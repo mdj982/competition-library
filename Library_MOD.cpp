@@ -65,7 +65,8 @@ vll mod_factlist(ll n) {
 
 //n^p O(log p)
 ll mod_pow(ll n, ll p) {
-	if (p == 1) return n;
+  if (p == 0) return 1;
+	else if (p == 1) return n;
 	else {
 		ll ans = mod_pow(n, p / 2);
 		ans = mod_mul(ans, ans);
