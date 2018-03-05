@@ -4,8 +4,7 @@ struct coordinate {
 };
 
 /*
-if s != t, after trimming, s.y != t.y
-e.g. s = (0,0), t = (2,0) -> (0,2)
+after trimming, s -> (0, 0), t -> placed in the first quadrant or x = 0 (y >= 0)
 */
 class Board_Trimming {
 private:

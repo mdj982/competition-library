@@ -1,3 +1,50 @@
+#include <iostream>
+#include <iomanip>
+#include <climits>
+#include <algorithm>
+#include <vector>
+#include <deque>
+#include <queue>
+#include <list>
+#include <stack>
+#include <string>
+#include <functional>
+#include <numeric>
+#include <map>
+#include <set>
+#include <cstdlib>
+#include <bitset>
+#include <unordered_map>
+#include <random>
+#define _USE_MATH_DEFINES
+#include <math.h>
+#include <complex>
+
+using namespace std;
+
+#define INF (int)1e8
+#define _INF (int)-1e8
+#define INFLL (long long)1e15
+#define _INFLL (long long)-1e15
+#define Loop(i, n) for(int i = 0; i < (int)n; i++)
+#define Loop1(i, n) for(int i = 1; i <= (int)n; i++)
+#define Loopr(i, n) for(int i = (int)n - 1; i >= 0; i--)
+#define Loopr1(i, n) for(int i = (int)n; i >= 1; i--)
+#define bitmanip(m,val) static_cast<bitset<(int)m>>(val)
+typedef long long int ll;
+typedef vector<int> vi;
+typedef vector<vector<int>> vvi;
+typedef pair<int, int> P;
+typedef vector<ll> vll;
+typedef vector<vector<ll>> vvll;
+typedef vector<double> vd;
+typedef vector<vector<double>> vvd;
+typedef complex<double> cdouble;
+typedef vector<complex<double>> vcd;
+typedef vector<vector<complex<double>>> vvcd;
+
+/*******************************************************/
+
 #define MOD (ll)(1e9+7)
 
 //solve x, y s.t. mx+ny=gcd(m,n)
@@ -48,49 +95,61 @@ public:
 	}
 };
 
-ll mod_mul(ll x, ll y) {
-	return x * y % MOD;
-}
+namespace mod_op {
 
-//A[k] = k!
-vll mod_factlist(ll n) {
-	if (n < 0) return{};
-	else {
-		vll ret((int)n + 1);
-		ret[0] = 1;
-		Loop1(i, (int)n) ret[i] = mod_mul(ret[i - 1], i);
-		return ret;
-	}
-}
+  //0 ~ mod - 1
+  ll modify(ll n) {
+    ll ret;
+    if (n > 0) ret = n - n / MOD * MOD;
+    else ret = n - (n - MOD + 1) / MOD * MOD;
+    return ret;
+  }
 
-//n^p O(log p)
-ll mod_pow(ll n, ll p) {
-  if (p == 0) return 1;
-	else if (p == 1) return n;
-	else {
-		ll ans = mod_pow(n, p / 2);
-		ans = mod_mul(ans, ans);
-		if (p % 2 == 1) ans = mod_mul(ans, n);
-		return ans;
-	}
-}
+  ll mul(ll x, ll y) {
+    return x * y % MOD;
+  }
 
-//0 ~ mod - 1
-ll mod_modify(ll n) {
-	ll ret;
-	if (n > 0) ret = n - n / MOD * MOD;
-	else ret = n - (n - MOD + 1) / MOD * MOD;
-	return ret;
-}
+  ll add(ll x, ll y) {
+    return (x + y) % MOD;
+  }
 
-//x^-1
-ll mod_inv(ll n) {
-	Extended_Euclid ee(n, MOD*(-1));
-	return mod_modify(ee.x);
-}
+  ll sub(ll x, ll y) {
+    return modify(x - y);
+  }
 
-//nCr
-ll mod_combination(ll n, ll r) {
-	vll facts = mod_factlist(n);
-	return mod_mul(facts[n], mod_inv(mod_mul(facts[r], facts[n - r])));
+  //A[k] = k!
+  vll factlist(ll n) {
+    if (n < 0) return{};
+    else {
+      vll ret((int)n + 1);
+      ret[0] = 1;
+      Loop1(i, (int)n) ret[i] = mul(ret[i - 1], i);
+      return ret;
+    }
+  }
+
+  //n^p O(log p)
+  ll pow(ll n, ll p) {
+    if (p == 0) return 1;
+    else if (p == 1) return n;
+    else {
+      ll ans = pow(n, p / 2);
+      ans = mul(ans, ans);
+      if (p % 2 == 1) ans = mul(ans, n);
+      return ans;
+    }
+  }
+
+  //x^-1
+  ll inv(ll n) {
+    Extended_Euclid ee(n, MOD*(-1));
+    return modify(ee.x);
+  }
+
+  //nCr
+  ll mod_combination(ll n, ll r) {
+    vll facts = factlist(n);
+    return mul(facts[n], inv(mul(facts[r], facts[n - r])));
+  }
+
 }

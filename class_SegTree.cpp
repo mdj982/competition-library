@@ -1,73 +1,84 @@
-typedef ll seg_t;
+typedef int seg_t;
 
 class SegTree {
 private:
-	int n;
-	vector<seg_t> segtree;
-	seg_t exc;
-	seg_t(*build_rule)(seg_t, seg_t);
-	seg_t build_seg(int k) {
-		int l = k * 2 + 1, r = k * 2 + 2;
-		return build_rule(segtree[l], segtree[r]);
-	}
-	seg_t find_rule(int s, int t, int l, int r, int k) {
-		if (s == l&&t == r) return segtree[k];
-		else {
-			int mid = (l + r) / 2;
-			if (s < mid&&mid < t) {
-				seg_t result1 = find_rule(s, mid, l, mid, k * 2 + 1);
-				seg_t result2 = find_rule(mid, t, mid, r, k * 2 + 2);
-				return build_rule(result1, result2);
-			}
-			else if (s < mid) {
-				return find_rule(s, t, l, mid, k * 2 + 1);
-			}
-			else if (mid < t) {
-				return find_rule(s, t, mid, r, k * 2 + 2);
-			}
-		}
-	}
+  int n;
+  vector<seg_t> segs;
+  int left_of(int index) {
+    return index * 2 + 1;
+  }
+  int right_of(int index) {
+    return index * 2 + 2;
+  }
+  void local_update(int index, seg_t(*update_rule)(seg_t, seg_t)) {
+    int l = left_of(index), r = index * 2 + 2;
+    segs[index] = update_rule(segs[l], segs[r]);
+  }
+  void get_index_of_range_sub(int s, int t, int l, int r, int index, vi *v) {
+    if (s == l && t == r) v->push_back(index);
+    else {
+      int mid = (l + r) / 2;
+      if (s < mid && mid < t) {
+        get_index_of_range_sub(s, mid, l, mid, left_of(index), v);
+        get_index_of_range_sub(mid, t, mid, r, right_of(index), v);
+      }
+      else if (s < mid) {
+        get_index_of_range_sub(s, t, l, mid, left_of(index), v);
+      }
+      else if (mid < t) {
+        get_index_of_range_sub(s, t, mid, r, right_of(index), v);
+      }
+    }
+  }
 public:
-	SegTree(vector<seg_t> a, seg_t init, seg_t(*f)(seg_t, seg_t)) {
-		n = (ll)pow(2, ceil(log2(a.size())));
-		segtree = vector<seg_t>(n * 2 - 1, init);
-		exc = init;
-		build_rule = f;
-		Loop(i, a.size()) segtree[n - 1 + i] = a[i];
-		Loopr(i, n - 1) segtree[i] = build_seg(i);
-	}
-	void update(int k, seg_t x, bool add_flag = false) {
-		k += n - 1;
-		segtree[k] = add_flag ? segtree[k] + x : x;
-		while (k > 0) {
-			k = (k - 1) / 2;
-			segtree[k] = build_seg(k);
-		}
-	}
-	// note: range is [s, t)
-	seg_t search(int s, int t) {
-		if (s == t) return exc;
-		return find_rule(s, t, 0, n, 0);
-	}
+  SegTree(vector<seg_t> a, seg_t init, seg_t(*update_rule)(seg_t, seg_t)) {
+    n = (int)pow(2, ceil(log2(a.size())));
+    segs = vector<seg_t>(n * 2 - 1, init);
+    Loop(i, a.size()) segs[n - 1 + i] = a[i];
+    Loopr(i, n - 1) local_update(i, update_rule);
+  }
+  void update(int k, seg_t x, seg_t(*update_rule)(seg_t, seg_t), bool add_flag = false) {
+    int index = k + n - 1;
+    segs[index] = add_flag ? segs[index] + x : x;
+    while (index > 0) {
+      index = (index - 1) / 2;
+      local_update(index, update_rule);
+    }
+  }
+  // note: range [s, t)
+  vi get_index_of_range(int s, int t) {
+    vi ret = {};
+    get_index_of_range_sub(s, t, 0, n, 0, &ret);
+    return ret;
+  }
+  // write extend method from here:
+  seg_t sum_of_range(int s, int t) {
+    vi v = get_index_of_range(s, t);
+    seg_t m = 0;
+    Loop(i, v.size()) {
+      m += segs[v[i]];
+    }
+    return m;
+  }
 };
 
-seg_t seg_build_rule(seg_t a, seg_t b) {
-	return a + b;
+seg_t update_rule(seg_t a, seg_t b) {
+  return a + b;
 }
 
 int main() {
-	int n; cin >> n;
-	int q; cin >> q;
-	vector<seg_t> a(n, 0);
-	SegTree segtree(a, 0, seg_build_rule);
-	Loop(i, q) {
-		int c, x, y; cin >> c >> x >> y;
-		if (c == 0) {
-			segtree.update(x - 1, y, true);
-		}
-		else {
-			cout << segtree.search(x - 1, y) << endl;
-		}
-	}
-	return 0;
+  int n; cin >> n;
+  int q; cin >> q;
+  vector<seg_t> a(n, 0);
+  SegTree segtree(a, 0, update_rule);
+  Loop(i, q) {
+    int c, x, y; cin >> c >> x >> y;
+    if (c == 0) {
+      segtree.update(x - 1, y, update_rule, true);
+    }
+    else {
+      cout << segtree.sum_of_range(x - 1, y) << endl;
+    }
+  }
+  return 0;
 }

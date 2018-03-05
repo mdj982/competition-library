@@ -17,29 +17,42 @@ public:
   }
 };
 
+// Grundy number pseudo code
 class Grundy {
 private:
   bool result;
+  vi grundies;
+  vi diff;
 public:
-  Grundy(vi a, vi b) {
-    sort(b.begin(), b.end());
-    int max_a = *max_element(a.begin(), a.end());
-    vi grundies((unsigned)max_a + 1, 0);
-    Loop1(i, max_a) {
+  void make_grundies(int k) {
+    // memoization
+    if (grundies[k] != -1) return;
+    else {
       set<int> s;
-      Loop(j, b.size()) {
-        int buf = i - b[j];
-        if (buf >= 0) s.insert(grundies[buf]);
-      }
-      Loop(j, i + 1) {
-        if (s.find(j) == s.end()) {
-          grundies[i] = j;
-          break;
+      Loop(j, diff.size()) {
+        // transition rule
+        int index = k - diff[j];
+        if (index >= 0) {
+          if (grundies[index] == -1) make_grundies(index);
+          s.insert(grundies[index]);
         }
       }
+      int c = 0;
+      while (s.find(c) != s.end()) c++;
+      grundies[k] = c;
+      return;
     }
-    vll x(a.size());
-    Loop(i, a.size()) x[i] = grundies[a[i]];
+  }
+  Grundy(vi states, vi diff) {
+    Grundy::diff = diff;
+    // calculate all possible grundy numbers
+    int grundy_size = 1000;
+    grundies = vi(grundy_size, -1);
+    Loop(i, grundy_size) make_grundies(i);
+    // decide the grundy number in each states
+    vll x(states.size());
+    Loop(i, states.size()) x[i] = grundies[states[i]];
+    // return to Nim
     Nim *nim = new Nim(x);
     result = nim->get_result();
   }
