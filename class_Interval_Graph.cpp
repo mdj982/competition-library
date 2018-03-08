@@ -1,4 +1,3 @@
-
 struct interval_graph_t {
   int n;           // |I|, index begins with 0
   vector<Pll> intervals; // I
