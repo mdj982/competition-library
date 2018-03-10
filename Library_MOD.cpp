@@ -1,4 +1,4 @@
-#define MOD (ll)(1e9+7)
+#define MOD (ll)1e9+7
 
 ll ceil_div(ll a, ll b) {
   if (a % b == 0) return a / b;
@@ -141,7 +141,7 @@ namespace mod_op {
     if (p == 0) return 1;
     else if (p == 1) return n;
     else {
-      ll ans = pow(n, p / 2);
+      ll ans = powm(n, p / 2);
       ans = mul(ans, ans);
       if (p % 2 == 1) ans = mul(ans, n);
       return ans;
@@ -158,5 +158,27 @@ namespace mod_op {
   ll mod_combination(ll n, ll r) {
     vll facts = factlist(n);
     return mul(facts[n], inv(mul(facts[r], facts[n - r])));
+  }
+
+  ll divm(ll x, ll y) {
+    return mul(x, inv(y));
+  }
+
+  //a^x=b, if x does not exist, return -1
+  ll disc_log(ll a, ll b) {
+    ll m = sqrt(MOD) + 1;
+    unordered_map<ll, ll> mp;
+    ll y = 1;
+    Loop(i, m) {
+      mp[y] = i;
+      y = mul(y, a);
+    }
+    y = inv(powm(a, m));
+    ll k = b;
+    Loop(i, m) {
+      if (mp.find(k) == mp.end()) k = mul(k, y);
+      else return i * m + mp[k];
+    }
+    return -1;
   }
 }

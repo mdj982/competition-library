@@ -16,14 +16,13 @@ private:
   int n;
 public:
   vector<node> nodes;
-  vi leaves;
+  set<int> leaves;
   int root;
   Tree(tree_t T) {
     n = T.n;
-    root = T.r;
     nodes.resize(n);
     Loop(i, n) nodes[i] = { i,{},-1,0,-1,0 };
-    map<int, vector<pair<int, ll>>> edges;
+    unordered_map<int, vector<pair<int, ll>>> edges;
     Loop(i, n - 1) {
       if (T.cost.size() == 0) {
         edges[T.edges[i].first].push_back({ T.edges[i].second,1 });
@@ -33,6 +32,20 @@ public:
         edges[T.edges[i].first].push_back({ T.edges[i].second,T.cost[i] });
         edges[T.edges[i].second].push_back({ T.edges[i].first,T.cost[i] });
       }
+    }
+    // the node which has the greatest degree will automatically decided as the root
+    if (T.r == -1) {
+      root = 0;
+      int max_d = -1;
+      Loop(i, n) {
+        if (edges[i].size() > max_d) {
+          root = i;
+          max_d = edges[i].size();
+        }
+      }
+    }
+    else {
+      root = T.r;
     }
     leaves = {};
     stack<int> stk;
@@ -56,9 +69,9 @@ public:
           stk.push(b);
         }
       }
-      if (leaf_flag) leaves.push_back(a);
+      if (leaf_flag) leaves.insert(a);
     }
-    if (n == 1) leaves.push_back(root);
+    if (n == 1) leaves.insert(root);
     return;
   }
   pair<int, vi> get_center_of_gravity() {
@@ -80,5 +93,12 @@ public:
     }
     sort(ret.second.begin(), ret.second.end());
     return ret;
+  }
+  void add_node(int parent, ll cost = 1) {
+    if (nodes[parent].childs.size() == 0) leaves.erase(parent);
+    nodes[parent].childs.push_back(n);
+    nodes.push_back({ n,{}, parent, cost, nodes[parent].deg + 1, nodes[parent].d + cost });
+    leaves.insert(n);
+    n++;
   }
 };
