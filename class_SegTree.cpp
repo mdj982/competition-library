@@ -54,11 +54,11 @@ public:
   // write extend method from here:
   seg_t sum_of_range(int s, int t) {
     vi v = get_index_of_range(s, t);
-    seg_t m = 0;
+    seg_t ret = 0;
     Loop(i, v.size()) {
-      m += segs[v[i]];
+      ret += segs[v[i]];
     }
-    return m;
+    return ret;
   }
 };
 

@@ -1,3 +1,4 @@
+
 struct interval_graph_t {
   int n;           // |I|, index begins with 0
   vector<Pll> intervals; // I
@@ -10,11 +11,14 @@ private:
     int id;
     ll l, r, weight; // interval of [l, r], l may be equal to r
     bool operator<(const node & another) const {
-      return (r != another.r ? r < another.r : l < another.l);
+      return (r != another.r ? r < another.r : (l != another.l ? l < another.l : id < another.id));
     }
   };
   struct clique_record_t {
     ll l, r, value;
+    bool operator<(const clique_record_t & another) const {
+      return (l != another.l ? l < another.l : (r != another.r ? r < another.r : value < another.value));
+    }
   };
   struct stableset_record_t {
     int id;
@@ -125,6 +129,25 @@ public:
     if (max_clique[NUM].second == -1) solve_max_clique(NUM);
     return max_clique[NUM].second;
   }
+  // range interval must be less than memory capacity 
+  vll count_up_clique_num(Pll range) {
+    vll ret((int)(range.second - range.first) + 1, 0);
+    if (clique_record[NUM].empty()) solve_clique(NUM);
+    clique_record_t target = { range.first, range.first, 0 };
+    auto itr = lower_bound(clique_record[NUM].begin(), clique_record[NUM].end(), target);
+    if (itr == clique_record[NUM].end()) return ret;
+    else {
+      for (ll k = range.first; k <= range.second; k++) {
+        if (k < itr->l) continue;
+        if (itr->r < k) {
+          itr++;
+          if (itr == clique_record[NUM].end()) break;
+        }
+        ret[(int)(k - range.first)] = itr->value;
+      }
+      return ret;
+    }
+  }
   vi get_max_weight_clique() {
     if (max_clique[WEIGHT].second == -1) solve_max_clique(WEIGHT);
     return max_clique[WEIGHT].first;
@@ -132,6 +155,25 @@ public:
   ll get_weight_of_max_weight_clique() {
     if (max_clique[WEIGHT].second == -1) solve_max_clique(WEIGHT);
     return max_clique[WEIGHT].second;
+  }
+  // range interval must be less than memory capacity 
+  vll count_up_clique_weight(Pll range) {
+    vll ret((int)(range.second - range.first + 1), 0);
+    if (clique_record[WEIGHT].empty()) solve_clique(WEIGHT);
+    clique_record_t target = { range.first, range.first, 0 };
+    auto itr = lower_bound(clique_record[WEIGHT].begin(), clique_record[WEIGHT].end(), target);
+    if (itr == clique_record[WEIGHT].end()) return ret;
+    else {
+      for (ll k = range.first; k <= range.second; k++) {
+        if (k < itr->l) continue;
+        if (itr->r < k) {
+          itr++;
+          if (itr == clique_record[WEIGHT].end()) break;
+        }
+        ret[(int)(k - range.first)] = itr->value;
+      }
+      return ret;
+    }
   }
   vi get_max_stableset() {
     if (max_stableset[NUM].second == -1) solve_max_stableset(NUM);

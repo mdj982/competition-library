@@ -119,3 +119,19 @@ vi list_prime_until(int n) {
   }
   return ret;
 }
+
+vector<P> prime_factorize(int n, vi prime_list = {}) {
+  vector<P> ret;
+  if (prime_list.empty()) prime_list = list_prime_until(rnd(sqrt(n)));
+  Loop(i, prime_list.size()) {
+    while (n % prime_list[i] == 0) {
+      if (ret.size() == 0 || ret.back().first != prime_list[i]) {
+        ret.push_back({ prime_list[i], 0 });
+      }
+      ret.back().second++;
+      n /= prime_list[i];
+    }
+  }
+  if (n != 1) ret.push_back({ n, 1 });
+  return ret;
+}
