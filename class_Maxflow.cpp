@@ -52,9 +52,9 @@ public:
       nodes[source].done = true;
       while (a != sink) {
         int b = -1;
-        for (auto itr = nodes[a].edges.begin(); itr != nodes[a].edges.end(); ++itr) {
-          if ((*itr).cap > 0) {
-            b = (*itr).to;
+        Loopitr(itr, nodes[a].edges) {
+          if (itr->cap > 0) {
+            b = itr->to;
             if (nodes[b].done) b = -1;
             else {
               stk.push_back(make_pair(a, &(*itr)));
@@ -83,16 +83,16 @@ public:
   vll get_eid_flow() {
     vll ret(m);
     Loop(i, n) {
-      for (auto itr = nodes[i].edges.begin(); itr != nodes[i].edges.end(); ++itr) {
-        if ((*itr).eid < 0) ret[(*itr).eid + m] = (*itr).cap;
+      Loopitr(itr, nodes[i].edges) {
+        if (itr->eid < 0) ret[itr->eid + m] = itr->cap;
       }
     }
     return ret;
   }
   ll get_maxflow() {
     ll ret = 0;
-    for (auto itr = nodes[sink].edges.begin(); itr != nodes[sink].edges.end(); ++itr) {
-      if ((*itr).eid < 0) ret += (*itr).cap;
+    Loopitr(itr, nodes[sink].edges) {
+      if (itr->eid < 0) ret += itr->cap;
     }
     return ret;
   }
