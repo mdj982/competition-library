@@ -1,10 +1,5 @@
 #define MOD (ll)1e9+7
 
-ll ceil_div(ll a, ll b) {
-  if (a % b == 0) return a / b;
-  else return a / b + 1;
-}
-
 class Extended_Euclid {
 private:
   ll m, n;
@@ -24,25 +19,25 @@ private:
     if ((*x) > x_range.second && (*y) > y_range.second) return false;
     ll d;
     if ((*y) > y_range.second) {
-      d = ceil_div((*y) - y_range.second, m);
+      d = ceildiv((*y) - y_range.second, m);
       (*x) += n * d;
       (*y) -= m * d;
       if ((*x) > x_range.second || (*y) < y_range.first) return false;
     }
     if ((*y) < y_range.first) {
-      d = ceil_div(y_range.first - (*y), m);
+      d = ceildiv(y_range.first - (*y), m);
       (*x) -= n * d;
       (*y) += m * d;
       if ((*x) < x_range.first || (*y) > y_range.second) return false;
     }
     if ((*x) < x_range.first) {
-      d = ceil_div(x_range.first - (*x), n);
+      d = ceildiv(x_range.first - (*x), n);
       (*x) += n * d;
       (*y) -= m * d;
       if ((*x) > x_range.second || (*y) < y_range.first) return false;
     }
     if ((*x) > x_range.second) {
-      d = ceil_div((*x) - x_range.second, n);
+      d = ceildiv((*x) - x_range.second, n);
       (*x) -= n * d;
       (*y) += m * d;
       if ((*x) < x_range.first || (*y) > y_range.second) return false;
