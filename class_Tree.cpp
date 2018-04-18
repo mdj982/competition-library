@@ -1,77 +1,89 @@
+typedef ll nodeval_t;
+typedef ll edgeval_t;
+
 struct tree_t {
   int n;           // |V|, index begins with 0
-  int r;           // root
   vector<P> edges; // E
-  vector<ll> cost; // cost or distance
+  vector<nodeval_t> vals; // value of nodes
+  vector<edgeval_t> costs; // cost, distance, or weight of edges
 };
 
 class Tree {
 private:
   struct node {
-    int id; vi childs; int parent; ll cost; int deg; ll d;
-    bool operator<(const node & another) const {
-      return deg != another.deg ? deg < another.deg : id < another.id;
-    }
+    int id; vi childs; int parent;
+    int deg; // the number of edges of the path to the root
+    int eid; // edge id of the edge connected by its parent and itself
+    int subtree_n; // the number of nodes of the partial tree rooted by itself
+    nodeval_t val; // value of the node itself
+    edgeval_t cost; // cost of the edge connected by its parent and itself
+  };
+  struct edgeinfo {
+    int eid; int to; edgeval_t cost;
   };
   int n;
+  static const nodeval_t init_val = 0;
+  static const edgeval_t init_cost = 1;
 public:
   vector<node> nodes;
-  set<int> leaves;
+  vi deg_order; // node ids, sorted by deg
+  vi leaves;
   int root;
-  Tree(tree_t T) {
+  // T should be non-empty tree
+  Tree(tree_t T, int root = -1) {
     n = T.n;
     nodes.resize(n);
-    Loop(i, n) nodes[i] = { i,{},-1,0,-1,0 };
-    unordered_map<int, vector<pair<int, ll>>> edges;
+    Loop(i, n) nodes[i] = { i,{}, -1, -1, -1, 1, T.vals.size() > i ? T.vals[i] : 0, init_cost };
+    vector<vector<edgeinfo>> edges(n);
     Loop(i, n - 1) {
-      if (T.cost.size() == 0) {
-        edges[T.edges[i].first].push_back({ T.edges[i].second,1 });
-        edges[T.edges[i].second].push_back({ T.edges[i].first,1 });
-      }
-      else {
-        edges[T.edges[i].first].push_back({ T.edges[i].second,T.cost[i] });
-        edges[T.edges[i].second].push_back({ T.edges[i].first,T.cost[i] });
-      }
+      edges[T.edges[i].first].push_back({ i, T.edges[i].second, (T.costs.size() > i ? T.costs[i] : init_cost) });
+      edges[T.edges[i].second].push_back({ i, T.edges[i].first, (T.costs.size() > i ? T.costs[i] : init_cost) });
     }
     // the node which has the greatest degree will automatically decided as the root
-    if (T.r == -1) {
-      root = 0;
+    if (root < 0) {
       int max_d = -1;
       Loop(i, n) {
         if (edges[i].size() > max_d) {
-          root = i;
+          Tree::root = i;
           max_d = edges[i].size();
         }
       }
     }
     else {
-      root = T.r;
+      Tree::root = min(root, n - 1);
     }
+    // tree construction
     leaves = {};
-    stack<int> stk;
-    stk.push(root);
-    while (stk.size()) {
-      int a = stk.top(); stk.pop();
-      if (nodes[a].deg != -1) continue;
-      if (a == root) nodes[a].deg = 0;
+    queue<int> que;
+    que.push(Tree::root);
+    while (que.size()) {
+      int a = que.front(); que.pop();
+      deg_order.push_back(a);
+      if (a == Tree::root) nodes[a].deg = 0;
       int leaf_flag = true;
       Loop(i, edges[a].size()) {
-        int b = edges[a][i].first;
+        int b = edges[a][i].to;
         if (nodes[b].deg != -1) {
           nodes[a].parent = b;
-          nodes[a].cost = edges[a][i].second;
+          nodes[a].eid = edges[a][i].eid;
+          nodes[a].cost = edges[a][i].cost;
           nodes[a].deg = nodes[b].deg + 1;
-          nodes[a].d = nodes[b].d + nodes[a].cost;
         }
         else {
           leaf_flag = false;
           nodes[a].childs.push_back(b);
-          stk.push(b);
+          que.push(b);
         }
       }
-      if (leaf_flag) leaves.insert(a);
+      if (leaf_flag) leaves.push_back(a);
     }
-    if (n == 1) leaves.insert(root);
+    Loopr(i, n) {
+      int a = deg_order[i];
+      Loop(j, nodes[a].childs.size()) {
+        int b = nodes[a].childs[j];
+        nodes[a].subtree_n += nodes[b].subtree_n;
+      }
+    }
     return;
   }
   pair<int, vi> get_center_of_gravity() {
@@ -94,11 +106,29 @@ public:
     sort(ret.second.begin(), ret.second.end());
     return ret;
   }
-  void add_node(int parent, ll cost = 1) {
-    if (nodes[parent].childs.size() == 0) leaves.erase(parent);
-    nodes[parent].childs.push_back(n);
-    nodes.push_back({ n,{}, parent, cost, nodes[parent].deg + 1, nodes[parent].d + cost });
-    leaves.insert(n);
-    n++;
+  vi solve_node_inclusion_cnt_in_all_path(bool enable_single_node_path) {
+    vi ret(n, 0);
+    Loop(i, n) {
+      int a = i;
+      // desendants to desendants
+      Loop(j, nodes[a].childs.size()) {
+        int b = nodes[a].childs[j];
+        ret[i] += nodes[b].subtree_n * (nodes[a].subtree_n - nodes[b].subtree_n - 1);
+      }
+      ret[i] /= 2; // because of double counting
+      ret[i] += (nodes[a].subtree_n - 1) * (n - nodes[a].subtree_n); // desendants to the others except for itself
+      ret[i] += n - 1; // itself to the others
+      if (enable_single_node_path) ret[i]++; // itself
+    }
+    return ret;
+  }
+  vi solve_edge_inclusion_cnt_in_all_path() {
+    vi ret(n - 1, 0);
+    Loop(i, n) {
+      int eid = nodes[i].eid;
+      if (eid < 0) continue;
+      ret[eid] = nodes[i].subtree_n * (n - nodes[i].subtree_n); // members in the partial tree to the others
+    }
+    return ret;
   }
 };
