@@ -84,41 +84,6 @@ namespace mod_op {
     }
     return ret;
   }
-
-  vector<modll> facts;
-
-  void make_facts(int n) {
-    if (facts.empty()) facts.push_back(modll(1));
-    for (int i = facts.size(); i <= n; ++i) facts.push_back(modll(facts.back() * (ll)i));
-    return;
-  }
-
-  //nCr
-  modll combination(modll n, ll r) {
-    modll ret;
-    make_facts((int)n);
-    ret = facts[(unsigned)n] / (facts[(unsigned)r] * facts[(unsigned)(n - r)]);
-    return ret;
-  }
-
-  //a^x=b, if x does not exist, return -1
-  ll disc_log(modll a, modll b) {
-    ll ret = -1;
-    ll m = ceilsqrt(a.get_mod());
-    unordered_map<ll, ll> mp;
-    modll x = 1;
-    Loop(i, m) {
-      mp[x] = i;
-      x *= a;
-    }
-    x = 1 / pow(a, m);
-    modll k = b;
-    Loop(i, m) {
-      if (mp.find(k) == mp.end()) k *= x;
-      ret = i * m + mp[k];
-    }
-    return ret;
-  }
 }
 
 using namespace mod_op;

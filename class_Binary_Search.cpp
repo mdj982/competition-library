@@ -1,31 +1,34 @@
-
+template<typename val_t, typename dat_t>
 class Binary_Search {
 private:
-  ll l;
-  ll r;
-  ll m;
+	dat_t dat;
+	bool reverse_flag;
+	bool(*evalfunc)(val_t, dat_t);
+	ll search(val_t l, val_t r) {
+		if (abs(r - l) == 1) {
+			if (!evalfunc(l, dat)) return r;
+			else return l;
+		}
+		val_t m = reverse_flag ? ceildiv(l + r, 2) : ((l + r) / 2);
+		if (!evalfunc(m, dat)) return search(m, r);
+		else return search(l, m);
+	}
 public:
-  ll result;
-  // search [l, r), rule should be [y,...,y,n...,n], and return the index that causes the last 'y'
-  Binary_Search(ll range_l, ll range_r, bool(*rule)(ll), bool upper_flag) {
-    l = range_l;
-    r = range_r;
-    while (r - l > 1) {
-      m = (l + r) / 2;
-      if (rule(m)) l = m;
-      else r = m;
-    }
-    result = upper_flag ? l + 1 : l;
-  }
+	ll result;
+	// range = [l, r), return first value causing "t" in evalfunc that returns l->[f,...,f,t,...,t)->r
+	Binary_Search(pair<val_t, val_t> range, dat_t dat, bool(*evalfunc)(val_t, dat_t)) {
+		if (range.first > range.second) reverse_flag = true;
+		Binary_Search::dat = dat;
+		Binary_Search::evalfunc = evalfunc;
+		result = search(range.first, range.second);
+	}
 };
 
-namespace Binary_Search_Rules {
-  vll a = { 1,3,4,5,5,6,7,8,9 };
-  ll x = 5;
-  bool bs_rule(ll k) {
-    if (a[(int)k] < x) return true;
-    else return false;
-  }
-}
+struct dat_t {
+	ll n, k, m, d;
+};
 
-using namespace Binary_Search_Rules;
+bool evalfunc(ll x, dat_t dat) {
+	if ((dat.d - 1) * dat.k + 1 <= dat.n / x) return true;
+	else return false;
+}
