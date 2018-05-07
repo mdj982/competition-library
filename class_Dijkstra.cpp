@@ -20,7 +20,7 @@ public:
 	Dijkstra(graph_t G, int start) {
 		n = G.n;
 		nodes.resize(n);
-		Loop(i, n) nodes[i] = { i, false,{},{},{}, -1, -1, INFLL };
+		Loop(i, n) nodes[i] = { i, false,{},{},{}, -1, -1, LLONG_MAX };
 		Loop(i, G.edges.size()) {
 			nodes[G.edges[i].first].to_eid.push_back(i);
 			nodes[G.edges[i].first].to.push_back(G.edges[i].second);
@@ -57,7 +57,7 @@ public:
 			stk.push(nodes[a].from);
 			a = nodes[a].from;
 		}
-		if (a != source) return{ -1 };
+		if (a != source) return {};
 		vi ret;
 		while (stk.size()) {
 			ret.push_back(stk.top());
@@ -72,7 +72,7 @@ public:
 			stk.push(nodes[a].from_eid);
 			a = nodes[a].from;
 		}
-		if (a != source) return{ -1 };
+		if (a != source) return {};
 		vi ret;
 		while (stk.size()) {
 			ret.push_back(stk.top());
@@ -99,7 +99,7 @@ int main() {
 	Dijkstra dijkstra(G, start);
 	Loop(i, G.n) {
 		ll ans = dijkstra.get_dist(i);
-		if (ans == INFLL) cout << "INF" << endl;
+		if (ans == LLONG_MAX) cout << "INF" << endl;
 		else cout << ans << endl;
 	}
 	return 0;

@@ -20,7 +20,7 @@ public:
 	Prim(graph_t G, int start) {
 		n = G.n;
 		nodes.resize(n);
-		Loop(i, n) nodes[i] = { i, false,{},{},{}, -1, -1, INFLL };
+		Loop(i, n) nodes[i] = { i, false,{},{},{}, -1, -1, LLONG_MAX };
 		Loop(i, G.edges.size()) {
 			nodes[G.edges[i].first].to_eid.push_back(i);
 			nodes[G.edges[i].first].to.push_back(G.edges[i].second);

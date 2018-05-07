@@ -17,6 +17,9 @@ private:
     int subtree_n; // the number of nodes of the partial tree rooted by itself
     nodeval_t val; // value of the node itself
     edgeval_t cost; // cost of the edge connected by its parent and itself
+		bool operator<(const node & another) const {
+			return deg != another.deg ? deg < another.deg : id < another.id;
+		}
   };
   struct edgeinfo {
     int eid; int to; edgeval_t cost;
