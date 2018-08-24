@@ -132,3 +132,8 @@ vector<Pll> prime_factorize(ll n, vll &prime_list) {
   if (n != 1) ret.push_back({ n, 1 });
   return ret;
 }
+
+ll gcd(ll m, ll n) {
+	if (n == 0) return m;
+	else return gcd(n, m % n);
+}

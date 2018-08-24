@@ -14,19 +14,19 @@ private:
     int l = left_of(index), r = index * 2 + 2;
     segs[index] = update_rule(segs[l], segs[r]);
   }
-  void get_index_of_range_sub(int s, int t, int l, int r, int index, vi *v) {
+  void get_index_of_range_rec(int s, int t, int l, int r, int index, vi *v) {
     if (s == l && t == r) v->push_back(index);
     else {
       int mid = (l + r) / 2;
       if (s < mid && mid < t) {
-        get_index_of_range_sub(s, mid, l, mid, left_of(index), v);
-        get_index_of_range_sub(mid, t, mid, r, right_of(index), v);
+        get_index_of_range_rec(s, mid, l, mid, left_of(index), v);
+        get_index_of_range_rec(mid, t, mid, r, right_of(index), v);
       }
       else if (s < mid) {
-        get_index_of_range_sub(s, t, l, mid, left_of(index), v);
+        get_index_of_range_rec(s, t, l, mid, left_of(index), v);
       }
       else if (mid < t) {
-        get_index_of_range_sub(s, t, mid, r, right_of(index), v);
+        get_index_of_range_rec(s, t, mid, r, right_of(index), v);
       }
     }
   }
@@ -48,7 +48,7 @@ public:
   // note: range [s, t)
   vi get_index_of_range(int s, int t) {
     vi ret = {};
-    get_index_of_range_sub(s, t, 0, n, 0, &ret);
+    get_index_of_range_rec(s, t, 0, n, 0, &ret);
     return ret;
   }
   // write extend method from here:
