@@ -4,6 +4,7 @@
 #include <climits>
 #include <limits>
 #include <algorithm>
+#include <array>
 #include <vector>
 #include <deque>
 #include <queue>
@@ -46,10 +47,12 @@ const double PI = 3.14159265358979323846;
 #define Loopitr(itr, container) for(auto itr = container.begin(); itr != container.end(); itr++)
 #define printv(vector) Loop(i, vector.size()) { cout << vector[i] << " "; } cout << endl;
 #define printmx(matrix) Loop(i, matrix.size()) { Loop(j, matrix[i].size()) { cout << matrix[i][j] << " "; } cout << endl; }
-#define rnd(d) (ll)((double)(d) + (d >= 0 ? 0.5 : -0.5))
-#define floorsqrt(x) ((ll)sqrt((double)x) + ((ll)sqrt((double)x) * (ll)sqrt((double)x) <= (ll)(x) ? 0 : -1))
-#define ceilsqrt(x) ((ll)sqrt((double)x) + ((ll)x <= (ll)sqrt((double)x) * (ll)sqrt((double)x) ? 0 : 1))
-#define ceildiv(a, b) ((ll)(a) / (ll)(b) + ((ll)(a) % (ll)(b) == 0 ? 0 : 1))
+#define quickio() ios::sync_with_stdio(false); cin.tie(0);
 #define bitmanip(m,val) static_cast<bitset<(int)m>>(val)
+ll rndf(double x) { return (ll)(x + (x >= 0 ? 0.5 : -0.5)); }
+ll floorsqrt(double x) { ll m = (ll)sqrt(x); return m + (m * m <= (ll)(x) ? 0 : -1); }
+ll ceilsqrt(double x) { ll m = (ll)sqrt(x); return m + ((ll)x <= m * m ? 0 : 1); }
+ll rnddiv(ll a, ll b) { return (a / b + (a % b * 2 >= b ? 1 : 0)); }
+ll ceildiv(ll a, ll b) { return (a / b + (a % b == 0 ? 0 : 1)); }
 
 /*******************************************************/

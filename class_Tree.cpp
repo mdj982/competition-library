@@ -64,6 +64,38 @@ private:
 			}
 		}
 	}
+	void solve_sparse_ancestors() {
+		sparse_ancestors.resize(n);
+		vector<int> current_ancestors;
+		stack<int> stk;
+		stk.push(Tree::root);
+		int time_stamp = 1;
+		while (stk.size()) {
+			int a = stk.top(); stk.pop();
+			nodes[a].visited = time_stamp++;
+			for (int i = 1; i <= (int)(current_ancestors.size()); i *= 2) {
+				sparse_ancestors[a].push_back(current_ancestors[current_ancestors.size() - i]);
+			}
+			if (nodes[a].childs.size()) {
+				Loop(i, nodes[a].childs.size()) {
+					stk.push(nodes[a].childs[i]);
+				}
+				current_ancestors.push_back(a);
+			}
+			else {
+				nodes[a].departed = time_stamp++;
+				while (current_ancestors.size() && (stk.empty() || nodes[stk.top()].parent != current_ancestors.back())) {
+					nodes[current_ancestors.back()].departed = time_stamp++;
+					current_ancestors.pop_back();
+				}
+			}
+		}
+		return;
+	}
+	bool is_ancestor(int descendant, int ancestor) {
+		return nodes[ancestor].visited < nodes[descendant].visited
+			&& nodes[descendant].departed < nodes[ancestor].departed;
+	}
 public:
 	vector<node> nodes;
 	vi deg_order; // node ids, sorted by deg
@@ -75,7 +107,7 @@ public:
 		nodes.resize(n);
 		Loop(i, n) {
 			nodes[i].id = i;
-			nodes[i].val = (int)(T.vals.size()) > i ? T.vals[i] : 0;
+			nodes[i].val = (int)(T.vals.size()) > i ? T.vals[i] : init_val;
 			nodes[i].cost = init_cost;
 		}
 		edges.resize(n);
@@ -144,39 +176,8 @@ public:
 		}
 		return ret;
 	}
-	void solve_sparse_ancestors() {
-		sparse_ancestors.resize(n);
-		vector<int> current_ancestors;
-		stack<int> stk;
-		stk.push(Tree::root);
-		int time_stamp = 1;
-		while (stk.size()) {
-			int a = stk.top(); stk.pop();
-			nodes[a].visited = time_stamp++;
-			for (int i = 1; i <= (int)(current_ancestors.size()); i *= 2) {
-				sparse_ancestors[a].push_back(current_ancestors[current_ancestors.size() - i]);
-			}
-			if (nodes[a].childs.size()) {
-				Loop(i, nodes[a].childs.size()) {
-					stk.push(nodes[a].childs[i]);
-				}
-				current_ancestors.push_back(a);
-			}
-			else {
-				nodes[a].departed = time_stamp++;
-				while (current_ancestors.size() && (stk.empty() || nodes[stk.top()].parent != current_ancestors.back())) {
-					nodes[current_ancestors.back()].departed = time_stamp++;
-					current_ancestors.pop_back();
-				}
-			}
-		}
-		return;
-	}
-	bool is_ancestor(int descendant, int ancestor) {
-		return nodes[ancestor].visited < nodes[descendant].visited
-			&& nodes[descendant].departed < nodes[ancestor].departed;
-	}
 	int get_lowest_common_ancestor(int u, int v) {
+		if (sparse_ancestors.size() == 0) solve_sparse_ancestors();
 		if (u == v) return u;
 		if (is_ancestor(u, v)) return v;
 		if (is_ancestor(v, u)) return u;

@@ -15,18 +15,18 @@ namespace mod_op {
 		modll(ll init = 0) { val = modify(init); return; }
 		modll(const modll& another) { val = another.val; return; }
 		inline modll& operator=(const modll &another) { val = another.val; return *this; }
-		inline modll operator+(const modll &x) { return (val + x.val) % MOD; }
-		inline modll operator-(const modll &x) { return (val - x.val) % MOD; }
-		inline modll operator*(const modll &x) { return (val * x.val) % MOD; }
-		inline modll operator/(const modll &x) { return (val * inv(x.val)) % MOD; }
-		inline modll& operator+=(const modll &x) { val = (val + x.val) % MOD; return *this; }
-		inline modll& operator-=(const modll &x) { val = (val - x.val) % MOD; return *this; }
-		inline modll& operator*=(const modll &x) { val = (val * x.val) % MOD; return *this; }
-		inline modll& operator/=(const modll &x) { val = (val * inv(x.val)) % MOD; return *this; }
+		inline modll operator+(const modll &x) { return modify(val + x.val); }
+		inline modll operator-(const modll &x) { return modify(val - x.val); }
+		inline modll operator*(const modll &x) { return modify(val * x.val); }
+		inline modll operator/(const modll &x) { return modify(val * inv(x.val)); }
+		inline modll& operator+=(const modll &x) { val = modify(val + x.val); return *this; }
+		inline modll& operator-=(const modll &x) { val = modify(val - x.val); return *this; }
+		inline modll& operator*=(const modll &x) { val = modify(val * x.val); return *this; }
+		inline modll& operator/=(const modll &x) { val = modify(val * inv(x.val)); return *this; }
 		inline bool operator==(const modll &x) { return val == x.val; }
 		inline bool operator!=(const modll &x) { return val != x.val; }
 		friend inline istream& operator >> (istream &is, modll& x) { is >> x.val; return is; }
-		friend inline ostream& operator << (ostream &os, modll& x) { os << x.val; return os; }
+		friend inline ostream& operator << (ostream &os, const modll& x) { os << x.val; return os; }
 		ll get_val() { return val; }
 	};
 
@@ -87,6 +87,11 @@ namespace mod_op {
 	modll get_fact(ll n) {
 		make_facts((int)n);
 		return facts[(int)n];
+	}
+
+	modll get_ifact(ll n) {
+		make_ifacts((int)n);
+		return ifacts[(int)n];
 	}
 
 	vector<vector<modll>> Stirling_nums2;
@@ -182,9 +187,10 @@ typedef vector<modll> vmodll;
 typedef vector<vector<modll>> vvmodll;
 
 // the number of methods of dividing n factors into r groups
+// recommend to consider corner case (n == 0 or r == 0) irregularly
 modll grouping(ll n, ll r, bool distinct_n, bool distinct_r, bool enable_empty_r) {
 	int mode = (distinct_n ? 0b100 : 0) + (distinct_r ? 0b010 : 0) + (enable_empty_r ? 0b001 : 0);
-	if (n <= 0 || r <= 0) return 0;
+	if (n < 0 || r < 0) return 0;
 	switch (mode) {
 	case 0b000:
 		return get_partition_num(n, r);
