@@ -2,7 +2,7 @@
 struct interval_graph_t {
   int n;           // |I|, index begins with 0
   vector<Pll> intervals; // I
-  vll weight; // cost or weight
+  vll weights; // cost or weight
 };
 
 class Interval_Graph {
@@ -115,7 +115,7 @@ public:
       range.second = max(range.second, IG.intervals[i].second);
     }
     if (IG.weight.size()) {
-      Loop(i, n) nodes[i].weight = IG.weight[i];
+      Loop(i, n) nodes[i].weight = IG.weights[i];
     }
     Loop(i, 2) clique_record[i] = {};
     Loop(i, 2) max_clique[i] = { {}, -1 };

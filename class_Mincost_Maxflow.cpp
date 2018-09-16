@@ -1,9 +1,12 @@
+typedef ll val_t;
+
 struct graph_t {
-  int n;           // |V|, index begins with 0
-  int m;           // |E|
-  vector<P> edges; // E
-  vector<ll> cost; // cost or distance
-  vector<ll> cap;  // capacity
+	int n;           // |V|, index begins with 0
+	int m;           // |E|
+	vector<P> edges; // E
+	vector<val_t> vals; // V
+	vector<ll> costs; // cost or distance
+	vector<ll> caps;  // capacity
 };
 
 class Mincost_Maxflow {
@@ -37,8 +40,8 @@ public:
     Loop(i, G.edges.size()) {
       int a = G.edges[i].first;
       int b = G.edges[i].second;
-      nodes[a].edges.push_back({ i, a, b, G.cost[i], G.cap[i], empty_edge });
-      nodes[b].edges.push_back({ i - m, b, a, -1 * G.cost[i], 0, &(nodes[a].edges.back()) });
+      nodes[a].edges.push_back({ i, a, b, G.costs[i], G.caps[i], empty_edge });
+      nodes[b].edges.push_back({ i - m, b, a, -1 * G.costs[i], 0, &(nodes[a].edges.back()) });
       nodes[a].edges.back().dual_p = &(nodes[b].edges.back());
     }
     source = s;
@@ -123,8 +126,8 @@ int main() {
     ll c, d;
     cin >> u >> v >> c >> d;
     G.edges.push_back({ u, v });
-    G.cap.push_back(c);
-    G.cost.push_back(d);
+    G.caps.push_back(c);
+    G.costs.push_back(d);
   }
   Mincost_Maxflow mincost_maxflow(G, 0, G.n - 1, f);
   cout << mincost_maxflow.get_cost() << endl;

@@ -1,9 +1,12 @@
+typedef ll val_t;
+
 struct graph_t {
-  int n;           // |V|, index begins with 0
-  int m;           // |E|
-  vector<P> edges; // E
-  vector<ll> cost; // cost or distance
-  vector<ll> cap;  // capacity
+	int n;           // |V|, index begins with 0
+	int m;           // |E|
+	vector<P> edges; // E
+	vector<val_t> vals; // V
+	vector<ll> costs; // cost or distance
+	vector<ll> caps;  // capacity
 };
 
 class Maxflow {
@@ -36,7 +39,7 @@ public:
     Loop(i, G.edges.size()) {
       int a = G.edges[i].first;
       int b = G.edges[i].second;
-      nodes[a].edges.push_back({ i, a, b, G.cap[i], empty_edge });
+      nodes[a].edges.push_back({ i, a, b, G.caps[i], empty_edge });
       nodes[b].edges.push_back({ i - m, b, a, 0, &(nodes[a].edges.back()) });
       nodes[a].edges.back().dual_p = &(nodes[b].edges.back());
     }
@@ -106,7 +109,7 @@ int main() {
     ll c;
     cin >> u >> v >> c;
     G.edges.push_back({ u, v });
-    G.cap.push_back(c);
+    G.caps.push_back(c);
   }
   Maxflow maxflow(G, 0, G.n - 1);
   cout << maxflow.get_maxflow() << endl;

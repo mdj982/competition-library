@@ -1,9 +1,12 @@
+typedef ll val_t;
+
 struct graph_t {
 	int n;           // |V|, index begins with 0
 	int m;           // |E|
 	vector<P> edges; // E
-	vector<ll> cost; // cost or distance
-	vector<ll> cap;  // capacity
+	vector<val_t> vals; // V
+	vector<ll> costs; // cost or distance
+	vector<ll> caps;  // capacity
 };
 
 class Warshallfloyd {
@@ -16,7 +19,7 @@ public:
 		n = G.n;
 		wf_table = vvll(n, vll(n, INFLL));
 		Loop(i, G.edges.size()) {
-			wf_table[G.edges[i].first][G.edges[i].second] = G.cost[i];
+			wf_table[G.edges[i].first][G.edges[i].second] = G.costs[i];
 		}
 		Loop(i, n) wf_table[i][i] = 0;
 		Loop(i, n) {
@@ -51,7 +54,7 @@ int main() {
 	Loop(i, G.m) {
 		int s, t, c; cin >> s >> t >> c;
 		G.edges.push_back({ s, t });
-		G.cost.push_back(c);
+		G.costs.push_back(c);
 	}
 	Warshallfloyd warshallfloyd(G);
 	if (warshallfloyd.is_negative_cycle()) cout << "NEGATIVE CYCLE" << endl;

@@ -1,9 +1,12 @@
+typedef ll val_t;
+
 struct graph_t {
 	int n;           // |V|, index begins with 0
 	int m;           // |E|
 	vector<P> edges; // E
-	vector<ll> cost; // cost or distance
-	vector<ll> cap;  // capacity
+	vector<val_t> vals; // V
+	vector<ll> costs; // cost or distance
+	vector<ll> caps;  // capacity
 };
 
 class Prim {
@@ -24,7 +27,7 @@ public:
 		Loop(i, G.edges.size()) {
 			nodes[G.edges[i].first].to_eid.push_back(i);
 			nodes[G.edges[i].first].to.push_back(G.edges[i].second);
-			nodes[G.edges[i].first].cost.push_back(G.cost[i]);
+			nodes[G.edges[i].first].cost.push_back(G.costs[i]);
 		}
 		root = start;
 		nodes[root].d = 0;
@@ -78,9 +81,9 @@ int main() {
 	Loop(i, G.m) {
 		int s, t, c; cin >> s >> t >> c;
 		G.edges.push_back({ s, t });
-		G.cost.push_back(c);
+		G.costs.push_back(c);
 		G.edges.push_back({ t, s });
-		G.cost.push_back(c);
+		G.costs.push_back(c);
 	}
 	Prim prim(G, 0);
 	cout << prim.get_weight() << endl;

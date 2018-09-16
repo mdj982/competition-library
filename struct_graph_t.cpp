@@ -1,11 +1,13 @@
+typedef ll val_t;
+
 struct graph_t {
 	int n;           // |V|, index begins with 0
 	int m;           // |E|
 	vector<P> edges; // E
-	vector<ll> cost; // cost or distance
-	vector<ll> cap;  // capacity
+	vector<val_t> vals; // V
+	vector<ll> costs; // cost or distance
+	vector<ll> caps;  // capacity
 };
-
 
 graph_t contract(graph_t G, vi u, int cand) {
   if (u.empty()) return G;
@@ -35,6 +37,27 @@ graph_t contract(graph_t G, vi u, int cand) {
   }
 }
 
+class Graph {
+private:
+	struct node {
+		int id; val_t val; bool done; vi to_eid; vi to;
+	};
+	vector<node> nodes;
+	int n;
+public:
+	Graph(graph_t G) {
+		n = G.n;
+		nodes.resize(n);
+		Loop(i, n) nodes[i] = { i,G.vals[i],false,{},{} };
+		Loop(i, G.edges.size()) {
+			nodes[G.edges[i].first].to_eid.push_back(i);
+			nodes[G.edges[i].first].to.push_back(G.edges[i].second);
+		}
+		return;
+	}
+};
+
+
 // graph input sample
 int main() {
 	graph_t G;
@@ -42,7 +65,7 @@ int main() {
 	Loop(i, G.m) {
 		int s, t, c; cin >> s >> t >> c;
 		G.edges.push_back({ s, t });
-		G.cost.push_back(c);
+		G.costs.push_back(c);
 	}
 	return 0;
 }

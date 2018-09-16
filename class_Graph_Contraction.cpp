@@ -1,9 +1,12 @@
+typedef ll val_t;
+
 struct graph_t {
-  int n;           // |V|, index begins with 0
-  int m;           // |E|
-  vector<P> edges; // E
-  vector<ll> cost; // cost or distance
-  vector<ll> cap;  // capacity
+	int n;           // |V|, index begins with 0
+	int m;           // |E|
+	vector<P> edges; // E
+	vector<val_t> vals; // V
+	vector<ll> costs; // cost or distance
+	vector<ll> caps;  // capacity
 };
 
 class Graph_Contraction {
@@ -47,8 +50,8 @@ public:
       if (a == b && !allow_self_cycle_flag) continue;
       else {
         contracted_graph.edges.push_back({ a,b });
-        if (G.cost.size()) contracted_graph.cost.push_back(G.cost[i]);
-        if (G.cap.size()) contracted_graph.cost.push_back(G.cap[i]);
+        if (G.costs.size()) contracted_graph.costs.push_back(G.costs[i]);
+        if (G.caps.size()) contracted_graph.caps.push_back(G.caps[i]);
       }
     }
     contracted_graph.m = contracted_graph.edges.size();

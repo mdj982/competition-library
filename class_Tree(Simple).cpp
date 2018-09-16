@@ -80,6 +80,7 @@ public:
 			edges[T.edges[i].first].push_back({ i, T.edges[i].second, ((int)(T.costs.size()) > i ? T.costs[i] : init_cost) });
 			edges[T.edges[i].second].push_back({ i, T.edges[i].first, ((int)(T.costs.size()) > i ? T.costs[i] : init_cost) });
 		}
+		Tree::root = root;
 		tree_construction();
 		return;
 	}

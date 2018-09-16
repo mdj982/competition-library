@@ -1,9 +1,12 @@
+typedef ll val_t;
+
 struct graph_t {
   int n;           // |V|, index begins with 0
   int m;           // |E|
   vector<P> edges; // E
-  vector<ll> cost; // cost or distance
-  vector<ll> cap;  // capacity
+	vector<val_t> vals;
+  vector<ll> costs; // cost or distance
+  vector<ll> caps;  // capacity
 };
 
 class Union_Find {

@@ -1,9 +1,12 @@
+typedef ll val_t;
+
 struct graph_t {
 	int n;           // |V|, index begins with 0
 	int m;           // |E|
 	vector<P> edges; // E
-	vector<ll> cost; // cost or distance
-	vector<ll> cap;  // capacity
+	vector<val_t> vals; // V
+	vector<ll> costs; // cost or distance
+	vector<ll> caps;  // capacity
 };
 
 // solve MCA
@@ -71,7 +74,7 @@ public:
 		nodes.resize(n);
 		Loop(i, n) nodes[i] = { -1, false, false, priority_queue<fromedge>(),{} };
 		Loop(i, G.edges.size()) {
-			nodes[G.edges[i].second].from_edges.push({ i, G.edges[i].first, G.cost[i], stack<int>() });
+			nodes[G.edges[i].second].from_edges.push({ i, G.edges[i].first, G.costs[i], stack<int>() });
 		}
 		root = start;
 		no_mca = false;
@@ -138,7 +141,7 @@ int main() {
 	Loop(i, G.m) {
 		int s, t, c; cin >> s >> t >> c;
 		G.edges.push_back({ s, t });
-		G.cost.push_back(c);
+		G.costs.push_back(c);
 	}
 	Chuliu_Edmonds mca(G, r);
 	cout << mca.get_weight() << endl;

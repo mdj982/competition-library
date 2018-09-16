@@ -1,9 +1,12 @@
+typedef ll val_t;
+
 struct graph_t {
 	int n;           // |V|, index begins with 0
 	int m;           // |E|
 	vector<P> edges; // E
-	vector<ll> cost; // cost or distance
-	vector<ll> cap;  // capacity
+	vector<val_t> vals; // V
+	vector<ll> costs; // cost or distance
+	vector<ll> caps;  // capacity
 };
 
 class Bellmanford {
@@ -22,7 +25,7 @@ public:
 		Loop(i, G.edges.size()) {
 			nodes[G.edges[i].first].to_eid.push_back(i);
 			nodes[G.edges[i].first].to.push_back(G.edges[i].second);
-			nodes[G.edges[i].first].cost.push_back(G.cost[i]);
+			nodes[G.edges[i].first].cost.push_back(G.costs[i]);
 		}
 		source = start;
 		nodes[source].d = 0;
@@ -93,7 +96,7 @@ int main() {
 	Loop(i, G.m) {
 		int s, t, c; cin >> s >> t >> c;
 		G.edges.push_back({ s, t });
-		G.cost.push_back(c);
+		G.costs.push_back(c);
 	}
 	Bellmanford bellmanford(G, start);
 	if (bellmanford.is_negative_cycle()) {
