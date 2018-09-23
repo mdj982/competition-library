@@ -55,6 +55,28 @@ ll floorsqrt(double x) { ll m = (ll)sqrt(x); return m + (m * m <= (ll)(x) ? 0 : 
 ll ceilsqrt(double x) { ll m = (ll)sqrt(x); return m + ((ll)x <= m * m ? 0 : 1); }
 ll rnddiv(ll a, ll b) { return (a / b + (a % b * 2 >= b ? 1 : 0)); }
 ll ceildiv(ll a, ll b) { return (a / b + (a % b == 0 ? 0 : 1)); }
-ll gcd(ll m, ll n) { if (n == 0) return m; else return gcd(n, m % n); }
 
 /*******************************************************/
+
+
+class Make737Hard {
+public:
+	string make(int X) {
+	}
+};
+
+struct params_t {
+	int X;
+};
+
+int main() {
+	vector<params_t> testparams;
+	testparams.push_back({ 1 });
+	testparams.push_back({ 8 });
+	testparams.push_back({ 0 });
+	testparams.push_back({ 4 });
+	Make737Hard classunit;
+	Loop(i, testparams.size()) {
+		classunit.make(testparams[i].X);
+	}
+}

@@ -10,7 +10,7 @@ public:
 		mt = new mt19937((*rnd)());
 		distr = new uniform_int_distribution<>(0, m - 1);
 	}
-	int get_rand() {
+	int get() {
 		return (*distr)(*mt);
 	}
 };
