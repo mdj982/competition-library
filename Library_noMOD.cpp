@@ -31,16 +31,6 @@ vvll combinationlist(int n) {
   return ret;
 }
 
-void printmx(vvll A) {
-  Loop(i, A.size()) {
-    Loop(j, A[i].size()) {
-      cout << A[i][j] << " ";
-    }
-    cout << endl;
-  }
-  cout << endl;
-}
-
 // ret[i] = a[i] + a[i + 1] + ... (for length times, with looping)
 vll loop_vec_accumulate(vll a, ll length) {
   int n = a.size();
@@ -125,4 +115,34 @@ vector<Pll> prime_factorize(ll n, vll &prime_list) {
   }
   if (n != 1) ret.push_back({ n, 1 });
   return ret;
+}
+
+
+pair<vector<Pll>, vector<Pll>> reduce_common_factors(const vector<Pll> &x_factors, const vector<Pll> &y_factors) {
+	pair<vector<Pll>, vector<Pll>> ret;
+	int n = int(x_factors.size()), m = int(y_factors.size());
+	int i = 0, j = 0;
+	while (i < n && j < m) {
+		if (x_factors[i].first < y_factors[j].first) ret.first.push_back(x_factors[i++]);
+		else if (x_factors[i].first > y_factors[j].first) ret.second.push_back(y_factors[j++]);
+		else {
+			ll cnt = min(x_factors[i].second, y_factors[i].second);
+			if (x_factors[i].second - cnt > 0) ret.first.push_back({ x_factors[i].first, x_factors[i].second - cnt });
+			if (y_factors[j].second - cnt > 0) ret.second.push_back({ y_factors[j].first, y_factors[j].second - cnt });
+			++i; ++j;
+		}
+	}
+	while (i < n) ret.first.push_back(x_factors[i++]);
+	while (j < m) ret.second.push_back(y_factors[j++]);
+	return ret;
+}
+
+pair<ll, ll> reduce_fraction(ll x, ll y, const vll &prime_list) {
+	pair<ll, ll> ret = { 1, 1 };
+	vector<Pll> x_factors = prime_factorize(x, prime_list);
+	vector<Pll> y_factors = prime_factorize(y, prime_list);
+	pair<vector<Pll>, vector<Pll>> factors = reduce_common_factors(x_factors, y_factors);
+	Loop(i, factors.first.size()) ret.first *= powll(factors.first[i].first, factors.first[i].second);
+	Loop(i, factors.second.size()) ret.second *= powll(factors.second[i].first, factors.second[i].second);
+	return ret;
 }
