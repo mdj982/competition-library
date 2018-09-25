@@ -32,6 +32,7 @@ typedef pair<int, int> P;
 typedef pair<ll, ll> Pll;
 typedef vector<ll> vll;
 typedef vector<vector<ll>> vvll;
+typedef complex<double> cdouble;
 
 const int INFL = (int)1e9;
 const ll INFLL = (ll)1e18;
