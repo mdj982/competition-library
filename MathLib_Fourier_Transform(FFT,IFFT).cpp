@@ -72,12 +72,21 @@ namespace Fourier_transform {
 		return ret;
 	}
 
+	// a.size() = b.size() should be 2^digit
+	vector<cdouble> mul_convolution(const vector<cdouble> &a, const vector<cdouble> &b) {
+		int n = int(a.size());
+		vector<cdouble> ret;
+		vector<cdouble> g = FFT(a), h = FFT(b);
+		Loop(i, n) g[i] *= h[i];
+		ret = IFFT(g);
+		return ret;
+	}
+
 	int legal_size_of(int n) {
 		int ret = 1 << (int)log2(n);
 		if (ret < n) ret <<= 1;
 		return ret;
 	}
-
 }
 
 using namespace Fourier_transform;
