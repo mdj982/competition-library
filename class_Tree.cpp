@@ -30,7 +30,7 @@ private:
 	static const nodeval_t init_val = 0;
 	static const edgeval_t init_cost = 1;
 	vector<vector<edgeinfo>> edges;
-	vvi sparse_ancestors;
+	vvi sparse_ancestors; // (1 << j)-th ancestors in each node_id = i
 	void tree_construction() {
 		leaves = {};
 		queue<int> que;

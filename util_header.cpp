@@ -46,11 +46,18 @@ const double PI = 3.14159265358979323846;
 #define Looprll(i, n) for(ll i = (ll)n - 1; i >= 0; i--)
 #define Loopr1(i, n) for(int i = (int)n; i >= 1; i--)
 #define Looprll1(i, n) for(ll i = (ll)n; i >= 1; i--)
+#define Loopdiag(i, j, h, w, sum) for(int i = (sum >= h ? h - 1 : sum), j = sum - i; i >= 0 && j < w; i--, j++)
+#define Loopdiagr(i, j, h, w, sum) for(int j = (sum >= w ? w - 1 : sum), i = sum - j; j >= 0 && i < h; j--, i++)
+#define Loopdiagsym(i, j, h, w, gap) for (int i = (gap >= 0 ? gap : 0), j = i - gap; i < h && j < w; i++, j++)
+#define Loopdiagsymr(i, j, h, w, gap) for (int i = (gap > h - w - 1 ? h - 1 : w - 1 + gap), j = i - gap; i >= 0 && j >= 0; i--, j--)
 #define Loopitr(itr, container) for(auto itr = container.begin(); itr != container.end(); itr++)
-#define printv(vector) Loop(i, vector.size()) { cout << vector[i] << " "; } cout << endl;
-#define printmx(matrix) Loop(i, matrix.size()) { Loop(j, matrix[i].size()) { cout << matrix[i][j] << " "; } cout << endl; }
+#define printv(vector) Loop(extra_i, vector.size()) { cout << vector[extra_i] << " "; } cout << endl;
+#define printmx(matrix) Loop(extra_i, matrix.size()) { Loop(extra_j, matrix[extra_i].size()) { cout << matrix[extra_i][extra_j] << " "; } cout << endl; }
 #define quickio() ios::sync_with_stdio(false); cin.tie(0);
+#define readfile(filename) ifstream in(filename); cin.rdbuf(in.rdbuf());
 #define bitmanip(m,val) static_cast<bitset<(int)m>>(val)
+bool nearlyeq(double x, double y) { return abs(x - y) < 1e-9; }
+bool inrange(int x, int t) { return x >= 0 && x < t; }
 ll rndf(double x) { return (ll)(x + (x >= 0 ? 0.5 : -0.5)); }
 ll floorsqrt(double x) { ll m = (ll)sqrt(x); return m + (m * m <= (ll)(x) ? 0 : -1); }
 ll ceilsqrt(double x) { ll m = (ll)sqrt(x); return m + ((ll)x <= m * m ? 0 : 1); }
