@@ -18,13 +18,14 @@ private:
 		}
 	};
 	vector<node> nodes;
-	int n, source;
+	int n, m, source;
 public:
 	Dijkstra(graph_t G, int start) {
 		n = G.n;
+		m = G.edges.size();
 		nodes.resize(n);
 		Loop(i, n) nodes[i] = { i, false,{},{},{}, -1, -1, LLONG_MAX };
-		Loop(i, G.edges.size()) {
+		Loop(i, m) {
 			nodes[G.edges[i].first].to_eid.push_back(i);
 			nodes[G.edges[i].first].to.push_back(G.edges[i].second);
 			nodes[G.edges[i].first].cost.push_back(G.costs[i]);

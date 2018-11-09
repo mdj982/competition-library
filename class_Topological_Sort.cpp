@@ -15,15 +15,16 @@ private:
 		int id; bool done; vi to; int from_cnt;
 	};
 	vector<node> nodes;
-	int n;
+	int n, m;
 	vi result;
 	bool cycle_existing_flag;
 public:
 	Topological_Sort(graph_t G) {
 		n = G.n;
+		m = G.edges.size();
 		nodes.resize(n);
 		Loop(i, n) nodes[i] = { i, false,{}, 0 };
-		Loop(i, G.edges.size()) {
+		Loop(i, m) {
 			nodes[G.edges[i].first].to.push_back(G.edges[i].second);
 			nodes[G.edges[i].second].from_cnt++;
 		}

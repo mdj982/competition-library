@@ -43,11 +43,11 @@ private:
 public:
 	Maxflow(graph_t G, int s, int t) {
 		n = G.n;
-		m = G.m;
+		m = G.edges.size();
 		nodes.resize(n);
 		Loop(i, n) nodes[i] = { i, false,{} };
 		empty_edge = new edgedata;
-		Loop(i, G.edges.size()) {
+		Loop(i, m) {
 			int a = G.edges[i].first;
 			int b = G.edges[i].second;
 			nodes[a].edges.push_back({ i, a, b, G.caps[i], (int)nodes[b].edges.size() });

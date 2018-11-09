@@ -46,7 +46,7 @@ private:
     int id; bool done; vi to_eid; vi to; int from_eid; int from;
   };
   vector<node> nodes[2];
-  int n;
+  int n, m;
   stack<int> stk;
   vvi sccs;
   vvi ccs;
@@ -71,12 +71,13 @@ private:
 public:
   Strongly_Connected_Components(graph_t G) {
     n = G.n;
+		m = G.edges.size();
     Loop(i, 2) nodes[i].resize(n);
     Loop(i, 2) {
       Loop(j, n) nodes[i][j] = { i, false,{},{}, -1, -1 };
     }
     Union_Find *uf = new Union_Find(n);
-    Loop(i, G.edges.size()) {
+    Loop(i, m) {
       nodes[0][G.edges[i].first].to_eid.push_back(i);
       nodes[0][G.edges[i].first].to.push_back(G.edges[i].second);
       nodes[1][G.edges[i].second].to_eid.push_back(i);

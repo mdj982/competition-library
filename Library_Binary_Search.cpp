@@ -1,5 +1,5 @@
 // range = [l, r), return last value causing "t" in evalfunc that returns l->[t,...,t,f,...,f)->r
-// NOTE: if [f,...,f) then return l - 1, if [l, r) = empty set then runtime-error
+// NOTE: if [f,...,f) then return l - 1, if [l, r) = empty set then invalid use
 template<typename val_t, typename bsargv_t>
 val_t lower_binary_search(val_t l, val_t r, const bsargv_t &bsargv, bool(*evalfunc)(val_t, const bsargv_t&)) {
 	if (r - l == 1) {
@@ -12,7 +12,7 @@ val_t lower_binary_search(val_t l, val_t r, const bsargv_t &bsargv, bool(*evalfu
 }
 
 // range = [l, r), return first value causing "t" in evalfunc that returns l->[f,...,f,t,...,t)->r
-// NOTE: if [f,...,f) then return r, if [l, r) = empty set then runtime-error
+// NOTE: if [f,...,f) then return r, if [l, r) = empty set then invalid use
 template<typename val_t, typename bsargv_t>
 val_t upper_binary_search(val_t l, val_t r, const bsargv_t &bsargv, bool(*evalfunc)(val_t, const bsargv_t&)) {
 	if (r - l == 1) {

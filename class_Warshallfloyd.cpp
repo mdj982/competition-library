@@ -11,14 +11,15 @@ struct graph_t {
 
 class Warshallfloyd {
 private:
-	int n;
+	int n, m;
 	bool negative_cycle;
 	vvll wf_table;
 public:
 	Warshallfloyd(graph_t G) {
 		n = G.n;
+		m = G.edges.size();
 		wf_table = vvll(n, vll(n, INFLL));
-		Loop(i, G.edges.size()) {
+		Loop(i, m) {
 			wf_table[G.edges[i].first][G.edges[i].second] = G.costs[i];
 		}
 		Loop(i, n) wf_table[i][i] = 0;

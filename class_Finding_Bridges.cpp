@@ -15,7 +15,7 @@ private:
 		int id; bool done; vi to_eid; vi to; int from_eid; int from; int pre; int low;
 	};
 	vector<node> nodes;
-	int n;
+	int n, m;
 	int ord;
 	vector<P> bridges_idpair;
 	vi bridges_eid;
@@ -45,9 +45,10 @@ private:
 public:
 	Finding_Bridges(graph_t G) {
 		n = G.n;
+		m = G.edges.size();
 		nodes.resize(n);
 		Loop(i, n) nodes[i] = { i, false,{},{}, -1, -1, -1, -1 };
-		Loop(i, G.edges.size()) {
+		Loop(i, m) {
 			nodes[G.edges[i].first].to_eid.push_back(i);
 			nodes[G.edges[i].first].to.push_back(G.edges[i].second);
 		}

@@ -1,16 +1,7 @@
-typedef ll val_t;
-
-struct graph_t {
-	int n;           // |V|, index begins with 0
-	int m;           // |E|
-	vector<P> edges; // E
-	vector<val_t> vals; // V
-	vector<ll> costs; // cost or distance
-	vector<ll> caps;  // capacity
-};
 
 class Prim {
 private:
+	// note: eid of dual_edge is negative
 	struct node {
 		int id; bool done; vi to_eid; vi to; vll cost; int from_eid; int from; ll d;
 		bool operator<(const node & another) const {
@@ -18,16 +9,20 @@ private:
 		}
 	};
 	vector<node> nodes;
-	int n, root;
+	int n, m, root;
 public:
 	Prim(graph_t G, int start) {
 		n = G.n;
+		m = G.edges.size();
 		nodes.resize(n);
 		Loop(i, n) nodes[i] = { i, false,{},{},{}, -1, -1, LLONG_MAX };
-		Loop(i, G.edges.size()) {
+		Loop(i, m) {
 			nodes[G.edges[i].first].to_eid.push_back(i);
 			nodes[G.edges[i].first].to.push_back(G.edges[i].second);
 			nodes[G.edges[i].first].cost.push_back(G.costs[i]);
+			nodes[G.edges[i].second].to_eid.push_back(i - m);
+			nodes[G.edges[i].second].to.push_back(G.edges[i].first);
+			nodes[G.edges[i].second].cost.push_back(G.costs[i]);
 		}
 		root = start;
 		nodes[root].d = 0;
@@ -58,10 +53,14 @@ public:
 		}
 		return ret;
 	}
+	// here negative eid will transformed to non-negative eid
 	vi get_tree_eid() {
 		vi ret;
 		Loop(i, n) {
-			if (i != root) ret.push_back(nodes[i].from_eid);
+			if (i != root) {
+				ret.push_back(nodes[i].from_eid);
+				if (ret.back() < 0) ret.back() += m;
+			}
 		}
 		return ret;
 	}
@@ -73,19 +72,3 @@ public:
 		return ret;
 	}
 };
-
-// prim sample
-int main() {
-	graph_t G;
-	cin >> G.n >> G.m;
-	Loop(i, G.m) {
-		int s, t, c; cin >> s >> t >> c;
-		G.edges.push_back({ s, t });
-		G.costs.push_back(c);
-		G.edges.push_back({ t, s });
-		G.costs.push_back(c);
-	}
-	Prim prim(G, 0);
-	cout << prim.get_weight() << endl;
-	return 0;
-}

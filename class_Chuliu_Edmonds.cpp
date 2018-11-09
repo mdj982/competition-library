@@ -25,7 +25,7 @@ private:
 		int overnode; bool done; bool fin; priority_queue<fromedge> from_edges; fromedge from;
 	};
 	vector<node> nodes;
-	int n, root;
+	int n, m, root;
 	stack<int> stk;
 	bool no_mca;
 	int topnode(int k) {
@@ -71,9 +71,10 @@ private:
 public:
 	Chuliu_Edmonds(graph_t G, int start) {
 		n = G.n;
+		m = G.edges.size();
 		nodes.resize(n);
 		Loop(i, n) nodes[i] = { -1, false, false, priority_queue<fromedge>(),{} };
-		Loop(i, G.edges.size()) {
+		Loop(i, m) {
 			nodes[G.edges[i].second].from_edges.push({ i, G.edges[i].first, G.costs[i], stack<int>() });
 		}
 		root = start;

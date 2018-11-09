@@ -33,11 +33,11 @@ private:
 public:
   Mincost_Maxflow(graph_t G, int s, int t, ll flow) {
     n = G.n;
-    m = G.m;
+    m = G.edges.size();
     nodes.resize(n);
     empty_edge = new edgedata;
     Loop(i, n) nodes[i] = { i, false, empty_edge,{}, LLONG_MAX };
-    Loop(i, G.edges.size()) {
+    Loop(i, m) {
       int a = G.edges[i].first;
       int b = G.edges[i].second;
       nodes[a].edges.push_back({ i, a, b, G.costs[i], G.caps[i], empty_edge });

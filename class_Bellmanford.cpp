@@ -15,14 +15,15 @@ private:
 		int id; bool done; vi to_eid; vi to; vll cost; int from_eid; int from; ll d;
 	};
 	vector<node> nodes;
-	int n, source;
+	int n, m, source;
 	bool negative_cycle;
 public:
 	Bellmanford(graph_t G, int start) {
 		n = G.n;
+		m = G.edges.size();
 		nodes.resize(n);
 		Loop(i, n) nodes[i] = { i, false,{},{},{}, -1, -1, INFLL };
-		Loop(i, G.edges.size()) {
+		Loop(i, m) {
 			nodes[G.edges[i].first].to_eid.push_back(i);
 			nodes[G.edges[i].first].to.push_back(G.edges[i].second);
 			nodes[G.edges[i].first].cost.push_back(G.costs[i]);

@@ -192,4 +192,39 @@ public:
 		}
 		return sparse_ancestors[a][0];
 	}
+	int get_ancestor(int descendant, int k) {
+		if (k == 0) return descendant;
+		int l = (int)log2(k);
+		if (l >= sparse_ancestors[descendant].size()) return -1;
+		else return get_ancestor(sparse_ancestors[descendant][l], k - (1 << l));
+	}
+	// return first value causing "t" in evalfunc that returns descendant->[f,...,f,t,...,t]->root
+	// NOTE: if [f,...,f] then return -1
+	template<typename bsargv_t>
+	int binary_search_upper_ancestor(int descendant, const bsargv_t &bsargv, bool(*evalfunc)(int, const bsargv_t&)) {
+		if (evalfunc(descendant, bsargv)) return descendant;
+		if (descendant == root) return -1;
+		Loop(i, sparse_ancestors[descendant].size()) {
+			if (evalfunc(sparse_ancestors[descendant][i], bsargv)) {
+				if (i == 0) return binary_search_upper_ancestor(sparse_ancestors[descendant][0], bsargv, evalfunc);
+				else return binary_search_upper_ancestor(sparse_ancestors[descendant][i - 1], bsargv, evalfunc);
+			}
+		}
+		return binary_search_upper_ancestor(sparse_ancestors[descendant].back(), bsargv, evalfunc);
+	}
+	// return last value causing "t" in evalfunc that returns descendant->[t,...,t,f,...,f]->root
+	// NOTE: if [f,...,f] then return -1
+	template<typename bsargv_t>
+	int binary_search_lower_ancestor(int descendant, const bsargv_t &bsargv, bool(*evalfunc)(int, const bsargv_t&)) {
+		if (!evalfunc(descendant, bsargv)) return -1;
+		if (descendant == root) return root;
+		Loop(i, sparse_ancestors[descendant].size()) {
+			if (!evalfunc(sparse_ancestors[descendant][i], bsargv)) {
+				if (i == 0) return descendant;
+				else return binary_search_lower_ancestor(sparse_ancestors[descendant][i - 1], bsargv, evalfunc);
+			}
+		}
+		return binary_search_lower_ancestor(sparse_ancestors[descendant].back(), bsargv, evalfunc);
+	}
+	// static bool evalfunc(int id, bsargv_t bsargv);
 };
