@@ -15,8 +15,8 @@ private:
 		int deg = -1; // the number of edges of the path to the root
 		int eid = -1; // edge id of the edge connected by its parent and itself
 		int subtree_n = 1; // the number of nodes of the partial tree rooted by itself
-		int visited = -1; // time stamp of visiting on DFS
-		int departed = -1; // time stamp of departure on DFS
+		int visited = -1; // time stamp of visiting on DFS, call solve_sparse_ancestors() for activation
+		int departed = -1; // time stamp of departure on DFS, call solve_sparse_ancestors() for activation
 		nodeval_t val; // value of the node itself
 		edgeval_t cost; // cost of the edge connected by its parent and itself
 		bool operator<(const node & another) const {
@@ -63,38 +63,6 @@ private:
 				nodes[a].subtree_n += nodes[b].subtree_n;
 			}
 		}
-	}
-	void solve_sparse_ancestors() {
-		sparse_ancestors.resize(n);
-		vector<int> current_ancestors;
-		stack<int> stk;
-		stk.push(Tree::root);
-		int time_stamp = 1;
-		while (stk.size()) {
-			int a = stk.top(); stk.pop();
-			nodes[a].visited = time_stamp++;
-			for (int i = 1; i <= (int)(current_ancestors.size()); i *= 2) {
-				sparse_ancestors[a].push_back(current_ancestors[current_ancestors.size() - i]);
-			}
-			if (nodes[a].childs.size()) {
-				Loop(i, nodes[a].childs.size()) {
-					stk.push(nodes[a].childs[i]);
-				}
-				current_ancestors.push_back(a);
-			}
-			else {
-				nodes[a].departed = time_stamp++;
-				while (current_ancestors.size() && (stk.empty() || nodes[stk.top()].parent != current_ancestors.back())) {
-					nodes[current_ancestors.back()].departed = time_stamp++;
-					current_ancestors.pop_back();
-				}
-			}
-		}
-		return;
-	}
-	bool is_ancestor(int descendant, int ancestor) {
-		return nodes[ancestor].visited < nodes[descendant].visited
-			&& nodes[descendant].departed < nodes[ancestor].departed;
 	}
 public:
 	vector<node> nodes;
@@ -175,6 +143,38 @@ public:
 			ret[eid] = nodes[i].subtree_n * (n - nodes[i].subtree_n); // members in the partial tree to the others
 		}
 		return ret;
+	}
+	void solve_sparse_ancestors() {
+		sparse_ancestors.resize(n);
+		vector<int> current_ancestors;
+		stack<int> stk;
+		stk.push(Tree::root);
+		int time_stamp = 0;
+		while (stk.size()) {
+			int a = stk.top(); stk.pop();
+			nodes[a].visited = time_stamp++;
+			for (int i = 1; i <= (int)(current_ancestors.size()); i *= 2) {
+				sparse_ancestors[a].push_back(current_ancestors[current_ancestors.size() - i]);
+			}
+			if (nodes[a].childs.size()) {
+				Loop(i, nodes[a].childs.size()) {
+					stk.push(nodes[a].childs[i]);
+				}
+				current_ancestors.push_back(a);
+			}
+			else {
+				nodes[a].departed = time_stamp++;
+				while (current_ancestors.size() && (stk.empty() || nodes[stk.top()].parent != current_ancestors.back())) {
+					nodes[current_ancestors.back()].departed = time_stamp++;
+					current_ancestors.pop_back();
+				}
+			}
+		}
+		return;
+	}
+	bool is_ancestor(int descendant, int ancestor) {
+		return nodes[ancestor].visited < nodes[descendant].visited
+			&& nodes[descendant].departed < nodes[ancestor].departed;
 	}
 	int get_lowest_common_ancestor(int u, int v) {
 		if (sparse_ancestors.size() == 0) solve_sparse_ancestors();
