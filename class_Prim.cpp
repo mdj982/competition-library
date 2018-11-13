@@ -1,10 +1,23 @@
+typedef ll val_t;
+
+struct graph_t {
+	int n;           // |V|, index begins with 0
+	int m;           // |E|
+	vector<P> edges; // E
+	vector<val_t> vals; // V
+	vector<ll> costs; // cost or distance
+	vector<ll> caps;  // capacity
+};
 
 class Prim {
 private:
 	// note: eid of dual_edge is negative
 	struct node {
-		int id; bool done; vi to_eid; vi to; vll cost; int from_eid; int from; ll d;
-		bool operator<(const node & another) const {
+		int id; bool done; vi to_eid; vi to; vll costs; int from_eid; int from; ll d;
+	};
+	struct pq_t {
+		int id; ll d;
+		bool operator<(const pq_t & another) const {
 			return d != another.d ? d > another.d : id > another.id;
 		}
 	};
@@ -19,28 +32,29 @@ public:
 		Loop(i, m) {
 			nodes[G.edges[i].first].to_eid.push_back(i);
 			nodes[G.edges[i].first].to.push_back(G.edges[i].second);
-			nodes[G.edges[i].first].cost.push_back(G.costs[i]);
+			nodes[G.edges[i].first].costs.push_back(G.costs[i]);
 			nodes[G.edges[i].second].to_eid.push_back(i - m);
 			nodes[G.edges[i].second].to.push_back(G.edges[i].first);
-			nodes[G.edges[i].second].cost.push_back(G.costs[i]);
+			nodes[G.edges[i].second].costs.push_back(G.costs[i]);
 		}
 		root = start;
 		nodes[root].d = 0;
-		priority_queue<node> pq;
-		pq.push(nodes[root]);
+		priority_queue<pq_t> pq;
+		pq.push({ nodes[root].id, nodes[root].d });
 		while (pq.size()) {
-			node a = pq.top(); pq.pop();
-			if (nodes[a.id].done) continue;
-			nodes[a.id].done = true;
-			Loop(j, a.to.size()) {
-				node *b = &nodes[a.to[j]];
+			node *a = &nodes[pq.top().id];
+			pq.pop();
+			if (nodes[a->id].done) continue;
+			nodes[a->id].done = true;
+			Loop(j, a->to.size()) {
+				node *b = &nodes[a->to[j]];
 				if (b->done) continue;
-				ll buf = a.cost[j];
+				ll buf = a->costs[j];
 				if (buf < b->d) {
 					b->d = buf;
-					b->from_eid = a.to_eid[j];
-					b->from = a.id;
-					pq.push(*b);
+					b->from_eid = a->to_eid[j];
+					b->from = a->id;
+					pq.push({ b->id, b->d });
 				}
 			}
 		}

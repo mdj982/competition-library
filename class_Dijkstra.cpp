@@ -17,6 +17,12 @@ private:
 			return d != another.d ? d > another.d : id > another.id;
 		}
 	};
+	struct pq_t {
+		int id; ll d;
+		bool operator<(const pq_t & another) const {
+			return d != another.d ? d > another.d : id > another.id;
+		}
+	};
 	vector<node> nodes;
 	int n, m, source;
 public:
@@ -28,26 +34,29 @@ public:
 		Loop(i, m) {
 			nodes[G.edges[i].first].to_eid.push_back(i);
 			nodes[G.edges[i].first].to.push_back(G.edges[i].second);
-			nodes[G.edges[i].first].cost.push_back(G.costs[i]);
+			nodes[G.edges[i].first].costs.push_back(G.costs[i]);
+			nodes[G.edges[i].second].to_eid.push_back(i);
+			nodes[G.edges[i].second].to.push_back(G.edges[i].first);
+			nodes[G.edges[i].second].costs.push_back(G.costs[i]);
 		}
 		source = start;
 		nodes[source].d = 0;
-		priority_queue<node> pq;
-		pq.push(nodes[source]);
+		priority_queue<pq_t> pq;
+		pq.push({ nodes[source].id, nodes[source].d });
 		while (pq.size()) {
-			node a = pq.top();
+			node *a = &nodes[pq.top().id];
 			pq.pop();
-			if (nodes[a.id].done) continue;
-			nodes[a.id].done = true;
-			Loop(j, a.to.size()) {
-				node *b = &nodes[a.to[j]];
+			if (nodes[a->id].done) continue;
+			nodes[a->id].done = true;
+			Loop(j, a->to.size()) {
+				node *b = &nodes[a->to[j]];
 				if (b->done) continue;
-				ll buf = a.d + a.cost[j];
+				ll buf = a->d + a->costs[j];
 				if (buf < b->d) {
 					b->d = buf;
-					b->from_eid = a.to_eid[j];
-					b->from = a.id;
-					pq.push(*b);
+					b->from_eid = a->to_eid[j];
+					b->from = a->id;
+					pq.push({ b->id, b->d });
 				}
 			}
 		}
