@@ -54,6 +54,14 @@ public:
 		get_index_of_range_rec(s, t, 0, n, 0, &ret);
 		return ret;
 	}
+	// note: indices.size() should not be 0, indices should not be intersected
+	seg_t independent_combine(vi indices, seg_t(*update_rule)(seg_t, seg_t, seg_t)) {
+		seg_t ret = segs[indices.back()];
+		Loopr(i, indices.size() - 1) {
+			ret = update_rule(segs[indices[i]], segs[indices[i]], ret);
+		}
+		return ret;
+	}
 	vi get_index_above(int k, bool by_index) {
 		int index = by_index ? k : k + n - 1;
 		vi ret = { index };
@@ -77,6 +85,7 @@ public:
 		int index = by_index ? k : k + n - 1;
 		return segs[index];
 	}
+	/*
 	void debug_output() {
 		int index = 0;
 		int cnt = 0;
@@ -89,8 +98,5 @@ public:
 			cnt++;
 		}
 	}
+	*/
 };
-
-ll add_rule(ll o, ll l, ll r) {
-	return l + r;
-}
