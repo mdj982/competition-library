@@ -32,13 +32,14 @@ public:
 		nodes[source].d = 0;
 		Loop(k, n) {
 			Loop(i, n) {
-				node *a = &nodes[i];
-				Loop(j, a->to.size()) {
-					node *b = &nodes[a->to[j]];
-					if (a->d != INFLL && a->d + a->cost[j] < b->d) {
-						b->d = a->d + a->cost[j];
-						b->from_eid = a->to_eid[j];
-						b->from = a->id;
+				int a = i;
+				if (nodes[a].d == INFLL) continue;
+				Loop(j, nodes[a].to.size()) {
+					int b = nodes[a].to[j];
+					if (nodes[a].d + nodes[a].cost[j] < nodes[b].d) {
+						nodes[b].d = nodes[a].d + nodes[a].cost[j];
+						nodes[b].from_eid = nodes[a].to_eid[j];
+						nodes[b].from = nodes[a].id;
 						if (k == n - 1) {
 							negative_cycle = true;
 							return;

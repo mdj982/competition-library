@@ -81,7 +81,7 @@ public:
 		if (n < r) return {};
 		used = vector<bool>(n, false);
 		make_facts(n);
-		result = vector<string>(perms[n][r]);
+		result = vector<string>(facts[n][r]);
 		core_func(a, n, r, 0);
 		return result;
 	}

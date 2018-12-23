@@ -46,6 +46,7 @@ const double PI = 3.14159265358979323846;
 #define Looprll(i, n) for(ll i = (ll)n - 1; i >= 0; i--)
 #define Loopr1(i, n) for(int i = (int)n; i >= 1; i--)
 #define Looprll1(i, n) for(ll i = (ll)n; i >= 1; i--)
+#define Foreach(buf, container) for(auto buf : container)
 #define Loopdiag(i, j, h, w, sum) for(int i = ((sum) >= h ? h - 1 : (sum)), j = (sum) - i; i >= 0 && j < w; i--, j++)
 #define Loopdiagr(i, j, h, w, sum) for(int j = ((sum) >= w ? w - 1 : (sum)), i = (sum) - j; j >= 0 && i < h; j--, i++)
 #define Loopdiagsym(i, j, h, w, gap) for (int i = ((gap) >= 0 ? (gap) : 0), j = i - (gap); i < (h) && j < (w); i++, j++)
@@ -66,3 +67,7 @@ ll ceildiv(ll a, ll b) { return (a / b + (a % b == 0 ? 0 : 1)); }
 ll gcd(ll m, ll n) { if (n == 0) return m; else return gcd(n, m % n); }
 
 /*******************************************************/
+
+
+
+/*================================================================================================================*/

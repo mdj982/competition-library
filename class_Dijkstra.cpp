@@ -12,7 +12,7 @@ struct graph_t {
 class Dijkstra {
 private:
 	struct node {
-		int id; bool done; vi to_eid; vi to; vll cost; int from_eid; int from; ll d;
+		int id; bool done; vi to_eid; vi to; vll costs; int from_eid; int from; ll d;
 		bool operator<(const node & another) const {
 			return d != another.d ? d > another.d : id > another.id;
 		}

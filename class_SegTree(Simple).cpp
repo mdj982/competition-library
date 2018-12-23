@@ -51,6 +51,14 @@ public:
     get_index_of_range_rec(s, t, 0, n, 0, &ret);
     return ret;
   }
+	// note: indices.size() should not be 0, indices should not be intersected
+	seg_t independent_combine(vi indices, seg_t(*update_rule)(seg_t, seg_t)) {
+		seg_t ret = segs[indices.back()];
+		Loopr(i, indices.size() - 1) {
+			ret = update_rule(segs[indices[i]], ret);
+		}
+		return ret;
+	}
   // write extend method from here:
   seg_t sum_of_range(int s, int t) {
     vi v = get_index_of_range(s, t);
