@@ -1,6 +1,6 @@
 namespace mod_op {
 
-	const ll MOD = // (ll)1e9 + 7;
+	const ll MOD = ;// (ll)1e9 + 7;
 
 	class modll {
 	private:
