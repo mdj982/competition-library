@@ -8,6 +8,18 @@ struct tree_t {
 	vector<edgeval_t> costs; // cost, distance, or weight of edges
 };
 
+// a should be sorted, return will be the root
+template<class T>
+int make_treap(const vector<T> &a, tree_t &T, int l = 0, int r = -1, int p = -1) {
+	if (r == -1) { r = a.size(); T.n = a.size(); }
+	if (r - l == 0) return -1;
+	int mid = (l + r) / 2;
+	if (p != -1) T.edges.push_back({ mid, p });
+	make_treap(a, T, l, mid, mid);
+	make_treap(a, T, mid + 1, r, mid);
+	return mid;
+}
+
 class Tree {
 private:
 	struct node {
