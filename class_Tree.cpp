@@ -1,6 +1,5 @@
-typedef ll nodeval_t;
-typedef ll edgeval_t;
 
+template<class nodeval_t, class edgeval_t>
 struct tree_t {
 	int n;           // |V|, index begins with 0
 	vector<P> edges; // E
@@ -8,9 +7,10 @@ struct tree_t {
 	vector<edgeval_t> costs; // cost, distance, or weight of edges
 };
 
+
 // a should be sorted, return will be the root
-template<class T>
-int make_treap(const vector<T> &a, tree_t &T, int l = 0, int r = -1, int p = -1) {
+template<class val_t, class tree_t>
+int make_treap(const vector<val_t> &a, const tree_t &T, int l = 0, int r = -1, int p = -1) {
 	if (r == -1) { r = a.size(); T.n = a.size(); }
 	if (r - l == 0) return -1;
 	int mid = (l + r) / 2;
@@ -20,6 +20,7 @@ int make_treap(const vector<T> &a, tree_t &T, int l = 0, int r = -1, int p = -1)
 	return mid;
 }
 
+template<class nodeval_t, class edgeval_t>
 class Tree {
 private:
 	struct node {
@@ -82,7 +83,7 @@ public:
 	vi leaves;
 	int root;
 	// T should be non-empty tree
-	Tree(tree_t T, int root = -1) {
+	Tree(tree_t<nodeval_t, edgeval_t> T, int root) {
 		n = T.n;
 		nodes.resize(n);
 		Loop(i, n) {
@@ -95,21 +96,30 @@ public:
 			edges[T.edges[i].first].push_back({ i, T.edges[i].second, ((int)(T.costs.size()) > i ? T.costs[i] : init_cost) });
 			edges[T.edges[i].second].push_back({ i, T.edges[i].first, ((int)(T.costs.size()) > i ? T.costs[i] : init_cost) });
 		}
-		// the node which has the greatest degree will automatically decided as the root
-		if (root < 0) {
-			int max_d = -1;
-			Loop(i, n) {
-				if ((int)(edges[i].size()) > max_d) {
-					Tree::root = i;
-					max_d = edges[i].size();
+		Tree::root = root;
+		tree_construction();
+		return;
+	}
+	int solve_diameter() {
+		vi d(n, -1);
+		queue<int> que;
+		d[deg_order[n - 1]] = 0;
+		que.push(deg_order[n - 1]);
+		while (que.size()) {
+			int a = que.front(); que.pop();
+			int p = nodes[a].parent;
+			if (d[p] == -1) {
+				d[p] = d[a] + 1;
+				que.push(nodes[a].parent);
+			}
+			Foreach(b, nodes[a].childs) {
+				if (d[b] == -1) {
+					d[b] = d[a] + 1;
+					que.push(b);
 				}
 			}
 		}
-		else {
-			this->root = min(root, n - 1);
-		}
-		tree_construction();
-		return;
+		return *max_element(d.begin(), d.end());
 	}
 	pair<int, vi> solve_center_of_gravity() {
 		pair<int, vi> ret = { INT_MAX,{} };
@@ -240,3 +250,5 @@ public:
 	}
 	// static bool evalfunc(int id, bsargv_t bsargv);
 };
+
+// Warning: val_t should be small as array<int, 5>, when n = 1e6 with 256MB

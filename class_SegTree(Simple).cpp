@@ -1,92 +1,71 @@
-typedef int seg_t;
-
+template<class T>
 class SegTree {
-private:
-  int n;
-  vector<seg_t> segs;
-  int left_of(int index) {
-    return index * 2 + 1;
-  }
-  int right_of(int index) {
-    return index * 2 + 2;
-  }
-  void local_update(int index, seg_t(*update_rule)(seg_t, seg_t)) {
-    int l = left_of(index), r = index * 2 + 2;
-    segs[index] = update_rule(segs[l], segs[r]);
-  }
-  void get_index_of_range_rec(int s, int t, int l, int r, int index, vi *v) {
-    if (s == l && t == r) v->push_back(index);
-    else {
-      int mid = (l + r) / 2;
-      if (s < mid && mid < t) {
-        get_index_of_range_rec(s, mid, l, mid, left_of(index), v);
-        get_index_of_range_rec(mid, t, mid, r, right_of(index), v);
-      }
-      else if (s < mid) {
-        get_index_of_range_rec(s, t, l, mid, left_of(index), v);
-      }
-      else if (mid < t) {
-        get_index_of_range_rec(s, t, mid, r, right_of(index), v);
-      }
-    }
-  }
+protected:
+	int n, N; // n is the original size, while N is the extended size
+	int base;
+	vector<T> nodes;
+	int left_of(int index) {
+		if (index >= base) return -1;
+		else return index * 2 + 1;
+	}
+	int right_of(int index) {
+		if (index >= base) return -1;
+		else return index * 2 + 2;
+	}
+	int parent_of(int index) {
+		if (index == 0) return -1;
+		else return (index - 1) >> 1;
+	}
+	// initially, (s, t, 0, N, 0, ...);
+	void rec(int s, int t, int l, int r, int index, vi &v) {
+		if (s == l && t == r) {
+			v.push_back(index);
+			// leaf process
+		}
+		else {
+			int mid = (l + r) / 2;
+			int index_l = left_of(index);
+			int index_r = right_of(index);
+			if (s < mid && mid < t) {
+				rec(s, mid, l, mid, index_l, v);
+				rec(mid, t, mid, r, index_r, v);
+			}
+			else if (s < mid) {
+				rec(s, t, l, mid, index_l, v);
+				// opposite process
+			}
+			else if (mid < t) {
+				rec(s, t, mid, r, index_r, v);
+				// opposite process
+			}
+			// merge process
+		}
+	}
 public:
-  SegTree(vector<seg_t> a, seg_t init, seg_t(*update_rule)(seg_t, seg_t)) {
-    n = (int)pow(2, ceil(log2(a.size())));
-    segs = vector<seg_t>(n * 2 - 1, init);
-    Loop(i, a.size()) segs[n - 1 + i] = a[i];
-    Loopr(i, n - 1) local_update(i, update_rule);
-  }
-  void update(int k, seg_t x, seg_t(*update_rule)(seg_t, seg_t), bool add_flag = false) {
-    int index = k + n - 1;
-    segs[index] = add_flag ? segs[index] + x : x;
-    while (index > 0) {
-      index = (index - 1) / 2;
-      local_update(index, update_rule);
-    }
-  }
-  // note: range [s, t)
-  vi get_index_of_range(int s, int t) {
-    vi ret = {};
-    get_index_of_range_rec(s, t, 0, n, 0, &ret);
-    return ret;
-  }
-	// note: indices.size() should not be 0, indices should not be intersected
-	seg_t independent_combine(vi indices, seg_t(*update_rule)(seg_t, seg_t)) {
-		seg_t ret = segs[indices.back()];
-		Loopr(i, indices.size() - 1) {
-			ret = update_rule(segs[indices[i]], ret);
+	SegTree(int n, T init) {
+		SegTree::n = n;
+		N = (int)pow(2, ceil(log2(n)));
+		base = N - 1;
+		nodes = vector<T>(base + N, init);
+	}
+	// inclusive
+	vi get_index_above(int index, bool from_base = false) {
+		if (from_base) index += base;
+		vi ret;
+		while (index >= 0) {
+			ret.push_back(index);
+			index = parent_of(index);
 		}
 		return ret;
 	}
-  // write extend method from here:
-  seg_t sum_of_range(int s, int t) {
-    vi v = get_index_of_range(s, t);
-    seg_t ret = 0;
-    Loop(i, v.size()) {
-      ret += segs[v[i]];
-    }
-    return ret;
-  }
+	int cover_size(int index) {
+		int cnt = 1;
+		while (left_of(index) != -1) {
+			index = left_of(index);
+			cnt *= 2;
+		}
+		int l = index - base;
+		int r = min(l + cnt, n);
+		return max(0, r - l);
+	}
 };
-
-seg_t update_rule(seg_t a, seg_t b) {
-  return a + b;
-}
-
-int main() {
-  int n; cin >> n;
-  int q; cin >> q;
-  vector<seg_t> a(n, 0);
-  SegTree segtree(a, 0, update_rule);
-  Loop(i, q) {
-    int c, x, y; cin >> c >> x >> y;
-    if (c == 0) {
-      segtree.update(x - 1, y, update_rule, true);
-    }
-    else {
-      cout << segtree.sum_of_range(x - 1, y) << endl;
-    }
-  }
-  return 0;
-}

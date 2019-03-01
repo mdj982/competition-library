@@ -36,9 +36,9 @@ vll list_prime_until(ll n) {
 	Loop(i, n + 1) {
 		if (is_prime[i]) {
 			ret.push_back(i);
-			int k = (i << 1);
+			ll k = (ll)i * i;
 			while (k < n + 1) {
-				is_prime[k] = false;
+				is_prime[int(k)] = false;
 				k += i;
 			}
 		}

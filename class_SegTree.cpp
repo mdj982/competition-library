@@ -6,11 +6,11 @@ protected:
 	vector<T> nodes;
 	int left_of(int index) {
 		if (index >= base) return -1;
-		else return (index << 1) + 1;
+		else return index * 2 + 1;
 	}
 	int right_of(int index) {
 		if (index >= base) return -1;
-		else return (index << 1) + 2;
+		else return index * 2 + 2;
 	}
 	int parent_of(int index) {
 		if (index == 0) return -1;
@@ -20,6 +20,7 @@ protected:
 		int l = left_of(index), r = right_of(index);
 		nodes[index] = update_rule(nodes[index], nodes[l], nodes[r]);
 	}
+	// initially, (s, t, 0, N, 0, ...);
 	void get_index_of_range_rec(int s, int t, int l, int r, int index, vi &v) {
 		if (s == l && t == r) {
 			v.push_back(index);
@@ -27,16 +28,17 @@ protected:
 		}
 		else {
 			int mid = (l + r) / 2;
+			int index_l = left_of(index), index_r = right_of(index);
 			if (s < mid && mid < t) {
-				get_index_of_range_rec(s, mid, l, mid, left_of(index), v);
-				get_index_of_range_rec(mid, t, mid, r, right_of(index), v);
+				get_index_of_range_rec(s, mid, l, mid, index_l, v);
+				get_index_of_range_rec(mid, t, mid, r, index_r, v);
 			}
 			else if (s < mid) {
-				get_index_of_range_rec(s, t, l, mid, left_of(index), v);
+				get_index_of_range_rec(s, t, l, mid, index_l, v);
 				// opposite process
 			}
 			else if (mid < t) {
-				get_index_of_range_rec(s, t, mid, r, right_of(index), v);
+				get_index_of_range_rec(s, t, mid, r, index_r, v);
 				// opposite process
 			}
 			// merge process
