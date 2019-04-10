@@ -5,7 +5,7 @@ private:
 	vector<vector<val_t>> result;
 	vvi combs; // iCj
 	void core_func(const vector<val_t> &a, int n, int r, int start) {
-		if (r == 0) return;
+		if (r == 0 || n < r) return;
 		Loop(i, combs[n - 1][r - 1]) {
 			result[start + i].push_back(a[Partial_Combination::n - n]);
 		}
@@ -41,7 +41,7 @@ private:
 	vector<string> result;
 	vvi combs; // iCj
 	void core_func(const string &a, int n, int r, int start) {
-		if (r == 0) return;
+		if (r == 0 || n < r) return;
 		Loop(i, combs[n - 1][r - 1]) {
 			result[start + i] += a[Partial_Combination_String::n - n];
 		}
@@ -77,7 +77,7 @@ private:
 	vi result;
 	vvi combs; // iCj
 	void core_func(const int &a, int n, int r, int start) {
-		if (r == 0) return;
+		if (r == 0 || n < r) return;
 		int x = a & -a;
 		Loop(i, combs[n - 1][r - 1]) {
 			result[start + i] += x;

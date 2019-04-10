@@ -1,23 +1,25 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-using vi = vector<int>;
-using vvi = vector<vi>;
-using vvvi = vector<vvi>;
+using vi = vector<int>; using vvi = vector<vi>; using vvvi = vector<vvi>;
 using ll = long long int;
-using vll = vector<ll>;
-using vvll = vector<vll>;
-using vvvll = vector<vvll>;
+using vll = vector<ll>; using vvll = vector<vll>; using vvvll = vector<vvll>;
+using vd = vector<double>; using vvd = vector<vd>; using vvvd = vector<vvd>;
 using P = pair<int, int>;
 using Pll = pair<ll, ll>;
 using cdouble = complex<double>;
 
+const double eps = 1e-9;
 const double INFD = numeric_limits<double>::infinity();
 const double PI = 3.14159265358979323846;
-#define Loop(i, n) for(int i = 0; i < (int)(n); i++)
-#define Loop1(i, n) for(int i = 1; i <= (int)(n); i++)
-#define Loopr(i, n) for(int i = (int)(n) - 1; i >= 0; i--)
-#define Loopr1(i, n) for(int i = (int)(n); i >= 1; i--)
+#define Loop(i, n) for(int i = 0; i < (int)n; i++)
+#define Loopll(i, n) for(ll i = 0; i < (ll)n; i++)
+#define Loop1(i, n) for(int i = 1; i <= (int)n; i++)
+#define Loopll1(i, n) for(ll i = 1; i <= (ll)n; i++)
+#define Loopr(i, n) for(int i = (int)n - 1; i >= 0; i--)
+#define Looprll(i, n) for(ll i = (ll)n - 1; i >= 0; i--)
+#define Loopr1(i, n) for(int i = (int)n; i >= 1; i--)
+#define Looprll1(i, n) for(ll i = (ll)n; i >= 1; i--)
 #define Foreach(buf, container) for(auto buf : container)
 #define Loopdiag(i, j, h, w, sum) for(int i = ((sum) >= (h) ? (h) - 1 : (sum)), j = (sum) - i; i >= 0 && j < (w); i--, j++)
 #define Loopdiagr(i, j, h, w, sum) for(int j = ((sum) >= (w) ? (w) - 1 : (sum)), i = (sum) - j; j >= 0 && i < (h); j--, i++)
@@ -31,9 +33,10 @@ const double PI = 3.14159265358979323846;
 #define Comp(type_t) bool operator<(const type_t &another) const
 #define fst first
 #define snd second
-bool nearlyeq(double x, double y) { return abs(x - y) < 1e-9; }
-bool inrange(int x, int t) { return x >= 0 && x < t; }
-bool inrange(vi xs, int t) { Foreach(x, xs) if (!(x >= 0 && x < t)) return false; return true; }
+bool nearlyeq(double x, double y) { return abs(x - y) < eps; }
+bool inrange(ll x, ll t) { return x >= 0 && x < t; }
+bool inrange(vll xs, ll t) { Foreach(x, xs) if (!(x >= 0 && x < t)) return false; return true; }
+int ceillog2(ll x) { int ret = 0;	x--; while (x > 0) { ret++; x >>= 1; } return ret; }
 ll rndf(double x) { return (ll)(x + (x >= 0 ? 0.5 : -0.5)); }
 ll floorsqrt(ll x) { ll m = (ll)sqrt((double)x); return m + (m * m <= x ? 0 : -1); }
 ll ceilsqrt(ll x) { ll m = (ll)sqrt((double)x); return m + (x <= m * m ? 0 : 1); }

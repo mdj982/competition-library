@@ -9,24 +9,6 @@ ll powll(ll n, ll p) {
   }
 }
 
-vll divisors(ll x) {
-  vll ret;
-  Loop1(i, x) {
-    ll y = (ll)i * i;
-    if (y >= x) {
-      if (y == x) ret.push_back(i);
-      break;
-    }
-    else {
-      if (x % i == 0) {
-        ret.push_back(i);
-        ret.push_back(x / i);
-      }
-    }
-  }
-  return ret;
-}
-
 // n = 1.5e7 -> 80 ms
 vll list_prime_until(ll n) {
 	vll ret;
@@ -63,6 +45,26 @@ vector<Pll> prime_factorize(ll n, const vll &prime_list) {
   return ret;
 }
 
+vll divisors(const vector<Pll> factors) {
+	queue<ll> que;
+	que.push(1);
+	Loop(i, factors.size()) {
+		ll x = factors[i].fst, d = factors[i].snd;
+		vll a(d + 1, 1); Loop1(j, d) a[j] = a[j - 1] * x;
+		int m = int(que.size());
+		Loop(j, m) {
+			ll y = que.front(); que.pop();
+			Loop(k, d + 1) que.push(y * a[k]);
+		}
+	}
+	int m = int(que.size());
+	vll ret(m);
+	Loop(i, m) {
+		ret[i] = que.front(); que.pop();
+	}
+	sort(ret.begin(), ret.end());
+	return ret;
+}
 
 pair<vector<Pll>, vector<Pll>> reduce_common_factors(const vector<Pll> &x_factors, const vector<Pll> &y_factors) {
 	pair<vector<Pll>, vector<Pll>> ret;

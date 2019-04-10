@@ -1,81 +1,69 @@
-typedef ll val_t;
-
-struct graph_t {
-	int n;           // |V|, index begins with 0
-	int m;           // |E|
-	vector<P> edges; // E
-	vector<val_t> vals; // V
-	vector<ll> costs; // cost or distance
-	vector<ll> caps;  // capacity
-};
-
 class Maxflow {
 private:
-	struct edge {
-		int eid, from, to;
-		ll cap;
+	struct edge_t {
+		int cap;
 	};
-	struct node {
-		int id; bool done; vector<int> to_eids;
-	};
-	int dual_eid(int eid) {
-		if (eid < m) return eid + m;
-		else return eid - m;
-	}
-	ll dfs(int a, ll f) {
-		if (a == sink) return f;
-		nodes[a].done = true;
-		Foreach(eid, nodes[a].to_eids) {
-			int b = edges[eid].to;
-			if (!nodes[b].done && edges[eid].cap > 0) {
-				ll df = dfs(b, min(f, edges[eid].cap));
-				if (df > 0) {
-					edges[eid].cap -= df;
-					edges[dual_eid(eid)].cap += df;
-					return df;
+	int n, source, sink;
+	int result;
+	vector<bool> done;
+	vector<unordered_map<int, edge_t>> lst;
+	int dfs(int a, int t) {
+		if (a == t) return 1;
+		done[a] = true;
+		Loopitr(itr, lst[a]) {
+			int b = itr->fst;
+			int cap = itr->snd.cap;
+			if (!done[b] && cap > 0) {
+				if (dfs(b, t)) {
+					lst[a][b].cap--;
+					lst[b][a].cap++;
+					return 1;
 				}
 			}
 		}
 		return 0;
 	}
-	vector<node> nodes;
-	vector<edge> edges;
-	int n, m;
-	int source, sink;
+	int run_flow(int s, int t, int f) {
+		int ret = 0;
+		Loop(i, f) {
+			done = vector<bool>(n, false);
+			if (dfs(s, t)) ret++;
+			else break;
+		}
+		return ret;
+	}
 public:
-	Maxflow(graph_t G, int s, int t) {
-		n = G.n;
-		m = G.edges.size();
-		nodes.resize(n);
-		edges.resize(m * 2);
-		Loop(i, n) nodes[i] = { i, false, {} };
-		Loop(i, m) {
-			int a = G.edges[i].first;
-			int b = G.edges[i].second;
-			nodes[a].to_eids.push_back(i);
-			nodes[b].to_eids.push_back(i + m);
-			edges[i] = { i, a, b, G.caps[i] };
-			edges[i + m] = { i + m, b, a, 0 };
+	Maxflow(const vvi &lst, const vvi &cap, int s, int t) {
+		n = lst.size();
+		Maxflow::lst.resize(n);
+		Loop(i, n) {
+			Loop(j, lst[i].size()) {
+				Maxflow::lst[i][lst[i][j]] = { cap[i][j] };
+				Maxflow::lst[lst[i][j]][i] = { 0 };
+			}
 		}
 		source = s;
 		sink = t;
-		do {
-			Loop(i, n) nodes[i].done = false;
-		} while(dfs(source, LLONG_MAX));
-		return;
+		result = 0;
+		update();
 	}
-	vll get_eid_flow() {
-		vll ret(m);
-		Loop(i, m) {
-			ret[i] = edges[i + m].cap;
+	void add_cap(int s, int t, int dcap, bool update_flag = true) {
+		lst[s][t].cap += dcap;
+		// program not be ensured when cap. becomes negative
+		if (lst[s][t].cap < 0) {
+			int df = -lst[s][t].cap;
+			run_flow(s, source, df);
+			run_flow(sink, t, df);
+			lst[s][t].cap += df;
+			lst[t][s].cap -= df;
+			result -= df;
 		}
-		return ret;
+		if (update_flag) update();
 	}
-	ll get_maxflow() {
-		ll ret = 0;
-		Foreach(eid, nodes[sink].to_eids) {
-			if (eid >= m) ret += edges[eid].cap;
-		}
-		return ret;
+	void update() {
+		result += run_flow(source, sink, INT_MAX);
+	}
+	int get_maxflow() {
+		return result;
 	}
 };

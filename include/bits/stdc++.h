@@ -4,7 +4,6 @@
 #include <climits>
 #include <limits>
 #include <algorithm>
-#include <array>
 #include <vector>
 #include <deque>
 #include <queue>

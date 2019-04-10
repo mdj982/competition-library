@@ -23,7 +23,6 @@ protected:
 	// initially, (s, t, 0, N, 0, ...);
 	void get_index_of_range_rec(int s, int t, int l, int r, int index, vi &v) {
 		if (s == l && t == r) {
-			v.push_back(index);
 			// leaf process
 		}
 		else {
@@ -97,12 +96,3 @@ public:
 		return max(0, r - l);
 	}
 };
-
-template<class T>
-static T nop_rule(T x, T a, T b) {
-	return x;
-}
-
-int update_rule(int x, int a, int b) {
-	return min(a, b);
-}

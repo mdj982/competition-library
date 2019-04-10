@@ -6,7 +6,7 @@ private:
 	vector<vector<val_t>> result;
 	vvi facts; // iPj
 	void core_func(const vector<val_t> &a, int n, int r, int start) {
-		if (r == 0) return;
+		if (r == 0 || n < r) return;
 		int m = facts[n - 1][r - 1];
 		int cnt = 0;
 		Loop(i, Partial_Permutation::n) {
@@ -51,7 +51,7 @@ private:
 	vector<string> result;
 	vvi facts; // iPj
 	void core_func(const string &a, int n, int r, int start) {
-		if (r == 0) return;
+		if (r == 0 || n < r) return;
 		int m = facts[n - 1][r - 1];
 		int cnt = 0;
 		Loop(i, Partial_Permutation_String::n) {

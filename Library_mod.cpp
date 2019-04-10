@@ -118,5 +118,6 @@ namespace mod_op {
 }
 
 using namespace mod_op;
-typedef vector<modll> vmodll;
-typedef vector<vector<modll>> vvmodll;
+using vmodll = vector<modll>;
+using vvmodll = vector<vmodll>;
+using vvvmodll = vector<vvmodll>;
