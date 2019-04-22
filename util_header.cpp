@@ -1,6 +1,8 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+#pragma warning(disable : 4267) // "int n = (unsigned)size"
+
 using vi = vector<int>; using vvi = vector<vi>; using vvvi = vector<vvi>;
 using ll = long long int;
 using vll = vector<ll>; using vvll = vector<vll>; using vvvll = vector<vvll>;

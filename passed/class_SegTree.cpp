@@ -17,9 +17,9 @@ protected:
 		else return (index - 1) >> 1;
 	}
 	// initially, (s, t, 0, N, 0, ...);
-	void rec(int s, int t, int l, int r, int index, vi &v) {
+	void rec(int s, int t, int l, int r, int index, int x, int v) {
+		// lazy propagation process
 		if (s == l && t == r) {
-			v.push_back(index);
 			// leaf process
 		}
 		else {
@@ -27,15 +27,15 @@ protected:
 			int index_l = left_of(index);
 			int index_r = right_of(index);
 			if (s < mid && mid < t) {
-				rec(s, mid, l, mid, index_l, v);
-				rec(mid, t, mid, r, index_r, v);
+				rec(s, mid, l, mid, index_l, x, v);
+				rec(mid, t, mid, r, index_r, x, v);
 			}
 			else if (s < mid) {
-				rec(s, t, l, mid, index_l, v);
+				rec(s, t, l, mid, index_l, x, v);
 				// opposite process
 			}
 			else if (mid < t) {
-				rec(s, t, mid, r, index_r, v);
+				rec(s, t, mid, r, index_r, x, v);
 				// opposite process
 			}
 			// merge process

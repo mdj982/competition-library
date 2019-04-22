@@ -133,8 +133,8 @@ namespace strll_op {
 		}
 		inline string sub(const string &s, const string &t) {
 			string ret = "";
-			int n = int(s.length());
-			int m = int(t.length());
+			int n = s.length();
+			int m = t.length();
 			int mode = (s[n - 1] == '-' ? 0b10 : 0) + (t[m - 1] == '-' ? 0b01 : 0);
 			switch (mode) {
 			case 0b00:
@@ -157,8 +157,8 @@ namespace strll_op {
 		}
 		inline string mul(const string &s, const string &t) {
 			string ret;
-			int n = int(s.length());
-			int m = int(t.length());
+			int n = s.length();
+			int m = t.length();
 			int mode = (s[n - 1] == '-' ? 0b10 : 0) + (t[m - 1] == '-' ? 0b01 : 0);
 			switch (mode) {
 			case 0b00:
@@ -179,8 +179,8 @@ namespace strll_op {
 		}
 		inline bool ge(const string &s, const string &t) const {
 			bool ret;
-			int n = int(s.length());
-			int m = int(t.length());
+			int n = s.length();
+			int m = t.length();
 			int mode = (s[n - 1] == '-' ? 0b10 : 0) + (t[m - 1] == '-' ? 0b01 : 0);
 			switch (mode) {
 			case 0b00:
@@ -201,8 +201,8 @@ namespace strll_op {
 		}
 		inline string div(const string &s, const string &t, bool rem_flag) {
 			string ret;
-			int n = int(s.length());
-			int m = int(t.length());
+			int n = s.length();
+			int m = t.length();
 			int mode = (s[n - 1] == '-' ? 0b10 : 0) + (t[m - 1] == '-' ? 0b01 : 0);
 			switch (mode) {
 			case 0b00:
@@ -238,6 +238,10 @@ namespace strll_op {
 		inline strll& operator*=(const strll &x) { val = mul(val, x.val); return *this; }
 		inline strll& operator/=(const strll &x) { val = div(val, x.val, false); return *this; }
 		inline strll& operator%=(const strll &x) { val = div(val, x.val, true); return *this; }
+		inline bool operator>=(const strll &x) { return ge(val, x.val); }
+		inline bool operator>(const strll &x) { return ge(val, x.val) && val != x.val; }
+		inline bool operator<=(const strll &x) { return ge(x.val, val); }
+		inline bool operator<(const strll &x) { return ge(x.val, val) && val != x.val; }
 		inline bool operator==(const strll &x) { return val == x.val; }
 		inline bool operator!=(const strll &x) { return val != x.val; }
 		inline bool operator<(const strll &x) const { return !ge(val, x.val); }
