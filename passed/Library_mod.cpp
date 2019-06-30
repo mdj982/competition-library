@@ -1,12 +1,12 @@
 namespace mod_op {
 
-	const ll MOD = ;// (ll)1e9 + 7;
+	const ll MOD = // (ll)1e9 + 7;
 
 	class modll {
 	private:
 		ll val;
-		ll modify(ll x) { ll ret = x % MOD; if (ret < 0) ret += MOD; return ret; }
-		ll inv(ll x) {
+		ll modify(ll x) const { ll ret = x % MOD; if (ret < 0) ret += MOD; return ret; }
+		ll inv(ll x) const {
 			if (x == 0) return 1 / x;
 			else if (x == 1) return 1;
 			else return modify(inv(MOD % x) * modify(-MOD / x));
@@ -15,10 +15,10 @@ namespace mod_op {
 		modll(ll init = 0) { val = modify(init); return; }
 		modll(const modll& another) { val = another.val; return; }
 		modll& operator=(const modll &another) { val = another.val; return *this; }
-		modll operator+(const modll &x) { return modify(val + x.val); }
-		modll operator-(const modll &x) { return modify(val - x.val); }
-		modll operator*(const modll &x) { return modify(val * x.val); }
-		modll operator/(const modll &x) { return modify(val * inv(x.val)); }
+		modll operator+(const modll &x) const { return modify(val + x.val); }
+		modll operator-(const modll &x) const { return modify(val - x.val); }
+		modll operator*(const modll &x) const { return modify(val * x.val); }
+		modll operator/(const modll &x) const { return modify(val * inv(x.val)); }
 		modll& operator+=(const modll &x) { val = modify(val + x.val); return *this; }
 		modll& operator-=(const modll &x) { val = modify(val - x.val); return *this; }
 		modll& operator*=(const modll &x) { val = modify(val * x.val); return *this; }

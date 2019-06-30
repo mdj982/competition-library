@@ -35,11 +35,11 @@ private:
 public:
 	Maxflow(const vvi &lst, const vvi &cap, int s, int t) {
 		n = lst.size();
-		Maxflow::lst.resize(n);
+		this->lst.resize(n);
 		Loop(i, n) {
 			Loop(j, lst[i].size()) {
-				Maxflow::lst[i][lst[i][j]] = { cap[i][j] };
-				Maxflow::lst[lst[i][j]][i] = { 0 };
+				this->lst[i][lst[i][j]].cap += cap[i][j];
+				this->lst[lst[i][j]][i].cap += 0;
 			}
 		}
 		source = s;

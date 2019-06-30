@@ -9,8 +9,7 @@ using P = pair<int, int>;
 using Pll = pair<ll, ll>;
 using cdouble = complex<double>;
 
-const double eps = 1e-9;
-const double INFD = numeric_limits<double>::infinity();
+const double eps = 1e-7;
 #define Loop(i, n) for(int i = 0; i < int(n); i++)
 #define Loopll(i, n) for(ll i = 0; i < ll(n); i++)
 #define Loop1(i, n) for(int i = 1; i <= int(n); i++)
@@ -32,7 +31,8 @@ const double INFD = numeric_limits<double>::infinity();
 #define Comp(type_t) bool operator<(const type_t &another) const
 #define fst first
 #define snd second
-bool nearlyeq(double x, double y) { return abs(x - y) < eps; }
+#define INF INFINITY
+bool feq(double x, double y) { return abs(x - y) <= eps; }
 bool inrange(ll x, ll t) { return x >= 0 && x < t; }
 bool inrange(vll xs, ll t) { Foreach(x, xs) if (!(x >= 0 && x < t)) return false; return true; }
 int ceillog2(ll x) { int ret = 0;	x--; while (x > 0) { ret++; x >>= 1; } return ret; }
@@ -45,3 +45,4 @@ ll gcd(ll m, ll n) { if (n == 0) return m; else return gcd(n, m % n); }
 ll lcm(ll m, ll n) { return m * n / gcd(m, n); }
 
 /*******************************************************/
+
