@@ -25,36 +25,20 @@ private:
 		nodes[id].sum = nodes[id_l].sum + nodes[id_l].add * cover_size(id_l)
 			+ nodes[id_r].sum + nodes[id_r].add * cover_size(id_r);
 	}
-	void lazy_rec(int s, int t, int l, int r, int id, ll upd, ll add, bool enable) {
-		if (s == l && t == r) {
-			if (enable) nodes[id] = { true, upd, add, upd, upd, upd * cover_size(id) };
-			else nodes[id].add += add;
+	void lazy(int id) {
+		if (id >= base) return;
+		int id_l = left_of(id);
+		int id_r = right_of(id);
+		if (nodes[id].enable) {
+			ll upd = nodes[id].upd + nodes[id].add;
+			nodes[id_l] = { true, upd, 0, upd, upd, upd * cover_size(id_l) };
+			nodes[id_r] = { true, upd, 0, upd, upd, upd * cover_size(id_r) };
+			nodes[id] = { false, 0, 0, upd, upd, upd * cover_size(id) };
 		}
 		else {
-			int m = (l + r) / 2;
-			int id_l = left_of(id);
-			int id_r = right_of(id);
-			if (!enable) {
-				add += nodes[id].add;
-				if (nodes[id].enable) {
-					upd = nodes[id].upd;
-					enable = true;
-				}
-			}
-			nodes[id].enable = false;
+			nodes[id_l].add += nodes[id].add;
+			nodes[id_r].add += nodes[id].add;
 			nodes[id].add = 0;
-			if (s < m && m < t) {
-				lazy_rec(s, m, l, m, id_l, upd, add, enable);
-				lazy_rec(m, t, m, r, id_r, upd, add, enable);
-			}
-			else if (s < m) {
-				lazy_rec(s, t, l, m, id_l, upd, add, enable);
-				lazy_rec(0, 0, 0, 0, id_r, upd, add, enable);
-			}
-			else if (m < t) {
-				lazy_rec(0, 0, 0, 0, id_l, upd, add, enable);
-				lazy_rec(s, t, m, r, id_r, upd, add, enable);
-			}
 			merge(id, id_l, id_r);
 		}
 	}
@@ -67,6 +51,7 @@ private:
 			else if (op == ADD) nodes[id].add += x;
 		}
 		else {
+			lazy(id);
 			int m = (l + r) / 2;
 			int id_l = left_of(id);
 			int id_r = right_of(id);
@@ -94,6 +79,7 @@ private:
 			else if (op == SUM) v = nodes[id].sum;
 		}
 		else {
+			lazy(id);
 			int m = (l + r) / 2;
 			int id_l = left_of(id);
 			int id_r = right_of(id);
@@ -116,9 +102,6 @@ private:
 		else if (op == SUM) v += nodes[id].add * (t - s);
 		return v;
 	}
-	void lazy(int s, int t) {
-		lazy_rec(s, t, 0, N, 0, 0, 0, false);
-	}
 public:
 	SegTree(int n, ll init) {
 		this->n = n;
@@ -138,23 +121,18 @@ public:
 		return max(0, r - l);
 	}
 	void upd(int s, int t, ll x) {
-		lazy(s, t);
 		change_rec(s, t, 0, N, 0, x, UPD);
 	}
 	void add(int s, int t, ll x) {
-		lazy(s, t);
 		change_rec(s, t, 0, N, 0, x, ADD);
 	}
 	ll minof(int s, int t) {
-		lazy(s, t);
 		return solve_rec(s, t, 0, N, 0, MIN);
 	}
 	ll maxof(int s, int t) {
-		lazy(s, t);
 		return solve_rec(s, t, 0, N, 0, MAX);
 	}
 	ll sumof(int s, int t) {
-		lazy(s, t);
 		return solve_rec(s, t, 0, N, 0, SUM);
 	}
 };
