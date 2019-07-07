@@ -1,3 +1,6 @@
+#ifndef UTILTIME
+#define UTILTIME
+
 #include <iostream>
 #include <chrono>
 
@@ -53,3 +56,5 @@ void timestamp(timestamp_t x) {
 		break;
 	}
 }
+
+#endif // UTILTIME

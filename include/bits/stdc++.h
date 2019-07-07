@@ -1,3 +1,6 @@
+#ifndef STDCPP
+#define STDCPP
+
 #include <iostream>
 #include <fstream>
 #include <iomanip>
@@ -21,3 +24,6 @@
 #include <cmath>
 #include <complex>
 #include <utiltime.hpp>
+const double M_PI = 3.14159265358979323846;
+
+#endif //STDCPP
