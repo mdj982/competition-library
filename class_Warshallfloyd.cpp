@@ -1,38 +1,28 @@
-typedef ll val_t;
-
-struct graph_t {
-	int n;           // |V|, index begins with 0
-	int m;           // |E|
-	vector<P> edges; // E
-	vector<val_t> vals; // V
-	vector<ll> costs; // cost or distance
-	vector<ll> caps;  // capacity
-};
-
 class Warshallfloyd {
 private:
-	int n, m;
+	int n;
 	bool negative_cycle;
-	vvll wf_table;
+	vvll table;
 public:
-	Warshallfloyd(graph_t G) {
-		n = G.n;
-		m = G.edges.size();
-		wf_table = vvll(n, vll(n, INFLL));
-		Loop(i, m) {
-			wf_table[G.edges[i].first][G.edges[i].second] = G.costs[i];
-		}
-		Loop(i, n) wf_table[i][i] = 0;
+	Warshallfloyd(const vvi &lst, const vvll &cst) {
+		n = lst.size();
+		table = vvll(n, vll(n, LLONG_MAX));
 		Loop(i, n) {
-			Loop(j, n) {
-				Loop(k, n) {
-					if (wf_table[j][i] == INFLL || wf_table[i][k] == INFLL) continue;
-					wf_table[j][k] = min(wf_table[j][k], wf_table[j][i] + wf_table[i][k]);
+			Loop(j, lst[i].size()) {
+				table[i][lst[i][j]] = cst[i][j];
+			}
+		}
+		Loop(i, n) table[i][i] = 0;
+		Loop(k, n) {
+			Loop(i, n) {
+				Loop(j, n) {
+					if (table[i][k] == LLONG_MAX || table[k][j] == LLONG_MAX) continue;
+					table[i][j] = min(table[i][j], table[i][k] + table[k][j]);
 				}
 			}
 		}
 		Loop(i, n) {
-			if (wf_table[i][i] < 0) {
+			if (table[i][i] < 0) {
 				negative_cycle = true;
 				return;
 			}
@@ -40,36 +30,10 @@ public:
 		negative_cycle = false;
 		return;
 	}
-	vvll get_wf_table() {
-		return wf_table;
+	vvll get_table() {
+		return table;
 	}
 	bool is_negative_cycle() {
 		return negative_cycle;
 	}
 };
-
-// warshallfloyd sample
-int main() {
-	graph_t G;
-	cin >> G.n >> G.m;
-	Loop(i, G.m) {
-		int s, t, c; cin >> s >> t >> c;
-		G.edges.push_back({ s, t });
-		G.costs.push_back(c);
-	}
-	Warshallfloyd warshallfloyd(G);
-	if (warshallfloyd.is_negative_cycle()) cout << "NEGATIVE CYCLE" << endl;
-	else {
-		vvll result = warshallfloyd.get_wf_table();
-		Loop(i, G.n) {
-			if (result[i][0] == INFLL) cout << "INF";
-			else cout << result[i][0];
-			Loop1(j, G.n - 1) {
-				if (result[i][j] == INFLL) cout << " INF";
-				else cout << " " << result[i][j];
-			}
-			cout << endl;
-		}
-	}
-	return 0;
-}

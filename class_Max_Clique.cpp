@@ -1,6 +1,6 @@
 class Max_Clique {
 private:
-	static int max_clique_rec(vvi mx, unordered_map<ll, int> &mp, ll mask) {
+	static int max_clique_rec(const vvi &mx, unordered_map<ll, int> &mp, ll mask) {
 		if (mask != 0 && mp[mask] == 0) {
 			ll x = mask & -mask;
 			int id = int(log2(x));
@@ -16,7 +16,7 @@ private:
 	}
 public:
 	// O(n*2^(n/2))
-	static int max_clique(vvi &mx) {
+	static int max_clique(const vvi &mx) {
 		int n = int(mx.size());
 		unordered_map<ll, int> mp;
 		return max_clique_rec(mx, mp, (1LL << n) - 1);

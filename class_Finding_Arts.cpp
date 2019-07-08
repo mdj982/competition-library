@@ -1,21 +1,10 @@
-typedef ll val_t;
-
-struct graph_t {
-	int n;           // |V|, index begins with 0
-	int m;           // |E|
-	vector<P> edges; // E
-	vector<val_t> vals; // V
-	vector<ll> costs; // cost or distance
-	vector<ll> caps;  // capacity
-};
-
 class Finding_Arts {
 private:
 	struct node {
-		int id; bool done; vi to_eid; vi to; int from_eid; int from; int pre; int low;
+		int id; bool done; vi to; int from; int pre; int low;
 	};
 	vector<node> nodes;
-	int n, m;
+	int n;
 	int ord;
 	vi arts;
 	void lowlink_dfs(int a, bool isroot) {
@@ -40,14 +29,14 @@ private:
 		return;
 	}
 public:
-	Finding_Arts(graph_t G) {
-		n = G.n;
-		m = G.edges.size();
+	Finding_Arts(const vvi &lst) {
+		n = lst.size();
 		nodes.resize(n);
-		Loop(i, n) nodes[i] = { i, false,{},{}, -1, -1, -1, -1 };
-		Loop(i, m) {
-			nodes[G.edges[i].first].to_eid.push_back(i);
-			nodes[G.edges[i].first].to.push_back(G.edges[i].second);
+		Loop(i, n) nodes[i] = { i, false, {}, -1, -1, -1 };
+		Loop(i, n) {
+			Foreach(j, lst[i]) {
+				nodes[i].to.push_back(j);
+			}
 		}
 		ord = 0;
 		Loop(i, nodes.size()) {
@@ -59,20 +48,3 @@ public:
 		return arts;
 	}
 };
-
-// finding_arts sample
-int main() {
-	graph_t G;
-	cin >> G.n >> G.m;
-	Loop(i, G.m) {
-		int s, t; cin >> s >> t;
-		G.edges.push_back({ s, t });
-		G.edges.push_back({ t, s });
-	}
-	Finding_Arts finding_arts(G);
-	vi arts = finding_arts.get_arts();
-	Loop(i, arts.size()) {
-		cout << arts[i] << endl;
-	}
-	return 0;
-}

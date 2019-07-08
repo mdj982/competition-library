@@ -1,15 +1,3 @@
-
-typedef ll val_t;
-
-struct graph_t {
-	int n;           // |V|, index begins with 0
-	int m;           // |E|
-	vector<P> edges; // E
-	vector<val_t> vals; // V
-	vector<ll> costs; // cost or distance
-	vector<ll> caps;  // capacity
-};
-
 class Mincostflow {
 private:
 	struct edge {
@@ -35,19 +23,25 @@ private:
 	int source, sink;
 	bool overflow;
 public:
-	Mincostflow(graph_t G, int s, int t) {
-		n = G.n;
-		m = int(G.edges.size());
+	Mincostflow(const vvi &lst, const vvll &cap, const vvll &cst, int s, int t) {
+		n = lst.size();
 		nodes.resize(n);
-		edges.resize(m * 2);
 		Loop(i, n) nodes[i] = { i, LLONG_MAX, -1, {} };
-		Loop(i, m) {
-			int a = G.edges[i].first;
-			int b = G.edges[i].second;
-			nodes[a].to_eids.push_back(i);
-			nodes[b].to_eids.push_back(i + m);
-			edges[i] = { i, a, b, G.caps[i], G.costs[i] };
-			edges[i + m] = { i + m, b, a, 0, -G.costs[i] };
+		int eid = 0;
+		Loop(i, n) {
+			Loop(j, lst[i].size()) {
+				nodes[i].to_eids.push_back(eid);
+				edges.push_back({ eid, i, lst[i][j], cap[i][j], cst[i][j] });
+				eid++;
+			}
+		}
+		m = eid;
+		Loop(i, n) {
+			Loop(j, lst[i].size()) {
+				nodes[lst[i][j]].to_eids.push_back(eid);
+				edges.push_back({ eid, lst[i][j], i, 0, -cst[i][j] });
+				eid++;
+			}
 		}
 		source = s;
 		sink = t;

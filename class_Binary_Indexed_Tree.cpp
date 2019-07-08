@@ -1,27 +1,27 @@
-class Binary_Indexed_Tree {
+class BIT {
 private:
-	vll bits;
+	vll nodes;
 	int n;
 public:
-	Binary_Indexed_Tree(vll a) {
+	BIT(vll a) {
 		n = a.size();
-		bits = vll(n, 0);
+		nodes = vll(n, 0);
 		Loop(i, a.size()) add(i, a[i]);
 	}
 	void add(int k, ll x) {
 		++k;
-		for (int index = k; index <= n; index += index & -index) {
-			bits[index - 1] += x;
+		for (int id = k; id <= n; id += id & -id) {
+			nodes[id - 1] += x;
 		}
 	}
 	// note: sum of [s, t)
 	ll sum(int s, int t) {
 		ll ret = 0;
-		for (int index = t; index > 0; index -= index & -index) {
-			ret += bits[index - 1];
+		for (int id = t; id > 0; id -= id & -id) {
+			ret += nodes[id - 1];
 		}
-		for (int index = s; index > 0; index -= index & -index) {
-			ret -= bits[index - 1];
+		for (int id = s; id > 0; id -= id & -id) {
+			ret -= nodes[id - 1];
 		}
 		return ret;
 	}
@@ -36,7 +36,7 @@ ll solve_inversion_number(const vll &a) {
 	Loopitr(itr, mp) itr->second = cnt++;
 	vi b(n);
 	Loop(i, n) b[i] = mp[a[i]];
-	Binary_Indexed_Tree bit(vll(cnt, 0));
+	BIT bit(vll(cnt, 0));
 	ll ret = 0;
 	Loop(i, n) {
 		ret += bit.sum(b[i] + 1, cnt);

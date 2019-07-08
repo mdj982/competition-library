@@ -184,3 +184,14 @@ vector<line_t> tangent_line(circle_t f, circle_t g) {
 	}
 	return ret;
 }
+
+// suppose a.size() >= 3
+double polygon_area(vector<pt_t> a) {
+	double ret = 0;
+	Loop(i, a.size()) {
+		int j = (i + 1 < a.size() ? i + 1 : 0);
+		ret += a[i].x * a[j].y - a[j].x * a[i].y;
+	}
+	ret = abs(ret) / 2;
+	return ret;
+}

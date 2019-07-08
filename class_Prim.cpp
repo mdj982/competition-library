@@ -1,19 +1,7 @@
-typedef ll val_t;
-
-struct graph_t {
-	int n;           // |V|, index begins with 0
-	int m;           // |E|
-	vector<P> edges; // E
-	vector<val_t> vals; // V
-	vector<ll> costs; // cost or distance
-	vector<ll> caps;  // capacity
-};
-
 class Prim {
 private:
-	// note: eid of dual_edge is negative
 	struct node {
-		int id; bool done; vi to_eid; vi to; vll costs; int from_eid; int from; ll d;
+		int id; bool done; vi to; vll cst; int from; ll d;
 	};
 	struct pq_t {
 		int id; ll d;
@@ -22,66 +10,52 @@ private:
 		}
 	};
 	vector<node> nodes;
-	int n, m, root;
+	int n, m;
 public:
-	Prim(graph_t G, int start) {
-		n = G.n;
-		m = G.edges.size();
+	Prim(const vvi &lst, const vvll &cst) {
+		n = lst.size();
 		nodes.resize(n);
-		Loop(i, n) nodes[i] = { i, false,{},{},{}, -1, -1, LLONG_MAX };
-		Loop(i, m) {
-			nodes[G.edges[i].first].to_eid.push_back(i);
-			nodes[G.edges[i].first].to.push_back(G.edges[i].second);
-			nodes[G.edges[i].first].costs.push_back(G.costs[i]);
-			nodes[G.edges[i].second].to_eid.push_back(i - m);
-			nodes[G.edges[i].second].to.push_back(G.edges[i].first);
-			nodes[G.edges[i].second].costs.push_back(G.costs[i]);
+		Loop(i, n) nodes[i] = { i, false,{},{}, -1, LLONG_MAX };
+		Loop(i, n) {
+			Loop(j, lst[i].size()) {
+				nodes[i].to.push_back(lst[i][j]);
+				nodes[i].cst.push_back(cst[i][j]);
+			}
 		}
-		root = start;
-		nodes[root].d = 0;
+		nodes[0].d = 0;
 		priority_queue<pq_t> pq;
-		pq.push({ nodes[root].id, nodes[root].d });
+		pq.push({ nodes[0].id, nodes[0].d });
 		while (pq.size()) {
-			node *a = &nodes[pq.top().id];
+			int a = pq.top().id;
 			pq.pop();
-			if (nodes[a->id].done) continue;
-			nodes[a->id].done = true;
-			Loop(j, a->to.size()) {
-				node *b = &nodes[a->to[j]];
-				if (b->done) continue;
-				ll buf = a->costs[j];
-				if (buf < b->d) {
-					b->d = buf;
-					b->from_eid = a->to_eid[j];
-					b->from = a->id;
-					pq.push({ b->id, b->d });
+			if (nodes[a].done) continue;
+			nodes[a].done = true;
+			Loop(j, nodes[a].to.size()) {
+				int b = nodes[a].to[j];
+				if (nodes[b].done) continue;
+				ll buf = nodes[a].cst[j];
+				if (buf < nodes[b].d) {
+					nodes[b].d = buf;
+					nodes[b].from = a;
+					pq.push({ b, nodes[b].d });
 				}
 			}
 		}
 		return;
 	}
-	vector<P> get_tree_idpair() {
+	vector<P> get_result() {
 		vector<P> ret;
-		Loop(i, n) {
-			if (i != root) ret.push_back({ nodes[i].from, i });
+		Loop1(i, n - 1) {
+			int a = i;
+			int b = nodes[i].from;
+			if (a > b) swap(a, b);
+			ret.push_back({ a, b });
 		}
-		return ret;
-	}
-	// here negative eid will transformed to non-negative eid
-	vi get_tree_eid() {
-		vi ret;
-		Loop(i, n) {
-			if (i != root) {
-				ret.push_back(nodes[i].from_eid);
-				if (ret.back() < 0) ret.back() += m;
-			}
-		}
-		return ret;
 	}
 	ll get_weight() {
 		ll ret = 0;
 		Loop(i, n) {
-			if (i != root) ret += nodes[i].d;
+			ret += nodes[i].d;
 		}
 		return ret;
 	}

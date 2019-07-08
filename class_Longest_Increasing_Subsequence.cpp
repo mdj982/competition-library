@@ -3,12 +3,12 @@ class LIS {
   vll id_result;
   int n;
 public:
-  LIS(vll a, bool truely_increasing_flag) {
+  LIS(vll a, bool strict_flag) {
     int n = a.size();
     vll record;
     vi id_record, parents(n, -1);
     Loop(i, n) {
-      auto itr = truely_increasing_flag ? lower_bound(record.begin(), record.end(), a[i])
+      auto itr = strict_flag ? lower_bound(record.begin(), record.end(), a[i])
         : upper_bound(record.begin(), record.end(), a[i]);
       if (itr == record.end()) {
         record.push_back(a[i]);
@@ -45,3 +45,4 @@ public:
     return result.size();
   }
 };
+

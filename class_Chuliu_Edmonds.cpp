@@ -1,31 +1,19 @@
-typedef ll val_t;
-
-struct graph_t {
-	int n;           // |V|, index begins with 0
-	int m;           // |E|
-	vector<P> edges; // E
-	vector<val_t> vals; // V
-	vector<ll> costs; // cost or distance
-	vector<ll> caps;  // capacity
-};
-
-// solve MCA
 class Chuliu_Edmonds {
 private:
-	struct fromedge {
-		int eid;
+	struct edge_t {
 		int id;
 		ll cost;
 		stack<int> included_stk;
-		bool operator<(const fromedge & another) const {
-			return !(cost != another.cost ? cost < another.cost : eid < another.eid);
+		bool operator<(const edge_t & another) const {
+			return cost > another.cost;
 		}
 	};
+	// edges are directed to the node itself
 	struct node {
-		int overnode; bool done; bool fin; priority_queue<fromedge> from_edges; fromedge from;
+		int overnode; bool done; bool fin; priority_queue<edge_t> edges; edge_t from;
 	};
 	vector<node> nodes;
-	int n, m, root;
+	int n, root;
 	stack<int> stk;
 	bool no_mca;
 	int topnode(int k) {
@@ -38,17 +26,17 @@ private:
 	}
 	void contract(int s) {
 		int a = s;
-		priority_queue<fromedge> new_from_edges;
+		priority_queue<edge_t> new_from_edges;
 		int cnt = 0;
 		do {
 			a = topnode(a);
-			while (nodes[a].from_edges.size()) {
-				fromedge from_e = nodes[a].from_edges.top();
-				nodes[a].from_edges.pop();
-				if (from_e.id == nodes[a].from.id) continue;
-				from_e.cost -= nodes[a].from.cost;
-				from_e.included_stk.push(a);
-				new_from_edges.push(from_e);
+			while (nodes[a].edges.size()) {
+				edge_t edge = nodes[a].edges.top();
+				nodes[a].edges.pop();
+				if (edge.id == nodes[a].from.id) continue;
+				edge.cost -= nodes[a].from.cost;
+				edge.included_stk.push(a);
+				new_from_edges.push(edge);
 			}
 			nodes[a].overnode = nodes.size();
 			a = nodes[a].from.id;
@@ -69,13 +57,14 @@ private:
 		}
 	}
 public:
-	Chuliu_Edmonds(graph_t G, int start) {
-		n = G.n;
-		m = G.edges.size();
+	Chuliu_Edmonds(const vvi &lst, const vvll &cst, int start) {
+		n = lst.size();
 		nodes.resize(n);
-		Loop(i, n) nodes[i] = { -1, false, false, priority_queue<fromedge>(),{} };
-		Loop(i, m) {
-			nodes[G.edges[i].second].from_edges.push({ i, G.edges[i].first, G.costs[i], stack<int>() });
+		Loop(i, n) nodes[i] = { -1, false, false, priority_queue<edge_t>(),{} };
+		Loop(i, n) {
+			Loop(j, lst[i].size()) {
+				nodes[lst[i][j]].edges.push({ i, cst[i][j], stack<int>() });
+			}
 		}
 		root = start;
 		no_mca = false;
@@ -88,8 +77,8 @@ public:
 				do {
 					int b;
 					do {
-						if (nodes[a].from_edges.empty()) { no_mca = true; return; }
-						nodes[a].from = nodes[a].from_edges.top(); nodes[a].from_edges.pop();
+						if (nodes[a].edges.empty()) { no_mca = true; return; }
+						nodes[a].from = nodes[a].edges.top(); nodes[a].edges.pop();
 						b = nodes[a].from.id;
 					} while (topnode(a) == topnode(b));
 					if (nodes[b].fin) unfold();
@@ -116,14 +105,6 @@ public:
 		}
 		return ret;
 	}
-	vi get_tree_eid() {
-		if (no_mca) return{};
-		vi ret;
-		Loop(i, n) {
-			if (i != root) ret.push_back(nodes[i].from.eid);
-		}
-		return ret;
-	}
 	ll get_weight() {
 		if (no_mca) return -1;
 		ll ret = 0;
@@ -133,18 +114,3 @@ public:
 		return ret;
 	}
 };
-
-// Chuliu_Edmonds sample
-int main() {
-	graph_t G;
-	cin >> G.n >> G.m;
-	int r; cin >> r;
-	Loop(i, G.m) {
-		int s, t, c; cin >> s >> t >> c;
-		G.edges.push_back({ s, t });
-		G.costs.push_back(c);
-	}
-	Chuliu_Edmonds mca(G, r);
-	cout << mca.get_weight() << endl;
-	return 0;
-}
