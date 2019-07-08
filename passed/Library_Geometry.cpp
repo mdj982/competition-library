@@ -65,22 +65,19 @@ double dist(line_t l, pt_t p) {
 		/ sqrt(l.a * l.a + l.b * l.b);
 }
 
-bool on_same_line(pt_t t, pt_t p) {
-	line_t l = solve_line({ 0, 0 }, t);
+bool on_same_line(pt_t s, pt_t t, pt_t p) {
+	line_t l = solve_line(s, t);
 	if (feq(dist(l, p), 0)) return true;
 	else return false;
 }
 
-bool on_same_halfline(pt_t t, pt_t p) {
-	line_t l = solve_line({ 0, 0 }, t);
-	if (feq(dist(l, p), 0) && feq(angle(t, p), 0)) return true;
-	else return false;
-}
-
-double in_segment(pt_t s, pt_t t, pt_t p) {
-	if (on_same_halfline(t - s, p - s) && on_same_halfline(s - t, p - t)) {
-		return true;
-	}
+bool in_segment(pt_t s, pt_t t, pt_t p) {
+	line_t l = solve_line(s, t);
+	if (feq(dist(l, p), 0)
+		&& fge(p.x, min(s.x, t.x))
+		&& fge(max(s.x, t.x), p.x)
+		&& fge(p.y, min(s.y, t.y))
+		&& fge(max(s.y, t.y), p.y)) return true;
 	else return false;
 }
 
