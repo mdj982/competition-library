@@ -1,4 +1,3 @@
-bool feq(double x, double y) { return abs(x - y) <= eps; }
 bool fge(double x, double y) { return x >= y - eps; }
 double fsqrt(double x) { return feq(x, 0) ? 0 : sqrt(x); }
 
@@ -6,9 +5,9 @@ double fsqrt(double x) { return feq(x, 0) ? 0 : sqrt(x); }
 
 struct pt_t {
 	double x, y;
-	pt_t operator+(const pt_t &p) { return { x + p.x, y + p.y }; }
-	pt_t operator-(const pt_t &p) { return { x - p.x, y - p.y }; }
-	pt_t operator*(const double &c) { return { x * c, y * c }; }
+	pt_t operator+(const pt_t &p) const { return { x + p.x, y + p.y }; }
+	pt_t operator-(const pt_t &p) const { return { x - p.x, y - p.y }; }
+	pt_t operator*(const double &c) const { return { x * c, y * c }; }
 	bool operator<(const pt_t &another) const {
 		return (x != another.x ? x < another.x : y < another.y);
 	}
@@ -48,16 +47,6 @@ double norm2(pt_t p) {
 
 double norm(pt_t p) {
 	return sqrt(norm2(p));
-}
-
-// angle [0, 2PI) of vector p to vector q
-double angle(pt_t p, pt_t q) {
-	p = p * (1.0 / norm(p));
-	q = q * (1.0 / norm(q));
-	double r0 = acos(max(min(p.x * q.x + p.y * q.y, 1.0), -1.0));
-	double r1 = asin(max(min(p.x * q.y - p.y * q.x, 1.0), -1.0));
-	if (r1 >= 0) return r0;
-	else return 2 * M_PI - r0;
 }
 
 double dist(line_t l, pt_t p) {
@@ -185,13 +174,157 @@ vector<line_t> tangent_line(circle_t f, circle_t g) {
 	return ret;
 }
 
-// suppose a.size() >= 3
+// inner product
+double dot(pt_t p, pt_t q) {
+	return p.x * q.x + p.y * q.y;
+}
+
+// outer product
+double cross(pt_t p, pt_t q) {
+	return p.x * q.y - p.y * q.x;
+}
+
+// suppose a is counterclockwise, a.size() >= 3
 double polygon_area(vector<pt_t> a) {
 	double ret = 0;
 	Loop(i, a.size()) {
 		int j = (i + 1 < a.size() ? i + 1 : 0);
-		ret += a[i].x * a[j].y - a[j].x * a[i].y;
+		ret += cross(a[i], a[j]);
 	}
 	ret = abs(ret) / 2;
 	return ret;
+}
+
+class Triangulate {
+private:
+	vvi tri_ids;
+	vector<vector<pt_t>> tri_pts;
+	vector<pt_t> a;
+	bool enable(pt_t p, pt_t q, pt_t r) {
+		line_t l = solve_line(q, r);
+		if (feq(dist(l, p), 0)) return false;
+		if (fge(cross(q - p, r - p), 0)) return true;
+		else return false;
+	}
+	void contraction(vi &ids) {
+		int n = ids.size();
+		if (n < 3) return;
+		Loop(i, n) {
+			int id_p = (i - 1 + n) % n;
+			int id_q = i;
+			int id_r = (i + 1) % n;
+			pt_t p = a[ids[id_p]];
+			pt_t q = a[ids[id_q]];
+			pt_t r = a[ids[id_r]];
+			line_t l = solve_line(p, r);
+			if (feq(dist(l, q), 0)) {
+				ids.erase(ids.begin() + i);
+				contraction(ids);
+				return;
+			}
+		}
+	}
+	void divide(vi &ids) {
+		contraction(ids);
+		int n = ids.size();
+		if (n < 3) return;
+		Loop(i, n) {
+			int id_p = (i - 1 + n) % n;
+			int id_q = i;
+			int id_r = (i + 1) % n;
+			pt_t p = a[ids[id_p]];
+			pt_t q = a[ids[id_q]];
+			pt_t r = a[ids[id_r]];
+			if (enable(p, q, r)) {
+				line_t l = solve_line(p, r);
+				bool judge = true;
+				Loop(j, n) {
+					if (j == id_p || j == id_q || j == id_r) continue;
+					pt_t xp = a[ids[j]];
+					if (in_triangle({ p,q,r }, xp)) judge = false;
+				}
+				if (judge) {
+					tri_ids.push_back({ id_p, id_q, id_r });
+					tri_pts.push_back({ p, q, r });
+					ids.erase(ids.begin() + i);
+					divide(ids);
+					return;
+				}
+			}
+		}
+	}
+	int in_triangle(const vector<pt_t> &a, pt_t p) {
+		int ret = 2;
+		Loop(i, 3) {
+			int j = (i + 1) % 3;
+			line_t l = solve_line(a[i], a[j]);
+			double d = dist(l, p);
+			if (feq(d, 0)) ret = 1;
+			else if (fge(M_PI, angle(a[j] - a[i], p - a[i])));
+			else return 0;
+		}
+		return ret;
+	}
+public:
+	// each triangle will be represented counterclockwisely
+	Triangulate(const vector<pt_t> &a) {
+		this->a = a;
+		vi ids(a.size());
+		Loop(i, ids.size()) ids[i] = i;
+		divide(ids);
+	}
+	vvi get_ids() {
+		return tri_ids;
+	}
+	vector<vector<pt_t>> get_pts() {
+		return tri_pts;
+	}
+	// suppose a is counterclockwise, a.size() >= 3
+	// return 0 if not, return 1 if on line, return 2 if strictly included
+	int in_polygon(pt_t p) {
+		int ret = 0;
+		Loop(i, tri_pts.size()) {
+			if (in_triangle(tri_pts[i], p)) {
+				ret = 2;
+			}
+		}
+		if (ret != 0) {
+			Loop(i, a.size()) {
+				int j = (i + 1) % a.size();
+				if (in_segment(a[i], a[j], p)) ret = 1;
+			}
+		}
+		return ret;
+	}
+};
+
+vector<pt_t> convex_hull(vector<pt_t> ps) {
+	int n = ps.size();
+	sort(ps.begin(), ps.end());
+	Loop(i, n - 1) ps.push_back(ps[n - 2 - i]);
+	vector<pt_t> ret;
+	int m = 2;
+	Loop(i, n * 2 - 1) {
+		if (i == n) m = ret.size() + 1;
+		while (ret.size() >= m) {
+			int k = ret.size();
+			if (in_segment(ret[k - 2], ps[i], ret[k - 1])) break;
+			else if (fge(cross(ret[k - 1] - ret[k - 2], ps[i] - ret[k - 2]), 0)) ret.pop_back();
+			else break;
+		}
+		ret.push_back(ps[i]);
+	}
+	ret.pop_back();
+	reverse(ret.begin(), ret.end());
+	return ret;
+}
+
+// angle [0, 2PI) of vector p to vector q
+double angle(pt_t p, pt_t q) {
+	p = p * (1.0 / norm(p));
+	q = q * (1.0 / norm(q));
+	double r0 = acos(max(min(dot(p, q), 1.0), -1.0));
+	double r1 = asin(max(min(dot(p, q), 1.0), -1.0));
+	if (r1 >= 0) return r0;
+	else return 2 * M_PI - r0;
 }
