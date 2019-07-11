@@ -7,39 +7,28 @@ private:
 	int n, N; // n is the original size, while N is the extended size
 	int base;
 	vector<val_t> nodes;
-	int left_of(int id) {
-		if (id >= base) return -1;
-		else return id * 2 + 1;
-	}
-	int right_of(int id) {
-		if (id >= base) return -1;
-		else return id * 2 + 2;
-	}
-	int parent_of(int id) {
-		if (id == 0) return -1;
-		else return (id - 1) >> 1;
-	}
-	void merge(int id, int id_l, int id_r) {
-		nodes[id].min = min(nodes[id_l].min + nodes[id_l].add, nodes[id_r].min + nodes[id_r].add);
-		nodes[id].max = max(nodes[id_l].max + nodes[id_l].add, nodes[id_r].max + nodes[id_r].add);
-		nodes[id].sum = nodes[id_l].sum + nodes[id_l].add * cover_size(id_l)
-			+ nodes[id_r].sum + nodes[id_r].add * cover_size(id_r);
+	vi idl, idr, cover_size;
+	void merge(int id) {
+		nodes[id].min = min(nodes[idl[id]].min + nodes[idl[id]].add, 
+			nodes[idr[id]].min + nodes[idr[id]].add);
+		nodes[id].max = max(nodes[idl[id]].max + nodes[idl[id]].add, 
+			nodes[idr[id]].max + nodes[idr[id]].add);
+		nodes[id].sum = nodes[idl[id]].sum + nodes[idl[id]].add * cover_size[idl[id]]
+			+ nodes[idr[id]].sum + nodes[idr[id]].add * cover_size[idr[id]];
 	}
 	void lazy(int id) {
 		if (id >= base) return;
-		int id_l = left_of(id);
-		int id_r = right_of(id);
 		if (nodes[id].enable) {
 			ll upd = nodes[id].upd + nodes[id].add;
-			nodes[id_l] = { true, upd, 0, upd, upd, upd * cover_size(id_l) };
-			nodes[id_r] = { true, upd, 0, upd, upd, upd * cover_size(id_r) };
-			nodes[id] = { false, 0, 0, upd, upd, upd * cover_size(id) };
+			nodes[idl[id]] = { true, upd, 0, upd, upd, upd * cover_size[idl[id]] };
+			nodes[idr[id]] = { true, upd, 0, upd, upd, upd * cover_size[idr[id]] };
+			nodes[id] = { false, 0, 0, upd, upd, upd * cover_size[id] };
 		}
 		else {
-			nodes[id_l].add += nodes[id].add;
-			nodes[id_r].add += nodes[id].add;
+			nodes[idl[id]].add += nodes[id].add;
+			nodes[idr[id]].add += nodes[id].add;
 			nodes[id].add = 0;
-			merge(id, id_l, id_r);
+			merge(id);
 		}
 	}
 	enum change_t {
@@ -47,25 +36,23 @@ private:
 	};
 	void change_rec(int s, int t, int l, int r, int id, ll x, change_t op) {
 		if (s == l && t == r) {
-			if (op == UPD) nodes[id] = { true, x, 0, x, x, x * cover_size(id) };
+			if (op == UPD) nodes[id] = { true, x, 0, x, x, x * cover_size[id] };
 			else if (op == ADD) nodes[id].add += x;
 		}
 		else {
 			lazy(id);
 			int m = (l + r) / 2;
-			int id_l = left_of(id);
-			int id_r = right_of(id);
 			if (s < m && m < t) {
-				change_rec(s, m, l, m, id_l, x, op);
-				change_rec(m, t, m, r, id_r, x, op);
+				change_rec(s, m, l, m, idl[id], x, op);
+				change_rec(m, t, m, r, idr[id], x, op);
 			}
 			else if (s < m) {
-				change_rec(s, t, l, m, id_l, x, op);
+				change_rec(s, t, l, m, idl[id], x, op);
 			}
 			else if (m < t) {
-				change_rec(s, t, m, r, id_r, x, op);
+				change_rec(s, t, m, r, idr[id], x, op);
 			}
-			merge(id, id_l, id_r);
+			merge(id);
 		}
 	}
 	enum solve_t {
@@ -81,20 +68,18 @@ private:
 		else {
 			lazy(id);
 			int m = (l + r) / 2;
-			int id_l = left_of(id);
-			int id_r = right_of(id);
 			if (s < m && m < t) {
-				ll v0 = solve_rec(s, m, l, m, id_l, op);
-				ll v1 = solve_rec(m, t, m, r, id_r, op);
+				ll v0 = solve_rec(s, m, l, m, idl[id], op);
+				ll v1 = solve_rec(m, t, m, r, idr[id], op);
 				if (op == MIN) v = min(v0, v1);
 				else if (op == MAX) v = max(v0, v1);
 				else if (op == SUM) v = v0 + v1;
 			}
 			else if (s < m) {
-				v = solve_rec(s, t, l, m, id_l, op);
+				v = solve_rec(s, t, l, m, idl[id], op);
 			}
 			else if (m < t) {
-				v = solve_rec(s, t, m, r, id_r, op);
+				v = solve_rec(s, t, m, r, idr[id], op);
 			}
 		}
 		if (op == MIN) v += nodes[id].add;
@@ -108,17 +93,20 @@ public:
 		N = (int)pow(2, ceil(log2(n)));
 		base = N - 1;
 		nodes = vector<val_t>(base + N, { false, 0, 0, LLONG_MAX, LLONG_MIN, 0 });
-		upd(0, n, init);
-	}
-	int cover_size(int id) {
-		int cnt = 1;
-		while (left_of(id) != -1) {
-			id = left_of(id);
-			cnt *= 2;
+		idl.resize(base + N, -1);
+		idr.resize(base + N, -1);
+		Loop(i, base) {
+			idl[i] = i * 2 + 1;
+			idr[i] = i * 2 + 2;
 		}
-		int l = id - base;
-		int r = min(l + cnt, n);
-		return max(0, r - l);
+		cover_size.resize(base + N);
+		Loop(i, n) {
+			cover_size[base + i] = 1;
+		}
+		Loopr(i, base) {
+			cover_size[i] = cover_size[idl[i]] + cover_size[idr[i]];
+		}
+		upd(0, n, init);
 	}
 	void upd(int s, int t, ll x) {
 		change_rec(s, t, 0, N, 0, x, UPD);
