@@ -113,8 +113,8 @@ void write_after_main() {
 
 
 int main() {
-	header_ifs.open("../util_header.cpp");
-	if (!header_ifs) failed("could not find ../util_header.cpp file");
+	header_ifs.open("../auto_util_header.cpp");
+	if (!header_ifs) failed("could not find ../auto_util_header.cpp file");
 	ofs.open("base.cpp");
 	if (!ofs) failed("could not make base.cpp file");
 	string readline;
