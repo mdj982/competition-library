@@ -4,57 +4,59 @@
 #include <iostream>
 #include <chrono>
 
-enum timestamp_t {
-	BEGIN, END, PAUSE
-};
-
-namespace timeval {
-	std::chrono::system_clock::time_point start, end;
-	timestamp_t mode = END;
-	double elapsed = 0;
-}
-
-void timestamp(timestamp_t x) {
-	switch (x) {
-	case BEGIN:
-		if (timeval::mode == BEGIN) {
+class Timestamp {
+private:
+	enum timestamp_t {
+		BEGIN, END, PAUSE
+	};
+	std::chrono::system_clock::time_point start, finish;
+	timestamp_t mode;
+	double elapsed;
+public:
+	Timestamp() {
+		mode = END;
+		elapsed = 0;
+	}
+	void begin() {
+		if (mode == BEGIN) {
 			std::cout << "timestamp mode error with BEGIN -> BEGIN" << std::endl;
 			exit(EXIT_SUCCESS);
 		}
-		timeval::mode = BEGIN;
-		timeval::start = std::chrono::system_clock::now();
-		break;
-	case PAUSE:
-		timeval::end = std::chrono::system_clock::now();
-		if (timeval::mode == PAUSE) {
+		mode = BEGIN;
+		start = std::chrono::system_clock::now();
+	}
+	void pause() {
+		finish = std::chrono::system_clock::now();
+		if (mode == PAUSE) {
 			std::cout << "timestamp mode error with PAUSE -> PAUSE" << std::endl;
 			exit(EXIT_SUCCESS);
 		}
-		if (timeval::mode == END) {
+		if (mode == END) {
 			std::cout << "timestamp mode error with END -> PAUSE" << std::endl;
 			exit(EXIT_SUCCESS);
 		}
-		timeval::elapsed += (double)std::chrono::duration_cast<std::chrono::nanoseconds>(timeval::end - timeval::start).count();
-		timeval::mode = PAUSE;
-		break;
-	case END:
-		timeval::end = std::chrono::system_clock::now();
-		if (timeval::mode == END) {
+		elapsed += (double)std::chrono::duration_cast<std::chrono::nanoseconds>(finish - start).count();
+		mode = PAUSE;
+	}
+	double end() {
+		finish = std::chrono::system_clock::now();
+		double ret = 0;
+		if (mode == END) {
 			std::cout << "timestamp mode error with END -> END" << std::endl;
 			exit(EXIT_SUCCESS);
 		}
-		if (timeval::mode == PAUSE) {
-			std::cout << "elapsed time: " << timeval::elapsed / 1e6 << " ms" << std::endl;
-			timeval::elapsed = 0;
+		if (mode == PAUSE) {
+			ret = elapsed / 1e6;
+			elapsed = 0;
 		}
 		else {
-			timeval::elapsed += (double)std::chrono::duration_cast<std::chrono::nanoseconds>(timeval::end - timeval::start).count();
-			std::cout << "elapsed time: " << timeval::elapsed / 1e6 << " ms" << std::endl;
-			timeval::elapsed = 0;
+			elapsed += (double)std::chrono::duration_cast<std::chrono::nanoseconds>(finish - start).count();
+			ret = elapsed / 1e6;
+			elapsed = 0;
 		}
-		timeval::mode = END;
-		break;
+		mode = END;
+		return ret;
 	}
-}
+};
 
 #endif // UTILTIME
