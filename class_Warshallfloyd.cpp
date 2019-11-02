@@ -33,6 +33,9 @@ public:
 	vvll get_table() {
 		return table;
 	}
+	ll get_dist(int i, int j) {
+		return table[i][j];
+	}
 	bool is_negative_cycle() {
 		return negative_cycle;
 	}

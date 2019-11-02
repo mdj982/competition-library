@@ -48,68 +48,30 @@ ll lcm(ll m, ll n) { return m * n / gcd(m, n); }
 
 
 
-class WaitingForBusAgain {
-private:
-	vector<double> calc(const vector<double> &b) {
-		vector<double> ret = { 1 };
-		vector<double> buf;
-		Loop(i, b.size()) {
-			buf = ret;
-			buf.push_back(0);
-			Loop(j, ret.size()) {
-				buf[j + 1] -= ret[j] / b[i];
-			}
-			ret = buf;
-		}
-		return ret;
-	}
-	double integral(const vector<double> &a, double val) {
-		double ret = 0;
-		Loop(i, a.size()) {
-			ret += a[i] * pow(val, i + 1) / (i + 1);
-		}
-		return ret;
-	}
+class PrefixComposite {
 public:
-	double expectedBus(vector <int> f) {
-		int m = INT_MAX;
-		Loop(i, f.size()) m = min(m, f[i]);
-		map<int, vi> mp;
-		Loop(i, f.size()) {
-			mp[f[i]].push_back(i);
-		}
-		double ans = 0;
-		Loopitr(itr, mp) {
-			vector<double> b;
-			Loopitr(itr2, mp) {
-				if (itr != itr2) {
-					Loop(j, itr2->snd.size()) {
-						b.push_back(itr2->fst);
-					}
-				}
-			}
-			vector<double> a = calc(b);
-			double p = integral(a, m) / itr->fst;
-			double q = accumulate(itr->snd.begin(), itr->snd.end(), 0LL);
-			ans += p * (q / itr->snd.size());
-		}
-		return ans;
+	vector<long long> minMax(long long A, long long B) {
 	}
 };
 
 struct params_t {
-	vector <int> f;
+	long long A;
+	long long B;
 };
 
 int main() {
 	vector<params_t> testparams;
-	testparams.push_back({ {8,8,8,8} });
-	testparams.push_back({ {1,2,3} });
-	testparams.push_back({ {3,2,1} });
-	testparams.push_back({ {3,1,4,1,5,9,2,6,5,3,5} });
-	testparams.push_back({ {26, 19548, 19299, 19431, 39568, 19476, 19726, 19530, 19613, 19529, 19679, 19552, 19706, 19505, 19666, 19349, 19755, 19424, 19486, 19596, 19439, 19500, 19639, 19520, 19472, 19675, 19602, 19552, 19933, 19424, 19316, 19497, 19582, 19531, 19679, 19742, 19896, 19365, 20083, 19542, 19827, 19583, 19592, 19593, 19661, 19340, 19403, 19664, 19690, 19655, 19727, 19661, 19528, 19836, 19819, 19414, 19770, 19500, 19653, 19613, 19579, 19794, 19668, 19729, 19428, 19477, 19733, 19641, 19680, 19594, 19667, 19878, 19571, 19627, 19576, 19422, 19521, 19512, 19481, 19620, 19364, 19487, 19740, 19627, 19795, 19353, 19251, 19865, 19710, 19597, 19610, 19710, 19491, 19598, 19650, 19828, 19726, 19810, 19766, 19692} });
-	WaitingForBusAgain classunit;
-	Loop(i, testparams.size()) {
-		cout << setprecision(12) << classunit.expectedBus(testparams[i].f) << endl;
+	testparams.push_back({ 1,3 });
+	testparams.push_back({ 1,4 });
+	testparams.push_back({ 123,838 });
+	testparams.push_back({ 409,87343 });
+	testparams.push_back({ 979797,979898 });
+	testparams.push_back({ 600,703 });
+	testparams.push_back({ 1,100000000000 });
+	testparams.push_back({ 37337999,37337999 });
+	testparams.push_back({ 22,39 });
+	PrefixComposite classunit;
+	Loop(unused, testparams.size()) {
+		classunit.minMax(testparams[i].A, testparams[i].B);
 	}
 }

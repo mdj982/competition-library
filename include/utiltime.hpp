@@ -55,6 +55,7 @@ public:
 			elapsed = 0;
 		}
 		mode = END;
+		std::cout << "elapsed " << ret << " ms" << std::endl;
 		return ret;
 	}
 };

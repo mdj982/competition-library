@@ -8,6 +8,7 @@
 #include <limits>
 #include <algorithm>
 #include <vector>
+#include <array>
 #include <deque>
 #include <queue>
 #include <list>
