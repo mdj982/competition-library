@@ -19,6 +19,7 @@ const double eps = 1e-7;
 #define Loopr1(i, n) for(int i = int(n); i >= 1; i--)
 #define Looprll1(i, n) for(ll i = ll(n); i >= 1; i--)
 #define Foreach(buf, container) for(const auto &buf : container)
+#define Foreachr(buf, container)  for(const auto &buf : reversed(container))
 #define Loopdiag(i, j, h, w, sum) for(int i = ((sum) >= (h) ? (h) - 1 : (sum)), j = (sum) - i; i >= 0 && j < (w); i--, j++)
 #define Loopdiagr(i, j, h, w, sum) for(int j = ((sum) >= (w) ? (w) - 1 : (sum)), i = (sum) - j; j >= 0 && i < (h); j--, i++)
 #define Loopdiagsym(i, j, h, w, gap) for (int i = ((gap) >= 0 ? (gap) : 0), j = i - (gap); i < (h) && j < (w); i++, j++)
@@ -35,7 +36,9 @@ const double eps = 1e-7;
 bool feq(double x, double y) { return abs(x - y) <= eps; }
 bool inrange(ll x, ll t) { return x >= 0 && x < t; }
 bool inrange(vll xs, ll t) { Foreach(x, xs) if (!(x >= 0 && x < t)) return false; return true; }
-int ceillog2(ll x) { int ret = 0;	x--; while (x > 0) { ret++; x >>= 1; } return ret; }
+int ceillog2(ll x) { return int(ceil(log2(x))); }
+int floorlog2(ll x) { return int(floor(log2(x))); }
+template<class T> T reversed(T container) { reverse(container.begin(), container.end()); return container; }
 ll rndf(double x) { return (ll)(x + (x >= 0 ? 0.5 : -0.5)); }
 ll floorsqrt(ll x) { ll m = (ll)sqrt((double)x); return m + (m * m <= x ? 0 : -1); }
 ll ceilsqrt(ll x) { ll m = (ll)sqrt((double)x); return m + (x <= m * m ? 0 : 1); }
@@ -45,3 +48,4 @@ ll gcd(ll m, ll n) { if (n == 0) return m; else return gcd(n, m % n); }
 ll lcm(ll m, ll n) { return m * n / gcd(m, n); }
 
 //========================================================================//
+

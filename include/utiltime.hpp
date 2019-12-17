@@ -35,7 +35,7 @@ public:
 			std::cout << "timestamp mode error with END -> PAUSE" << std::endl;
 			exit(EXIT_SUCCESS);
 		}
-		elapsed += (double)std::chrono::duration_cast<std::chrono::nanoseconds>(finish - start).count();
+		elapsed += double(std::chrono::duration_cast<std::chrono::nanoseconds>(finish - start).count());
 		mode = PAUSE;
 	}
 	double end() {
@@ -50,14 +50,22 @@ public:
 			elapsed = 0;
 		}
 		else {
-			elapsed += (double)std::chrono::duration_cast<std::chrono::nanoseconds>(finish - start).count();
+			elapsed += double(std::chrono::duration_cast<std::chrono::nanoseconds>(finish - start).count());
 			ret = elapsed / 1e6;
 			elapsed = 0;
 		}
 		mode = END;
-		std::cout << "elapsed " << ret << " ms" << std::endl;
 		return ret;
 	}
+    double check() {
+        if (mode == BEGIN) {
+	        std::chrono::system_clock::time_point cur = std::chrono::system_clock::now();
+            return double(std::chrono::duration_cast<std::chrono::nanoseconds>(cur - start).count()) / 1e6;
+		}
+        else {
+			return elapsed / 1e6;
+		}
+    }
 };
 
 #endif // UTILTIME
