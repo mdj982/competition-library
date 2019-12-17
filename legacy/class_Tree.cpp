@@ -1,6 +1,6 @@
-
-template<class nodeval_t, class edgeval_t>
 struct tree_t {
+	using nodeval_t = int;
+	using edgeval_t = int;
 	int n;           // |V|, index begins with 0
 	vector<P> edges; // E
 	vector<nodeval_t> vals; // value of nodes
@@ -20,31 +20,41 @@ int make_treap(const vector<val_t> &a, const tree_t &T, int l = 0, int r = -1, i
 	return mid;
 }
 
-template<class nodeval_t, class edgeval_t>
+// #define ANCESTOR
+// #define HLD
 class Tree {
+	using nodeval_t = int;
+	using edgeval_t = int;
 private:
 	struct node {
-		int id; vi childs; int parent = -1;
+		vi childs; int parent = -1;
 		int deg = -1; // the number of edges of the path to the root
 		int eid = -1; // edge id of the edge connected by its parent and itself
 		int subtree_n = 1; // the number of nodes of the partial tree rooted by itself
-		int visited = -1; // time stamp of visiting on DFS, call solve_sparse_ancestors() for activation
-		int departed = -1; // time stamp of departure on DFS, call solve_sparse_ancestors() for activation
+#ifdef ANCESTOR
+		int visited = -1; // time stamp of visiting on DFS, call solve_sprs_ancestors() for activation
+		int departed = -1; // time stamp of departure on DFS, call solve_sprs_ancestors() for activation
+#endif
+#ifdef HLD
+		int pid = -1; // path id of heavy light decompotion
+		int qid = -1; // id in its path
+#endif
 		nodeval_t val; // value of the node itself
 		edgeval_t cost; // cost of the edge connected by its parent and itself
-		bool operator<(const node & another) const {
-			return deg != another.deg ? deg < another.deg : id < another.id;
-		}
 	};
-	struct edgeinfo {
+	struct edgeinfo_t {
 		int eid; int to; edgeval_t cost;
 	};
 	int n;
 	static const nodeval_t init_val = 0;
 	static const edgeval_t init_cost = 1;
-	vector<vector<edgeinfo>> edges;
-	vvi sparse_ancestors; // (1 << j)-th ancestors in each node_id = i
-	void tree_construction() {
+#ifdef ANCESTOR
+	vvi sprs_ancestors; // (1 << j)-th ancestors in each node_id = i
+#endif
+#ifdef HLD
+	vvi hld_paths; // paths
+#endif
+	void tree_construction(const vector<vector<edgeinfo_t>> &edges) {
 		leaves = {};
 		queue<int> que;
 		que.push(root);
@@ -82,22 +92,22 @@ public:
 	vi deg_order; // node ids, sorted by deg
 	vi leaves;
 	int root;
+public:
 	// T should be non-empty tree
-	Tree(tree_t<nodeval_t, edgeval_t> T, int root) {
-		n = T.n;
+	Tree(const tree_t &T, int root) {
+		this->n = T.n;
+		this->root = root;
 		nodes.resize(n);
 		Loop(i, n) {
-			nodes[i].id = i;
 			nodes[i].val = (int)(T.vals.size()) > i ? T.vals[i] : init_val;
 			nodes[i].cost = init_cost;
 		}
-		edges.resize(n);
+		vector<vector<edgeinfo_t>> edges(n);
 		Loop(i, n - 1) {
-			edges[T.edges[i].first].push_back({ i, T.edges[i].second, ((int)(T.costs.size()) > i ? T.costs[i] : init_cost) });
-			edges[T.edges[i].second].push_back({ i, T.edges[i].first, ((int)(T.costs.size()) > i ? T.costs[i] : init_cost) });
+			edges[T.edges[i].fst].push_back({ i, T.edges[i].snd, ((int)(T.costs.size()) > i ? T.costs[i] : init_cost) });
+			edges[T.edges[i].snd].push_back({ i, T.edges[i].fst, ((int)(T.costs.size()) > i ? T.costs[i] : init_cost) });
 		}
-		Tree::root = root;
-		tree_construction();
+		tree_construction(edges);
 		return;
 	}
 	int solve_diameter() {
@@ -123,22 +133,19 @@ public:
 	}
 	pair<int, vi> solve_center_of_gravity() {
 		pair<int, vi> ret = { INT_MAX,{} };
-		vector<node> c_nodes = nodes;
-		sort(c_nodes.begin(), c_nodes.end());
 		vi record(n, 1);
-		Loopr(i, n) {
+		Foreach(a, deg_order) {
 			int x = n - 1, max_x = INT_MIN;
-			Loop(j, c_nodes[i].childs.size()) {
-				int b = c_nodes[i].childs[j];
+			Foreach(b, nodes[a].childs) {
 				max_x = max(max_x, record[b]);
 				x -= record[b];
-				record[c_nodes[i].id] += record[b];
+				record[a] += record[b];
 			}
 			max_x = max(max_x, x);
-			if (max_x < ret.first) ret = { max_x,{ c_nodes[i].id } };
-			else if (max_x == ret.first) ret.second.push_back(c_nodes[i].id);
+			if (max_x < ret.fst) ret = { max_x,{ a } };
+			else if (max_x == ret.fst) ret.snd.push_back(a);
 		}
-		sort(ret.second.begin(), ret.second.end());
+		sort(ret.snd.begin(), ret.snd.end());
 		return ret;
 	}
 	vi solve_node_inclusion_cnt_in_all_path(bool enable_single_node_path) {
@@ -146,8 +153,7 @@ public:
 		Loop(i, n) {
 			int a = i;
 			// desendants to desendants
-			Loop(j, nodes[a].childs.size()) {
-				int b = nodes[a].childs[j];
+			Foreach(b, nodes[a].childs) {
 				ret[i] += nodes[b].subtree_n * (nodes[a].subtree_n - nodes[b].subtree_n - 1);
 			}
 			ret[i] /= 2; // because of double counting
@@ -166,8 +172,9 @@ public:
 		}
 		return ret;
 	}
-	void solve_sparse_ancestors() {
-		sparse_ancestors.resize(n);
+#ifdef ANCESTOR
+	void solve_sprs_ancestors() {
+		sprs_ancestors.resize(n);
 		vector<int> current_ancestors;
 		stack<int> stk;
 		stk.push(Tree::root);
@@ -176,7 +183,7 @@ public:
 			int a = stk.top(); stk.pop();
 			nodes[a].visited = time_stamp++;
 			for (int i = 1; i <= (int)(current_ancestors.size()); i *= 2) {
-				sparse_ancestors[a].push_back(current_ancestors[current_ancestors.size() - i]);
+				sprs_ancestors[a].push_back(current_ancestors[current_ancestors.size() - i]);
 			}
 			if (nodes[a].childs.size()) {
 				Loop(i, nodes[a].childs.size()) {
@@ -199,26 +206,25 @@ public:
 			&& nodes[descendant].departed < nodes[ancestor].departed;
 	}
 	int get_lowest_common_ancestor(int u, int v) {
-		if (sparse_ancestors.size() == 0) solve_sparse_ancestors();
 		if (u == v) return u;
 		if (is_ancestor(u, v)) return v;
 		if (is_ancestor(v, u)) return u;
 		int a = u;
-		while (!is_ancestor(v, sparse_ancestors[a][0])) {
-			int b = sparse_ancestors[a][0];
-			Loop1(i, sparse_ancestors[a].size() - 1) {
-				if (is_ancestor(v, sparse_ancestors[a][i])) break;
-				else b = sparse_ancestors[a][i - 1];
+		while (!is_ancestor(v, sprs_ancestors[a][0])) {
+			int b = sprs_ancestors[a][0];
+			Loop1(i, sprs_ancestors[a].size() - 1) {
+				if (is_ancestor(v, sprs_ancestors[a][i])) break;
+				else b = sprs_ancestors[a][i - 1];
 			}
 			a = b;
 		}
-		return sparse_ancestors[a][0];
+		return sprs_ancestors[a][0];
 	}
 	int get_ancestor(int descendant, int k) {
 		if (k == 0) return descendant;
 		int l = (int)log2(k);
-		if (l >= sparse_ancestors[descendant].size()) return -1;
-		else return get_ancestor(sparse_ancestors[descendant][l], k - (1 << l));
+		if (l >= sprs_ancestors[descendant].size()) return -1;
+		else return get_ancestor(sprs_ancestors[descendant][l], k - (1 << l));
 	}
 	// return first value causing "t" in evalfunc that returns descendant->[f,...,f,t,...,t]->root
 	// NOTE: if [f,...,f] then return -1
@@ -226,13 +232,13 @@ public:
 	int binary_search_upper_ancestor(int descendant, const bsargv_t &bsargv, bool(*evalfunc)(int, const bsargv_t&)) {
 		if (evalfunc(descendant, bsargv)) return descendant;
 		if (descendant == root) return -1;
-		Loop(i, sparse_ancestors[descendant].size()) {
-			if (evalfunc(sparse_ancestors[descendant][i], bsargv)) {
-				if (i == 0) return binary_search_upper_ancestor(sparse_ancestors[descendant][0], bsargv, evalfunc);
-				else return binary_search_upper_ancestor(sparse_ancestors[descendant][i - 1], bsargv, evalfunc);
+		Loop(i, sprs_ancestors[descendant].size()) {
+			if (evalfunc(sprs_ancestors[descendant][i], bsargv)) {
+				if (i == 0) return binary_search_upper_ancestor(sprs_ancestors[descendant][0], bsargv, evalfunc);
+				else return binary_search_upper_ancestor(sprs_ancestors[descendant][i - 1], bsargv, evalfunc);
 			}
 		}
-		return binary_search_upper_ancestor(sparse_ancestors[descendant].back(), bsargv, evalfunc);
+		return binary_search_upper_ancestor(sprs_ancestors[descendant].back(), bsargv, evalfunc);
 	}
 	// return last value causing "t" in evalfunc that returns descendant->[t,...,t,f,...,f]->root
 	// NOTE: if [f,...,f] then return -1
@@ -240,15 +246,73 @@ public:
 	int binary_search_lower_ancestor(int descendant, const bsargv_t &bsargv, bool(*evalfunc)(int, const bsargv_t&)) {
 		if (!evalfunc(descendant, bsargv)) return -1;
 		if (descendant == root) return root;
-		Loop(i, sparse_ancestors[descendant].size()) {
-			if (!evalfunc(sparse_ancestors[descendant][i], bsargv)) {
+		Loop(i, sprs_ancestors[descendant].size()) {
+			if (!evalfunc(sprs_ancestors[descendant][i], bsargv)) {
 				if (i == 0) return descendant;
-				else return binary_search_lower_ancestor(sparse_ancestors[descendant][i - 1], bsargv, evalfunc);
+				else return binary_search_lower_ancestor(sprs_ancestors[descendant][i - 1], bsargv, evalfunc);
 			}
 		}
-		return binary_search_lower_ancestor(sparse_ancestors[descendant].back(), bsargv, evalfunc);
+		return binary_search_lower_ancestor(sprs_ancestors[descendant].back(), bsargv, evalfunc);
 	}
 	// static bool evalfunc(int id, bsargv_t bsargv);
+#endif
+#ifdef HLD
+	void solve_hld() {
+		Foreach(a, deg_order) {
+			if (nodes[a].pid == -1) {
+				nodes[a].pid = int(hld_paths.size());
+				nodes[a].qid = 0;
+				hld_paths.push_back({ a });
+			}
+			int max_id = -1;
+			int max_subtree_n = 0;
+			Foreach(b, nodes[a].childs) {
+				if (nodes[b].subtree_n > max_subtree_n) {
+					max_id = b;
+					max_subtree_n = nodes[b].subtree_n;
+				}
+			}
+			if (max_id == -1) continue;
+			nodes[max_id].pid = nodes[a].pid;
+			nodes[max_id].qid = nodes[a].qid + 1;
+			hld_paths[nodes[a].pid].push_back(max_id);
+		}
+	}
+	struct pathinfo_t {
+		int id;
+		int l, r; // [l, r)
+	};
+	// if weight is for each node, include_lca = true
+	// if weight is for each edge, include_lca = false
+	vector<pathinfo_t> get_path_in_hld(int u, int v, bool include_lca) {
+		vector<pathinfo_t> ret;
+		int w = get_lowest_common_ancestor(u, v);
+		if (include_lca && u == v) {
+			ret.push_back({ nodes[w].pid, nodes[w].qid, nodes[w].qid + 1 });
+		}
+		else {
+			Foreach(x, vector<int>({ u, v })) {
+				int a = x;
+				while (a != w) {
+					if (nodes[a].pid != nodes[w].pid) {
+						ret.push_back({ nodes[a].pid, 0, nodes[a].qid + 1 });
+						a = nodes[hld_paths[nodes[a].pid][0]].parent;
+					}
+					else {
+						ret.push_back({ nodes[a].pid, nodes[w].qid + (include_lca ? 0 : 1), nodes[a].qid + 1 });
+						a = w;
+					}
+				}
+			}
+		}
+		return ret;
+	}
+	vi get_hldpathsize() {
+		vi ret(hld_paths.size());
+		Loop(i, hld_paths.size()) {
+			ret[i] = int(hld_paths[i].size());
+		}
+		return ret;
+	}
+#endif
 };
-
-// Warning: val_t should be small as array<int, 5>, when n = 1e6 with 256MB
