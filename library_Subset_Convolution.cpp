@@ -97,29 +97,17 @@ namespace Subset_Convolution {
 	vll subset_convolution(const vll &f, const vll &g) {
 		int n = int(f.size());
 		int digit = ceillog2(n);
-		vll fz = Zeta_trans(f);
-		vll gz = Zeta_trans(g);
-		vll fzgz(n);
-		Loop(j, n) {
-			fzgz[j] += fz[j] * gz[j];
-		}
-		vll ret = Mobius_trans(fzgz);
-		return ret;
-	}
-
-	// O*(4^digit) version
-	vll naive_subset_convolution(const vll &f, const vll &g) {
-		int n = int(f.size());
-		int digit = ceillog2(n);
-		vll ret(n);
-		Loop(i, n) {
+		vvll fz = ranked_Zeta_trans(f);
+		vvll gz = ranked_Zeta_trans(g);
+		vvll fzgz(digit + 1, vll(n));
+		Loop(i, digit + 1) {
 			Loop(j, n) {
-				if (i & j) continue;
-				else {
-					ret[i | j] += f[i] * g[j];
+				Loop(k, i + 1) {
+					fzgz[i][j] += fz[k][j] * gz[i - k][j];
 				}
 			}
 		}
+		vll ret = ranked_Mobius_trans(fzgz);
 		return ret;
 	}
 
