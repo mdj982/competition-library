@@ -35,9 +35,9 @@ namespace mod_op {
 		if (p == 0) ret = 1;
 		else if (p == 1) ret = n;
 		else {
-			ret = pow(n, p / 2);
+			ret = pow(n, p >> 1);
 			ret *= ret;
-			if (p % 2 == 1) ret *= n;
+			if ((p & 1) == 1) ret *= n;
 		}
 		return ret;
 	}

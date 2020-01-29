@@ -1,5 +1,4 @@
-class Suffix_Array {
-private:
+namespace Suffix_Array {
 	struct sa_t {
 		int r0, r1;
 		int p;
@@ -7,13 +6,12 @@ private:
 			return r0 != another.r0 ? r0 < another.r0 : r1 < another.r1;
 		}
 	};
-public:
 	// excluding empty substring
-	static vi suffix_array(const string &s) {
-		int n = s.length();
+	vi suffix_array(const vi &s) {
+		int n = s.size();
 		vi ret(n);
 		vector<sa_t> a(n); // fst = current rank, snd add rank
-		Loop(k, ceillog2(n)) {
+		Loop(k, ceillog2(n) + 1) {
 			if (k == 0) {
 				Loop(i, n) a[i] = { s[i], 0, i };
 			}

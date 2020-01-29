@@ -1,6 +1,6 @@
 namespace mod_op {
 
-	const ll MOD = // (ll)1e9 + 7;
+	const ll MOD = //(ll)1e9 + 7;
 
 		class modll {
 		private:
@@ -35,9 +35,9 @@ namespace mod_op {
 		if (p == 0) ret = 1;
 		else if (p == 1) ret = n;
 		else {
-			ret = pow(n, p / 2);
+			ret = pow(n, p >> 1);
 			ret *= ret;
-			if (p % 2 == 1) ret *= n;
+			if ((p & 1) == 1) ret *= n;
 		}
 		return ret;
 	}
@@ -183,8 +183,9 @@ namespace mod_op {
 }
 
 using namespace mod_op;
-typedef vector<modll> vmodll;
-typedef vector<vector<modll>> vvmodll;
+using vmodll = vector<modll>;
+using vvmodll = vector<vmodll>;
+using vvvmodll = vector<vvmodll>;
 
 // the number of methods of dividing n factors into r groups
 // recommend to consider corner case (n == 0 or r == 0) irregularly
@@ -213,7 +214,53 @@ modll grouping(ll n, ll r, bool distinct_n, bool distinct_r, bool enable_empty_r
 	}
 }
 
-using namespace mod_op;
-using vmodll = vector<modll>;
-using vvmodll = vector<vmodll>;
-using vvvmodll = vector<vvmodll>;
+// collect sum of prefix sum, O(m^3)
+// a[0]=(1)^{n[k]} -> a[1]=(1,2,3,...) -> a[2]=(1,3,6,...)
+// ret[k][i] = sumof(a[i]), ret.size() = m
+vvmodll prefix_sums(vll n, int m) {
+	vvmodll c(m + 1, vmodll(m + 1));
+	Loop(i, m + 1) {
+		Loop(j, m + 1) {
+			c[i][j] = combination(i, j);
+		}
+	}
+	vvmodll p(m, vmodll(m + 1));
+	p[0][1] = 1;
+	Loop1(i, m - 1) {
+		p[i][0] -= 1;
+		Loop(k, i + 2) {
+			p[i][k] += c[i + 1][k];
+			Loop(j, i) {
+				p[i][k] -= p[j][k] * c[i + 1][j];
+			}
+		}
+		modll inv_i = modll(1) / (i + 1);
+		Loop(k, i + 2) {
+			p[i][k] *= inv_i;
+		}
+	}
+	vvmodll pow_n(n.size(), vmodll(m + 1, 1));
+	Loop(s, n.size()) {
+		Loop1(i, m) {
+			pow_n[s][i] = pow_n[s][i - 1] * n[s];
+		}
+	}
+	vvmodll q(m, vmodll(m + 1));
+	q[0][1] = 1;
+	Loop1(i, m - 1) {
+		Loop(k, i + 2) {
+			Loop(j, i + 1) {
+				q[i][k] += q[i - 1][j] * p[j][k];
+			}
+		}
+	}
+	vvmodll ret(n.size(), vmodll(m));
+	Loop(s, n.size()) {
+		Loop(i, m) {
+			Loop(k, i + 2) {
+				ret[s][i] += pow_n[s][k] * q[i][k];
+			}
+		}
+	}
+	return ret;
+}
