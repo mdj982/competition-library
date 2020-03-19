@@ -8,7 +8,7 @@ private:
 	int n, N; // n is the original size, while N is the extended size
 	int base;
 	vector<segval_t> nodes;
-	vi idl, idr, cover_size;
+	vi idl, idr;
 	void merge(int id) {
 		nodes[id].min = min(nodes[idl[id]].min + nodes[idl[id]].add,
 			nodes[idr[id]].min + nodes[idr[id]].add);
@@ -82,13 +82,6 @@ private:
 			idl[i] = (i << 1) + 1;
 			idr[i] = (i << 1) + 2;
 		}
-		cover_size.resize(base + N);
-		Loop(i, n) {
-			cover_size[base + i] = 1;
-		}
-		Loopr(i, base) {
-			cover_size[i] = cover_size[idl[i]] + cover_size[idr[i]];
-		}
 	}
 public:
 	SegTreeMin(int n, val_t init = LLONG_MAX) {
@@ -97,10 +90,15 @@ public:
 		base = N - 1;
 		nodes = vector<segval_t>(base + N, { false, 0, 0, LLONG_MAX });
 		common_init();
-		upd(0, n, init);
+		Loop(i, n) {
+			nodes[base + i] = { true, init, 0, init };
+		}
+		Loopr(i, base) {
+			merge(i);
+		}
 	}
 	SegTreeMin(const vector<val_t> &a) {
-		this->n = a.size();
+		this->n = int(a.size());
 		N = 1 << ceillog2(n);
 		base = N - 1;
 		nodes = vector<segval_t>(base + N, { false, 0, 0, LLONG_MAX });

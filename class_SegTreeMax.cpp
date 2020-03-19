@@ -1,3 +1,4 @@
+// #define ENABLE_UPD
 class SegTreeMax {
 	using val_t = ll;
 private:
@@ -8,7 +9,7 @@ private:
 	int n, N; // n is the original size, while N is the extended size
 	int base;
 	vector<segval_t> nodes;
-	vi idl, idr, cover_size;
+	vi idl, idr;
 	void merge(int id) {
 		nodes[id].max = max(nodes[idl[id]].max + nodes[idl[id]].add,
 			nodes[idr[id]].max + nodes[idr[id]].add);
@@ -37,7 +38,9 @@ private:
 			else if (op == ADD) nodes[id].add += x;
 		}
 		else {
+#ifdef ENABLE_UPD
 			lazy(id);
+#endif
 			int m = (l + r) >> 1;
 			if (s < m && m < t) {
 				change_rec(s, m, l, m, idl[id], x, op);
@@ -58,7 +61,9 @@ private:
 			v = nodes[id].max;
 		}
 		else {
+#ifdef ENABLE_UPD
 			lazy(id);
+#endif
 			int m = (l + r) >> 1;
 			if (s < m && m < t) {
 				val_t v0 = solve_rec(s, m, l, m, idl[id]);
@@ -82,13 +87,6 @@ private:
 			idl[i] = (i << 1) + 1;
 			idr[i] = (i << 1) + 2;
 		}
-		cover_size.resize(base + N);
-		Loop(i, n) {
-			cover_size[base + i] = 1;
-		}
-		Loopr(i, base) {
-			cover_size[i] = cover_size[idl[i]] + cover_size[idr[i]];
-		}
 	}
 public:
 	SegTreeMax(int n, val_t init = LLONG_MIN) {
@@ -97,10 +95,15 @@ public:
 		base = N - 1;
 		nodes = vector<segval_t>(base + N, { false, 0, 0, LLONG_MIN });
 		common_init();
-		upd(0, n, init);
+		Loop(i, n) {
+			nodes[base + i] = { true, init, 0, init };
+		}
+		Loopr(i, base) {
+			merge(i);
+		}
 	}
 	SegTreeMax(const vector<val_t> &a) {
-		this->n = a.size();
+		this->n = int(a.size());
 		N = 1 << ceillog2(n);
 		base = N - 1;
 		nodes = vector<segval_t>(base + N, { false, 0, 0, LLONG_MIN });
@@ -112,10 +115,12 @@ public:
 			merge(i);
 		}
 	}
+#ifdef ENABLE_UPD
 	void upd(int s, int t, val_t x) {
 		if (s >= t) return;
 		change_rec(s, t, 0, N, 0, x, UPD);
 	}
+#endif
 	void add(int s, int t, val_t x) {
 		if (s >= t) return;
 		change_rec(s, t, 0, N, 0, x, ADD);

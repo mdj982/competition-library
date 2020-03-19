@@ -18,14 +18,13 @@ const double eps = 1e-7;
 #define Looprll(i, n) for(ll i = ll(n) - 1; i >= 0; i--)
 #define Loopr1(i, n) for(int i = int(n); i >= 1; i--)
 #define Looprll1(i, n) for(ll i = ll(n); i >= 1; i--)
-#define Foreach(buf, container) for(auto buf : container)
+#define Foreach(buf, container) for(const auto &buf : container)
+#define Foreachr(buf, container)  for(const auto &buf : reversed(container))
 #define Loopdiag(i, j, h, w, sum) for(int i = ((sum) >= (h) ? (h) - 1 : (sum)), j = (sum) - i; i >= 0 && j < (w); i--, j++)
 #define Loopdiagr(i, j, h, w, sum) for(int j = ((sum) >= (w) ? (w) - 1 : (sum)), i = (sum) - j; j >= 0 && i < (h); j--, i++)
 #define Loopdiagsym(i, j, h, w, gap) for (int i = ((gap) >= 0 ? (gap) : 0), j = i - (gap); i < (h) && j < (w); i++, j++)
 #define Loopdiagsymr(i, j, h, w, gap) for (int i = ((gap) > (h) - (w) - 1 ? (h) - 1 : (w) - 1 + (gap)), j = i - (gap); i >= 0 && j >= 0; i--, j--)
 #define Loopitr(itr, container) for(auto itr = container.begin(); itr != container.end(); itr++)
-#define printv(vector) Loop(ex_i, vector.size()) { cout << vector[ex_i] << " "; } cout << endl;
-#define printmx(matrix) Loop(ex_i, matrix.size()) { Loop(ex_j, matrix[ex_i].size()) { cout << matrix[ex_i][ex_j] << " "; } cout << endl; }
 #define quickio() ios::sync_with_stdio(false); cin.tie(0);
 #define bitmanip(m,val) static_cast<bitset<(int)m>>(val)
 #define Comp(type_t) bool operator<(const type_t &another) const
@@ -35,7 +34,11 @@ const double eps = 1e-7;
 bool feq(double x, double y) { return abs(x - y) <= eps; }
 bool inrange(ll x, ll t) { return x >= 0 && x < t; }
 bool inrange(vll xs, ll t) { Foreach(x, xs) if (!(x >= 0 && x < t)) return false; return true; }
-int ceillog2(ll x) { int ret = 0;	x--; while (x > 0) { ret++; x >>= 1; } return ret; }
+int ceillog2(ll x) { return int(ceil(log2(x))); }
+int floorlog2(ll x) { return int(floor(log2(x))); }
+template<class T> T reversed(T container) { reverse(container.begin(), container.end()); return container; }
+template<class T> void printv(const vector<T> &v) { for (const T &x : v) cout << x << " "; cout << endl; }
+template<class T> void printmx(const vector<vector<T>> &mx) { for (const vector<T> &v : mx) printv(v); }
 ll rndf(double x) { return (ll)(x + (x >= 0 ? 0.5 : -0.5)); }
 ll floorsqrt(ll x) { ll m = (ll)sqrt((double)x); return m + (m * m <= x ? 0 : -1); }
 ll ceilsqrt(ll x) { ll m = (ll)sqrt((double)x); return m + (x <= m * m ? 0 : 1); }
@@ -44,34 +47,28 @@ ll ceildiv(ll a, ll b) { return (a / b + (a % b == 0 ? 0 : 1)); }
 ll gcd(ll m, ll n) { if (n == 0) return m; else return gcd(n, m % n); }
 ll lcm(ll m, ll n) { return m * n / gcd(m, n); }
 
-/*******************************************************/
+//========================================================================//
 
 
-
-class PrefixComposite {
+class SubstringQueries {
 public:
-	vector<long long> minMax(long long A, long long B) {
+	long long solve(string S, int k) {
 	}
 };
 
 struct params_t {
-	long long A;
-	long long B;
+	string S;
+	int k;
 };
 
 int main() {
 	vector<params_t> testparams;
-	testparams.push_back({ 1,3 });
-	testparams.push_back({ 1,4 });
-	testparams.push_back({ 123,838 });
-	testparams.push_back({ 409,87343 });
-	testparams.push_back({ 979797,979898 });
-	testparams.push_back({ 600,703 });
-	testparams.push_back({ 1,100000000000 });
-	testparams.push_back({ 37337999,37337999 });
-	testparams.push_back({ 22,39 });
-	PrefixComposite classunit;
+	testparams.push_back({ "aaaaaaaaa",1 });
+	testparams.push_back({ "zaba",2 });
+	testparams.push_back({ "acaa",2 });
+	testparams.push_back({ "aa",4 });
+	SubstringQueries classunit;
 	Loop(unused, testparams.size()) {
-		classunit.minMax(testparams[i].A, testparams[i].B);
+		classunit.solve(testparams[i].S, testparams[i].k);
 	}
 }

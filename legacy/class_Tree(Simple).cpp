@@ -1,13 +1,16 @@
-template<class nodeval_t, class edgeval_t>
+
 struct tree_t {
+	using nodeval_t = int;
+	using edgeval_t = int;
 	int n;           // |V|, index begins with 0
 	vector<P> edges; // E
 	vector<nodeval_t> vals; // value of nodes
 	vector<edgeval_t> costs; // cost, distance, or weight of edges
 };
 
-template<class nodeval_t, class edgeval_t>
 class Tree {
+	using nodeval_t = int;
+	using edgeval_t = int;
 private:
 	struct node {
 		int id; vi childs; int parent = -1;
@@ -66,7 +69,7 @@ public:
 	vi leaves;
 	int root;
 	// T should be non-empty tree
-	Tree(tree_t<nodeval_t, edgeval_t> T, int root) {
+	Tree(tree_t T, int root) {
 		n = T.n;
 		nodes.resize(n);
 		Loop(i, n) {
@@ -84,5 +87,3 @@ public:
 		return;
 	}
 };
-
-// Warning: val_t should be small as array<int, 5>, when n = 1e6 with 256MB

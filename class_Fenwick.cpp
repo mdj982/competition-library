@@ -19,6 +19,11 @@ public:
 			nodes[id - 1] += x;
 		}
 	}
+	void upd(int k, val_t x) {
+		val_t cur = sumof(k, k + 1);
+		val_t d = x - cur;
+		add(k, d);
+	}
 	// note: sum of [s, t)
 	val_t sumof(int s, int t) {
 		val_t ret = 0;

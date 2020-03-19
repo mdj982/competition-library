@@ -1,72 +1,52 @@
-class Trie {
-private:
-	struct node {
-		char val; map<char, node*> childs_mp; ll deg; node *parent; int cnt;
-	};
-	bool erase_leaf(node *ptr) {
-		if (ptr->val != '\0') {
-			do {
-				char v = ptr->val;
-				ptr->cnt--;
-				ptr = ptr->parent;
-				if (ptr->childs_mp[v]->cnt == 0) {
-					delete(ptr->childs_mp[v]);
-					ptr->childs_mp.erase(v);
-				}
-			} while (ptr != root);
-			ptr->cnt--;
-			return true;
-		}
-		else return false;
-	}
-	node *root;
-	bool multi_flag;
-public:
-	Trie(bool multi_flag) {
-		root = new node{ '\0',{}, 0, nullptr, 0 };
-		Trie::multi_flag = multi_flag;
-	}
-	void add(string s) {
-		node *a = root;
-		Loop(i, s.length()) {
-			char c = s[i];
-			if (a->childs_mp.find(c) == a->childs_mp.end()) {
-				node *node_buf = new node{ c,{},a->deg + 1, a, 0 };
-				a->childs_mp[c] = node_buf;
-			}
-			a->cnt++;
-			a = a->childs_mp[c];
-		}
-		if (a->childs_mp.find('\0') == a->childs_mp.end()) {
-			node *nil = new node{ '\0',{}, a->deg + 1, a, 0 };
-			a->childs_mp['\0'] = nil;
-		}
-		a->cnt++;
-		a = a->childs_mp['\0'];
-		a->cnt++;
-		if (!multi_flag && a->cnt >= 2) erase_leaf(a);
-	}
-	bool find(string s) {
-		node *a = root;
-		Loop(i, s.length()) {
-			char c = s[i];
-			if (a->childs_mp.find(c) == a->childs_mp.end()) return false;
-			else a = a->childs_mp[c];
-		}
-		if (a->childs_mp.find('\0') != a->childs_mp.end()) return true;
-		else return false;
-	}
-	bool erase(string s) {
-		node *a = root;
-		Loop(i, s.length()) {
-			char c = s[i];
-			if (a->childs_mp.find(c) == a->childs_mp.end()) return false;
-			else a = a->childs_mp[c];
-		}
-		if (a->childs_mp.find('\0') != a->childs_mp.end()) {
-			if (erase_leaf(a)) return true;
-			else return false;
-		}
-		else return false;
-	}
-};
+#include <bits/stdc++.h>
+using namespace std;
+
+using vi = vector<int>; using vvi = vector<vi>; using vvvi = vector<vvi>;
+using ll = long long int;
+using vll = vector<ll>; using vvll = vector<vll>; using vvvll = vector<vvll>;
+using vd = vector<double>; using vvd = vector<vd>; using vvvd = vector<vvd>;
+using P = pair<int, int>;
+using Pll = pair<ll, ll>;
+using cdouble = complex<double>;
+
+const double eps = 1e-7;
+const string endl = "\n";
+
+#define Loop(i, n) for(int i = 0; i < int(n); i++)
+#define Loopll(i, n) for(ll i = 0; i < ll(n); i++)
+#define Loop1(i, n) for(int i = 1; i <= int(n); i++)
+#define Loopll1(i, n) for(ll i = 1; i <= ll(n); i++)
+#define Loopr(i, n) for(int i = int(n) - 1; i >= 0; i--)
+#define Looprll(i, n) for(ll i = ll(n) - 1; i >= 0; i--)
+#define Loopr1(i, n) for(int i = int(n); i >= 1; i--)
+#define Looprll1(i, n) for(ll i = ll(n); i >= 1; i--)
+#define Foreach(buf, container) for(const auto &buf : container)
+#define Foreachr(buf, container)  for(const auto &buf : reversed(container))
+#define Loopdiag(i, j, h, w, sum) for(int i = ((sum) >= (h) ? (h) - 1 : (sum)), j = (sum) - i; i >= 0 && j < (w); i--, j++)
+#define Loopdiagr(i, j, h, w, sum) for(int j = ((sum) >= (w) ? (w) - 1 : (sum)), i = (sum) - j; j >= 0 && i < (h); j--, i++)
+#define Loopdiagsym(i, j, h, w, gap) for (int i = ((gap) >= 0 ? (gap) : 0), j = i - (gap); i < (h) && j < (w); i++, j++)
+#define Loopdiagsymr(i, j, h, w, gap) for (int i = ((gap) > (h) - (w) - 1 ? (h) - 1 : (w) - 1 + (gap)), j = i - (gap); i >= 0 && j >= 0; i--, j--)
+#define Loopitr(itr, container) for(auto itr = container.begin(); itr != container.end(); itr++)
+#define quickio() ios::sync_with_stdio(false); cin.tie(0);
+#define bitmanip(m,val) static_cast<bitset<(int)m>>(val)
+#define Comp(type_t) bool operator<(const type_t &another) const
+#define fst first
+#define snd second
+#define INF INFINITY
+bool feq(double x, double y) { return abs(x - y) <= eps; }
+bool inrange(ll x, ll t) { return x >= 0 && x < t; }
+bool inrange(vll xs, ll t) { Foreach(x, xs) if (!(x >= 0 && x < t)) return false; return true; }
+int ceillog2(ll x) { return int(ceil(log2(x))); }
+int floorlog2(ll x) { return int(floor(log2(x))); }
+template<class T> T reversed(T container) { reverse(container.begin(), container.end()); return container; }
+template<class T> void printv(const vector<T> &v) { for (const T &x : v) cout << x << " "; cout << endl; }
+template<class T> void printmx(const vector<vector<T>> &mx) { for (const vector<T> &v : mx) printv(v); }
+ll rndf(double x) { return (ll)(x + (x >= 0 ? 0.5 : -0.5)); }
+ll floorsqrt(ll x) { ll m = (ll)sqrt((double)x); return m + (m * m <= x ? 0 : -1); }
+ll ceilsqrt(ll x) { ll m = (ll)sqrt((double)x); return m + (x <= m * m ? 0 : 1); }
+ll rnddiv(ll a, ll b) { return (a / b + (a % b * 2 >= b ? 1 : 0)); }
+ll ceildiv(ll a, ll b) { return (a / b + (a % b == 0 ? 0 : 1)); }
+ll gcd(ll m, ll n) { if (n == 0) return m; else return gcd(n, m % n); }
+ll lcm(ll m, ll n) { return m * n / gcd(m, n); }
+
+//========================================================================//

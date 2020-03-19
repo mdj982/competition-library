@@ -25,9 +25,8 @@ const double eps = 1e-7;
 #define Loopdiagsym(i, j, h, w, gap) for (int i = ((gap) >= 0 ? (gap) : 0), j = i - (gap); i < (h) && j < (w); i++, j++)
 #define Loopdiagsymr(i, j, h, w, gap) for (int i = ((gap) > (h) - (w) - 1 ? (h) - 1 : (w) - 1 + (gap)), j = i - (gap); i >= 0 && j >= 0; i--, j--)
 #define Loopitr(itr, container) for(auto itr = container.begin(); itr != container.end(); itr++)
-#define printv(vector) Loop(ex_i, vector.size()) { cout << vector[ex_i] << " "; } cout << endl;
-#define printmx(matrix) Loop(ex_i, matrix.size()) { Loop(ex_j, matrix[ex_i].size()) { cout << matrix[ex_i][ex_j] << " "; } cout << endl; }
 #define quickio() ios::sync_with_stdio(false); cin.tie(0);
+#define endl "\n"
 #define bitmanip(m,val) static_cast<bitset<(int)m>>(val)
 #define Comp(type_t) bool operator<(const type_t &another) const
 #define fst first
@@ -39,6 +38,8 @@ bool inrange(vll xs, ll t) { Foreach(x, xs) if (!(x >= 0 && x < t)) return false
 int ceillog2(ll x) { return int(ceil(log2(x))); }
 int floorlog2(ll x) { return int(floor(log2(x))); }
 template<class T> T reversed(T container) { reverse(container.begin(), container.end()); return container; }
+template<class T> void printv(const vector<T> &v) { for (const T &x : v) cout << x << " "; cout << endl; }
+template<class T> void printmx(const vector<vector<T>> &mx) { for (const vector<T> &v : mx) printv(v); }
 ll rndf(double x) { return (ll)(x + (x >= 0 ? 0.5 : -0.5)); }
 ll floorsqrt(ll x) { ll m = (ll)sqrt((double)x); return m + (m * m <= x ? 0 : -1); }
 ll ceilsqrt(ll x) { ll m = (ll)sqrt((double)x); return m + (x <= m * m ? 0 : 1); }
@@ -48,4 +49,3 @@ ll gcd(ll m, ll n) { if (n == 0) return m; else return gcd(n, m % n); }
 ll lcm(ll m, ll n) { return m * n / gcd(m, n); }
 
 //========================================================================//
-

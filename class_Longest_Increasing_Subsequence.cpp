@@ -1,6 +1,6 @@
 class LIS {
   vll result;
-  vll id_result;
+  vi id_result;
   int n;
 public:
   LIS(vll a, bool strict_flag) {
@@ -38,7 +38,7 @@ public:
   vll get_lis() {
     return result;
   }
-  vll get_lisid() {
+  vi get_lisid() {
     return id_result;
   }
   int get_lisn() {

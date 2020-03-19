@@ -7,12 +7,11 @@ private:
 public:
 	// uniform int distribution of [0, m)
 	Random_Int(int m) {
-		#ifdef CF
-		mt = new mt19937(unsigned(time(NULL)));
-		#else
-		std::random_device dvc;
-		mt = new std::mt19937(dvc());
-		#endif
+		mt = new std::mt19937((uint64_t)(
+			std::chrono::duration_cast<chrono::nanoseconds>(
+				chrono::high_resolution_clock::now().time_since_epoch()
+				).count()
+			));
 		distr_int = new uniform_int_distribution<>(0, m - 1);
 	}
 	int get() {
@@ -27,12 +26,11 @@ private:
 public:
 	// uniform int distribution of [l, r)
 	Random_Real(double l, double r) {
-		#ifdef CF
-		mt = new mt19937(unsigned(time(NULL)));
-		#else
-		std::random_device dvc;
-		mt = new std::mt19937(dvc());
-		#endif
+		mt = new std::mt19937((uint64_t)(
+			std::chrono::duration_cast<chrono::nanoseconds>(
+				chrono::high_resolution_clock::now().time_since_epoch()
+				).count()
+			));
 		distr_real = new uniform_real_distribution<>(l, r);
 	}
     double get() {

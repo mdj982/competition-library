@@ -111,6 +111,26 @@ namespace Subset_Convolution {
 		return ret;
 	}
 
+	// return a vector of y s.t. (x | y) == x
+	vi make_bitwise_partition(int x) {
+		vi p;
+		int k = 0;
+		while (x > 0) {
+			if (x & 1) p.push_back(k);
+			x >>= 1;
+			k += 1;
+		}
+		vi ret(1 << p.size());
+		Loop(i, 1 << p.size()) {
+			Loop(j, p.size()) {
+				if (i & (1 << j)) {
+					ret[i] += (1 << p[j]);
+				}
+			}
+		}
+		return ret;
+	}
+
 }
 
 using namespace Subset_Convolution;

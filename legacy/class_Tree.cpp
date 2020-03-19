@@ -282,37 +282,54 @@ public:
 		int id;
 		int l, r; // [l, r)
 	};
+	// return all node ids in the single path
+	vector<int> get_ids_in_path(const pathinfo_t &pathinfo) {
+		vi ret(pathinfo.r - pathinfo.l);
+		Loop(i, ret.size()) {
+			ret[i] = hld_paths[pathinfo.id][pathinfo.l + i];
+		}
+		return ret;
+	}
 	// if weight is for each node, include_lca = true
 	// if weight is for each edge, include_lca = false
 	vector<pathinfo_t> get_path_in_hld(int u, int v, bool include_lca) {
 		vector<pathinfo_t> ret;
 		int w = get_lowest_common_ancestor(u, v);
-		if (include_lca && u == v) {
-			ret.push_back({ nodes[w].pid, nodes[w].qid, nodes[w].qid + 1 });
-		}
-		else {
-			Foreach(x, vector<int>({ u, v })) {
-				int a = x;
-				while (a != w) {
-					if (nodes[a].pid != nodes[w].pid) {
-						ret.push_back({ nodes[a].pid, 0, nodes[a].qid + 1 });
-						a = nodes[hld_paths[nodes[a].pid][0]].parent;
-					}
-					else {
-						ret.push_back({ nodes[a].pid, nodes[w].qid + (include_lca ? 0 : 1), nodes[a].qid + 1 });
-						a = w;
-					}
+		Foreach(x, vector<int>({ u, v })) {
+			int a = x;
+			while (a != w) {
+				if (nodes[a].pid != nodes[w].pid) {
+					ret.push_back({ nodes[a].pid, 0, nodes[a].qid + 1 });
+					a = nodes[hld_paths[nodes[a].pid][0]].parent;
+				}
+				else {
+					ret.push_back({ nodes[a].pid, nodes[w].qid + 1, nodes[a].qid + 1 });
+					a = w;
 				}
 			}
 		}
+		if (include_lca) {
+			Loop(i, ret.size()) {
+				if (nodes[w].pid == ret[i].id) {
+					ret[i].l -= 1;
+					include_lca = false;
+				}
+			}
+		}
+		if (include_lca) {
+			ret.push_back({ nodes[w].pid, nodes[w].qid, nodes[w].qid + 1 });
+		}
 		return ret;
 	}
-	vi get_hldpathsize() {
+	vi get_hld_path_sizes() {
 		vi ret(hld_paths.size());
 		Loop(i, hld_paths.size()) {
 			ret[i] = int(hld_paths[i].size());
 		}
 		return ret;
+	}
+	int get_hld_path_size(int pid) {
+		return int(hld_paths[pid].size());
 	}
 #endif
 };

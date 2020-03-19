@@ -97,7 +97,12 @@ public:
 		base = N - 1;
 		nodes = vector<segval_t>(base + N, { false, 0, 0, 0 });
 		common_init();
-		upd(0, n, init);
+		Loop(i, n) {
+			nodes[base + i] = { true, init, 0, init };
+		}
+		Loopr(i, base) {
+			merge(i);
+		}
 	}
 	SegTreeSum(const vector<val_t> &a) {
 		this->n = int(a.size());
