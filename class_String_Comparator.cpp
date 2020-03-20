@@ -17,7 +17,7 @@ public:
 	}
 };
 
-// based on rolling hash
+// based on rolling hash, constructor should be called as little as possible
 class String_Comparator {
 private:
 	const vll MOD_cands = {
@@ -30,7 +30,7 @@ private:
 	vvll pows;
 	Random_Int *ri;
 public:
-	String_Comparator(int max_length, int n_base = 5) {
+	String_Comparator(int max_length, int n_base = 4) {
 		Random_Int *rm = new Random_Int(int(MOD_cands.size()));
 		this->MOD = this->MOD_cands[rm->get()];
 		this->max_length = max(1, max_length);
@@ -59,8 +59,10 @@ public:
 	// Required: s0 + l <= str0.length() and s1 + l <= str1.length()
 	bool is_equal(const vvll &hashs0, const vvll &hashs1, const int s0, const int s1, const int l) {
 		Loop(k, this->bases.size()) {
-			ll val0 = (hashs0[k][s0 + l] + this->MOD - hashs0[k][s0] * pows[k][l] % this->MOD) % this->MOD;
-			ll val1 = (hashs1[k][s1 + l] + this->MOD - hashs1[k][s1] * pows[k][l] % this->MOD) % this->MOD;
+			ll val0 = (hashs0[k][s0 + l] - hashs0[k][s0] * pows[k][l]) % this->MOD;
+			ll val1 = (hashs1[k][s1 + l] - hashs1[k][s1] * pows[k][l]) % this->MOD;
+			if (val0 < 0) val0 += this->MOD;
+			if (val1 < 0) val1 += this->MOD;
 			if (val0 != val1) return false;
 		}
 		return true;
@@ -69,7 +71,8 @@ public:
 	vll get_hashs(const vvll &hashs, const int s, const int l) {
 		vll ret(bases.size());
 		Loop(k, this->bases.size()) {
-			ret[k]= (hashs[k][s + l] + this->MOD - hashs[k][s] * pows[k][l] % this->MOD) % this->MOD;
+			ret[k] = (hashs[k][s + l] - hashs[k][s] * pows[k][l]) % this->MOD;
+			if (ret[k] < 0) ret[k] += this->MOD;
 		}
 		return ret;
 	}
