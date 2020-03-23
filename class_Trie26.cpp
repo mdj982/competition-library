@@ -1,11 +1,10 @@
-template<size_t T>
-class Trie {
+class Trie26 {
 private:
 	struct node {
-		char val; array<node*, T + 1> childs; ll deg; node *parent; int cnt;
+		char val; array<node*, 27> childs; ll deg; node *parent; int cnt;
 	};
-	char base;
-	const int eos = T;
+	const char base = 'a';
+	const int eos = 26;
 	bool erase_leaf(node *ptr) {
 		if (ptr->val == '\0') {
 			{
@@ -34,10 +33,9 @@ private:
 	node *root;
 	bool multi_flag;
 public:
-	Trie(bool multi_flag, char base) {
-		this->base = base;
+	Trie26(bool multi_flag) {
 		root = new node{ '\0',{}, 0, nullptr, 0 };
-		Trie::multi_flag = multi_flag;
+		Trie26::multi_flag = multi_flag;
 	}
 	void add(const string &s) {
 		node *a = root;
