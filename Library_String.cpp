@@ -1,14 +1,12 @@
-// ret.fst[i] = x <=> "left (x - 1) letters + s[i] + right (x - 1) letters" is a parlindrome
-// ret.snd[i] = x <=> "left (x - 1) letters + s[i] + s[i + 1] + right (x - 1) letters" is a parlindrome
+// ret.fst[i] = x <=> "left (x - 1) letters + s[i] + right (x - 1) letters" is a palindrome
+// ret.snd[i] = x <=> "left (x - 1) letters + s[i] + s[i + 1] + right (x - 1) letters" is a palindrome
 pair<vi, vi> Manacher(const string &s) {
-	if (s.length() == 0) return { {},{} };
-	string t = "";
-	Loop(i, s.length()) {
-		t += s[i];
-		t += '$';
+	if (s.size() == 0) return { {},{} };
+	string t((s.size() << 1) - 1, '$');
+	Loop(i, s.size()) {
+		t[i << 1] = s[i];
 	}
-	t.pop_back();
-	int n = t.length();
+	int n = t.size();
 	vi x(n);
 	for (int i = 0, j = 0; i < n;) {
 		while (inrange(i - j, n) && inrange(i + j, n) && t[i - j] == t[i + j]) {
@@ -23,8 +21,8 @@ pair<vi, vi> Manacher(const string &s) {
 		i += k; j -= k;
 	}
 	pair<vi, vi> ret;
-	ret.fst = vi(s.length());
-	ret.snd = vi(s.length() - 1);
+	ret.fst = vi(s.size());
+	ret.snd = vi(s.size() - 1);
 	Loop(i, ret.fst.size()) {
 		ret.fst[i] = (x[i << 1] + 1) >> 1;
 	}
@@ -37,7 +35,7 @@ pair<vi, vi> Manacher(const string &s) {
 // the skip table used in KMP algorithm
 // ret[i] := the longest value x < i such that s.substr(0, x) == s.substr(i - x, x)
 vi solve_KMP_table(const string &s) {
-	int n = int(s.length());
+	int n = int(s.size());
 	vi ret(n + 1, -1);
 	for (int i = 0, j = -1; i < n; ++i) {
 		while (j >= 0 && s[i] != s[j]) j = ret[j];
@@ -50,8 +48,8 @@ vi solve_KMP_table(const string &s) {
 // return the matched indices in ascending order
 // t_table = solve_KMP_table(t)
 vi KMP_matching(const string &s, const string &t, const vi &t_table) {
-	int n = int(s.length());
-	int m = int(t.length());
+	int n = int(s.size());
+	int m = int(t.size());
 	vi ret;
 	for (int i = 0, j = 0, k = 0; i < n;) {
 		if (s[i] == t[j]) {

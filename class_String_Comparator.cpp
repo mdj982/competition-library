@@ -67,8 +67,14 @@ public:
 		}
 		return true;
 	}
+	bool is_equal(const vll &hash0, const vll &hash1) {
+		Loop(k, this->bases.size()) {
+			if (hash0[k] != hash1[k]) return false;
+		}
+		return true;
+	}
 	// Required: s + l <= str.length()
-	vll get_hashs(const vvll &hashs, const int s, const int l) {
+	vll get_hash(const vvll &hashs, const int s, const int l) {
 		vll ret(bases.size());
 		Loop(k, this->bases.size()) {
 			ret[k] = (hashs[k][s + l] - hashs[k][s] * pows[k][l]) % this->MOD;
