@@ -11,6 +11,7 @@ private:
 	};
 	const char base = 'a';
 	node_t *root;
+	// the node which indicates s[i, n)
 	vector<node_t*> sufnodes;
 	inline node_t* proceed(node_t *cur, int &k, int &i) {
 		if (i == n) return cur;
@@ -44,11 +45,11 @@ private:
 		if (i < n) {
 			node_t *leaf = new node_t{ i, n, {}, cur->dep + n - i, cur, 1, nullptr };
 			cur->childs[s[i] - base] = leaf;
-			sufnodes[leaf->dep] = leaf;
+			sufnodes[n - leaf->dep] = leaf;
 		}
 		else {
 			cur->cnt++;
-			sufnodes[cur->dep] = cur;
+			sufnodes[n - cur->dep] = cur;
 		}
 		return cur;
 	}
@@ -83,7 +84,6 @@ private:
 		int k = 0;
 		int i = 0;
 		root->suf = root;
-		sufnodes[0] = root;
 		while (i != n || cur != root) {
 			cur = proceed(cur, k, i);
 			cur = insert(cur, k, i);
@@ -99,38 +99,72 @@ private:
 			}
 		}
 	}
-public:
-	SuffixTree26(const string &s) {
-		this->root = new node_t{ 0, 0, {}, 0, nullptr, 1, nullptr };
-		this->n = s.length();
-		this->s = s;
-		this->sufnodes = vector<node_t*>(n + 1, nullptr);
-		this->construct();
-		return;
-	}
-	// decide if t is a suffix of s, including ""
-	bool find_suffix(const string &t) {
-		node_t *a = root;
-		int k = 0;
+	// a, k will be changed to the last position matching with t (differ at s[a->l + k])
+	// return true iff the matching is completed
+	bool get_pos(node_t *&a, int &k, const string &t) {
 		Loop(i, t.length()) {
 			if (k == a->r - a->l) {
+				if (a->childs[t[i] - base] == nullptr) return false;
 				a = a->childs[t[i] - base];
-				k = 0;
-				if (a == nullptr) return false;
+				k = 1;
 			}
-			if (t[i] == s[a->l + k]) {
+			else if (t[i] == s[a->l + k]) {
 				k++;
 			}
 			else {
 				return false;
 			}
 		}
-		if (k == a->r - a->l) {
+		return true;
+	}
+public:
+	SuffixTree26(const string &s) {
+		this->root = new node_t{ 0, 0, {}, 0, nullptr, 0, nullptr };
+		this->n = s.length();
+		this->s = s;
+		this->sufnodes = vector<node_t*>(n, nullptr);
+		this->construct();
+		return;
+	}
+	// decide if t is a suffix of s, excluding ""
+	bool is_suffix(const string &t) {
+		node_t *a = root;
+		int k = 0;
+		bool judge = get_pos(a, k, t);
+		if (judge && k == a->r - a->l) {
 			return a->cnt;
 		}
 		else {
 			return false;
 		}
 	}
-
+	// decide if t is a substring of s, including ""
+	bool is_substring(const string &t) {
+		node_t *a = root;
+		int k = 0;
+		return get_pos(a, k, t);
+	}
+	// ret[i] := the i-th smallest is s[ret[i], n)
+	vi get_suffix_array() {
+		vi ret(n, -1);
+		stack<pair<node_t*, int>> stk;
+		stk.push({ root, 0 });
+		int k = 0;
+		while (stk.size()) {
+			node_t* a = stk.top().fst;
+			int &i = stk.top().snd;
+			if (i == 0 && a->cnt) {
+				ret[k++] = n - a->dep;
+			}
+			for (; i < 26; ++i) {
+				if (a->childs[i] != nullptr) {
+					stk.push({ a->childs[i], 0 });
+					++i;
+					break;
+				}
+			}
+			if (i == 26) stk.pop();
+		}
+		return ret;
+	}
 };
