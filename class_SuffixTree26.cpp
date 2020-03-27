@@ -156,14 +156,16 @@ public:
 			if (i == 0 && a->cnt) {
 				ret[k++] = n - a->dep;
 			}
-			for (; i < 26; ++i) {
-				if (a->childs[i] != nullptr) {
+			for (; i < 27; ++i) {
+				if (i == 26) {
+					stk.pop();
+				}
+				else if (a->childs[i] != nullptr) {
 					stk.push({ a->childs[i], 0 });
 					++i;
 					break;
 				}
 			}
-			if (i == 26) stk.pop();
 		}
 		return ret;
 	}

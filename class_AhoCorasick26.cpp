@@ -45,9 +45,9 @@ private:
 	}
 public:
 	AhoCorasick26(const vector<string> &s) {
-		root = new node_t{ '\0',{}, 0, nullptr, 0, nullptr };
-		make_Trie(s);
-		construct_by_bfs();
+		this->root = new node_t{ '\0',{}, 0, nullptr, 0, nullptr };
+		this->make_Trie(s);
+		this->construct_by_bfs();
 	}
 	// cnt := #{the strings which have a suffix of this node}
 	void accumulate_cnt() {
