@@ -25,12 +25,12 @@ private:
 			this->rev_local = 0;
 			this->rev = 0;
 		}
-		void update_params() {
+		inline void update_params() {
 			if (this->cnt == 0) return;
 			this->subtree_n = 1 + this->childs[0]->subtree_n + this->childs[1]->subtree_n;
 			this->height = 1 + std::max(this->childs[0]->height, this->childs[1]->height);
 		}
-		void update_rev() {
+		inline void update_rev() {
 			if (this->cnt == 0) return;
 			this->rev = this->parent->rev ^ this->rev_local;
 		}
@@ -45,9 +45,9 @@ private:
 	// init
 	node_t* init(const size_t l, const size_t r, const side_t side, node_t* const p, const std::vector<val_t> &vals);
 	// recursively rebalance until root
-	node_t* rebalance(node_t* a);
+	inline node_t* rebalance(node_t* a);
 	// return replaced root, direction is semantical
-	node_t* rotate(node_t* a, const side_t direction);
+	inline node_t* rotate(node_t* a, const side_t direction);
 	// return root
 	node_t* erase_node(node_t* a);
 	// join two trees into one tree, tree_l -> tree_r in in-order, balanced
@@ -57,7 +57,7 @@ private:
 	// return the lower bound position (if nil, then return its parent)
 	node_t* lower_bound(node_t *a, const val_t &x);
 	// return the L/R-most node
-	node_t* most(node_t* a, const side_t direction, size_t height = 0);
+	inline node_t* most(node_t* a, const side_t direction, size_t height = 0);
 	//
 	void traverse_rec(node_t *a, std::vector<val_t> &track);
 	// update rev from a to root 
@@ -148,7 +148,7 @@ inline void AVL_Tree::lnk_edge(node_t* a, node_t* p, side_t direction) {
 //    \            /
 //     c          c
 //------------------------
-AVL_Tree::node_t* AVL_Tree::rotate(node_t* a, const side_t direction) {
+inline AVL_Tree::node_t* AVL_Tree::rotate(node_t* a, const side_t direction) {
 	node_t* p = a->parent;
 	node_t* b = a->childs[a->rev ^ direction ^ 1];
 	b->update_rev();
@@ -168,10 +168,6 @@ AVL_Tree::node_t* AVL_Tree::rotate(node_t* a, const side_t direction) {
 }
 
 AVL_Tree::node_t* AVL_Tree::join_trees(std::array<node_t*, 2> trees) {
-	if (trees[L]->side != U || trees[R]->side != U) {
-		std::cerr << "Error: invalid call of join_tree()." << std::endl;
-		exit(0);
-	}
 	if (trees[L] == this->nil) return trees[R];
 	if (trees[R] == this->nil) return trees[L];
 	if (trees[L]->height == trees[R]->height) {
@@ -209,41 +205,42 @@ AVL_Tree::node_t* AVL_Tree::join_trees(std::array<node_t*, 2> trees) {
 }
 
 std::array<AVL_Tree::node_t*, 2> AVL_Tree::split(node_t* a) {
-	std::array<std::vector<node_t*>, 2> trees;
+	std::array<std::array<node_t*, 128>, 2> trees;
+	std::array<size_t, 2> psize = { 0, 0 };
 	a->childs[a->rev ^ L]->update_rev();
-	trees[L].push_back(a->childs[a->rev ^ L]);
-	trees[R].push_back(a);
+	trees[L][psize[L]++] = a->childs[a->rev ^ L];
+	trees[R][psize[R]++] = a;
 	while (a->side != U) {
 		side_t side = side_t(a->parent->rev ^ a->side);
-		trees[side ^ 1].push_back(a->parent);
+		trees[side ^ 1][psize[side ^ 1]++] = a->parent;
 		a = a->parent;
 	}
-	for (node_t* b : trees[L]) this->cut_edge(b);
-	for (node_t* b : trees[R]) this->cut_edge(b);
+	for (size_t i = 0; i < psize[L]; ++i) this->cut_edge(trees[L][i]);
+	for (size_t i = 0; i < psize[R]; ++i) this->cut_edge(trees[R][i]);
+	// i == 0 && S == R
+	{
+		node_t* b = trees[R][0];
+		node_t* c = b->childs[b->rev ^ R];
+		c->update_rev();
+		this->cut_edge(c);
+		trees[R][0] = this->join_trees({ b, c });
+	}
 	for (size_t S = 0; S < 2; ++S) {
-		for (size_t i = 0; i < trees[S].size(); ++i) {
+		for (size_t i = 1; i < psize[S]; ++i) {
 			node_t* b = trees[S][i];
 			node_t* c = b->childs[b->rev ^ S];
 			c->update_rev();
-			if (i == 0) {
-				if (S == R) {
-					this->cut_edge(c);
-					trees[S][i] = this->join_trees({ b, c });
-				}
-			}
-			else {
-				this->cut_edge(c);
-				node_t* d = this->most(c, side_t(S ^ 1), trees[S][i - 1]->height);
-				node_t* pd = d->parent;
-				this->cut_edge(d);
-				this->lnk_edge(b, pd, side_t(S ^ 1));
-				this->lnk_edge(d, b, side_t(S));
-				this->lnk_edge(trees[S][i - 1], b, side_t(S ^ 1));
-				trees[S][i] = this->rebalance(b);
-			}
+			this->cut_edge(c);
+			node_t* d = this->most(c, side_t(S ^ 1), trees[S][i - 1]->height);
+			node_t* pd = d->parent;
+			this->cut_edge(d);
+			this->lnk_edge(b, pd, side_t(S ^ 1));
+			this->lnk_edge(d, b, side_t(S));
+			this->lnk_edge(trees[S][i - 1], b, side_t(S ^ 1));
+			trees[S][i] = this->rebalance(b);
 		}
 	}
-	return { trees[L].back(), trees[R].back() };
+	return { trees[L][psize[L] - 1], trees[R][psize[R] - 1] };
 }
 
 
@@ -262,20 +259,23 @@ AVL_Tree::node_t* AVL_Tree::erase_node(node_t *a) {
 	return this->rebalance(b);
 }
 
-AVL_Tree::node_t* AVL_Tree::rebalance(node_t* a) {
-	a->update_params();
-	for (int S = 0; S < 2; ++S) {
-		if (a->childs[a->rev ^ S]->height + 1 < a->childs[a->rev ^ S ^ 1]->height) {
-			node_t* b = a->childs[a->rev ^ S ^ 1];
-			b->update_rev();
-			if (b->childs[b->rev ^ S]->height > b->childs[b->rev ^ S ^ 1]->height) {
-				b = this->rotate(b, side_t(S ^ 1));
+inline AVL_Tree::node_t* AVL_Tree::rebalance(node_t* a) {
+	while (true) {
+		a->update_params();
+		for (int S = 0; S < 2; ++S) {
+			if (a->childs[a->rev ^ S]->height + 1 < a->childs[a->rev ^ S ^ 1]->height) {
+				node_t* b = a->childs[a->rev ^ S ^ 1];
+				b->update_rev();
+				if (b->childs[b->rev ^ S]->height > b->childs[b->rev ^ S ^ 1]->height) {
+					b = this->rotate(b, side_t(S ^ 1));
+				}
+				a = this->rotate(a, side_t(S));
 			}
-			a = this->rotate(a, side_t(S));
 		}
+		if (a->parent == this->nil) break;
+		a = a->parent;
 	}
-	if (a->parent == this->nil) return a;
-	else return this->rebalance(a->parent);
+	return a;
 }
 
 AVL_Tree::node_t* AVL_Tree::lower_bound(node_t* a, const val_t &x) {
@@ -291,11 +291,14 @@ AVL_Tree::node_t* AVL_Tree::lower_bound(node_t* a, const val_t &x) {
 	}
 }
 
-AVL_Tree::node_t* AVL_Tree::most(node_t* a, const side_t direction, size_t height) {
-	a->update_rev();
-	side_t side = side_t(direction ^ a->rev);
-	if (a->childs[side] == this->nil || a->height <= height) return a;
-	else return this->most(a->childs[side], direction, height);
+inline AVL_Tree::node_t* AVL_Tree::most(node_t* a, const side_t direction, size_t height) {
+	while (true) {
+		a->update_rev();
+		side_t side = side_t(direction ^ a->rev);
+		if (a->childs[side] == this->nil || a->height <= height) break;
+		else a = a->childs[side];
+	}
+	return a;
 }
 
 void AVL_Tree::update_rev(node_t* a) {
