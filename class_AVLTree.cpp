@@ -38,7 +38,7 @@ private:
 	bool multi_flag;
 	node_t* root;
 	node_t* nil;
-	std::map<val_t, node_t*> mp;
+	std::unordered_map<val_t, node_t*> mp;
 	inline void cut_edge(node_t* a);
 	// direction: semantical, a->side := s->parent->rev ^ direction
 	inline void lnk_edge(node_t* a, node_t* p, side_t direction);
@@ -61,7 +61,7 @@ private:
 	//
 	void traverse_rec(node_t *a, std::vector<val_t> &track);
 	// update rev from a to root 
-	void update_rev(node_t *a);
+	void update_rev_rec(node_t *a);
 public:
 	AVL_Tree(const val_t nil_val);
 	AVL_Tree(const std::vector<val_t> &vals, const val_t nil_val);
@@ -70,8 +70,12 @@ public:
 	bool erase(const val_t x);
 	void cut(const val_t x);
 	void reverse(const val_t x);
-	// change the cyclic sequence of traversal [ >> x >> z y >> ] -> [ >> z << x y >> ] 
+	// change the cyclic sequence of traversal [ >> x >> z y >> ] -> [ >> z << x y >> ]
 	void reverse_cyclic_seq(const val_t x, const val_t y);
+	// return the id of in-order sequence whose value is x
+	size_t seq_id(const val_t x);
+	// return the value of in-order sequence 
+	val_t seq_at(const size_t k);
 	std::vector<val_t> traverse();
 };
 
@@ -301,10 +305,10 @@ inline AVL_Tree::node_t* AVL_Tree::most(node_t* a, const side_t direction, size_
 	return a;
 }
 
-void AVL_Tree::update_rev(node_t* a) {
+void AVL_Tree::update_rev_rec(node_t* a) {
 	if (a == this->nil) return;
 	else {
-		this->update_rev(a->parent);
+		this->update_rev_rec(a->parent);
 		a->rev = a->parent->rev ^ a->rev_local;
 	}
 }
@@ -342,7 +346,7 @@ bool AVL_Tree::erase(const val_t x) {
 
 void AVL_Tree::cut(const val_t x) {
 	node_t *a = this->mp[x];
-	this->update_rev(a);
+	this->update_rev_rec(a);
 	std::array<node_t*, 2> trees = this->split(a);
 	std::swap(trees[0], trees[1]);
 	this->root = this->join_trees(trees);
@@ -350,7 +354,7 @@ void AVL_Tree::cut(const val_t x) {
 
 void AVL_Tree::reverse(const val_t x) {
 	node_t *a = this->mp[x];
-	this->update_rev(a);
+	this->update_rev_rec(a);
 	std::array<node_t*, 2> trees = this->split(a);
 	trees[R]->rev_local ^= 1;
 	trees[R]->update_rev();
@@ -374,4 +378,41 @@ std::vector<AVL_Tree::val_t> AVL_Tree::traverse() {
 void AVL_Tree::reverse_cyclic_seq(const val_t x, const val_t y) {
 	this->cut(y);
 	this->reverse(x);
+}
+
+size_t AVL_Tree::seq_id(const val_t x) {
+	node_t *a = this->mp[x];
+	this->update_rev_rec(a);
+	size_t ret = a->childs[a->rev ^ L]->subtree_n;
+	while (a->side != U) {
+		side_t side = side_t(a->parent->rev ^ a->side);
+		if (side == R) {
+			node_t *p = a->parent;
+			ret += 1 + p->childs[p->rev ^ L]->subtree_n;
+		}
+		a = a->parent;
+	}
+	return ret;
+}
+
+AVL_Tree::val_t AVL_Tree::seq_at(const size_t k) {
+	node_t *a = this->root;
+	a->update_rev();
+	size_t p = a->childs[a->rev ^ L]->subtree_n;
+	while (true) {
+		if (k < p) {
+			node_t *b = a->childs[a->rev ^ L];
+			b->update_rev();
+			p -= 1 + b->childs[b->rev ^ R]->subtree_n;
+			a = b;
+		}
+		else if (p < k) {
+			node_t *b = a->childs[a->rev ^ R];
+			b->update_rev();
+			p += 1 + b->childs[b->rev ^ L]->subtree_n;
+			a = b;
+		}
+		else break;
+	}
+	return a->val;
 }
