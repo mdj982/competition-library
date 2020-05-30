@@ -2,17 +2,17 @@
 
 class Random_Int {
 private:
-	mt19937 *mt;
-	uniform_int_distribution<> *distr_int;
+	std::mt19937 *mt;
+	std::uniform_int_distribution<> *distr_int;
 public:
 	// uniform int distribution of [0, m)
 	Random_Int(int m) {
 		mt = new std::mt19937((uint64_t)(
-			std::chrono::duration_cast<chrono::nanoseconds>(
-				chrono::high_resolution_clock::now().time_since_epoch()
+			std::chrono::duration_cast<std::chrono::nanoseconds>(
+				std::chrono::high_resolution_clock::now().time_since_epoch()
 				).count()
 			));
-		distr_int = new uniform_int_distribution<>(0, m - 1);
+		distr_int = new std::uniform_int_distribution<>(0, m - 1);
 	}
 	int get() {
 		return (*distr_int)(*mt);
@@ -21,17 +21,17 @@ public:
 
 class Random_Real {
 private:
-	mt19937 *mt;
-    uniform_real_distribution<> *distr_real;
+	std::mt19937 *mt;
+    std::uniform_real_distribution<> *distr_real;
 public:
 	// uniform int distribution of [l, r)
 	Random_Real(double l, double r) {
 		mt = new std::mt19937((uint64_t)(
-			std::chrono::duration_cast<chrono::nanoseconds>(
-				chrono::high_resolution_clock::now().time_since_epoch()
+			std::chrono::duration_cast<std::chrono::nanoseconds>(
+				std::chrono::high_resolution_clock::now().time_since_epoch()
 				).count()
 			));
-		distr_real = new uniform_real_distribution<>(l, r);
+		distr_real = new std::uniform_real_distribution<>(l, r);
 	}
     double get() {
         return (*distr_real)(*mt);
