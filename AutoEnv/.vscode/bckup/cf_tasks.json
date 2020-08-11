@@ -1,0 +1,42 @@
+{
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "debugBuild",
+            "command": "/usr/bin/g++-9",
+            "args": [
+                "-Wall",
+                "-std=c++1z",
+                "-g",
+                "${file}",
+                "-o",
+                "${fileDirname}/${fileBasenameNoExtension}"
+            ],
+            "options": {
+                "cwd": "/usr/bin"
+            }
+        },
+        {
+            "type": "shell",
+            "label": "releaseBuild",
+            "command": "/usr/bin/g++-9",
+            "args": [
+                "-Wall",
+                "-std=c++1z",
+                "-O3",
+                "${file}",
+                "-o",
+                "${fileDirname}/${fileBasenameNoExtension}"
+            ],
+            "options": {
+                "cwd": "/usr/bin"
+            }
+        },
+        {
+            "type": "shell",
+            "label": "runConpetitiveTestSample",
+            "command": "cd ${fileDirname} && g++ -Wall -std=c++1z -g ${fileBasename} -o ${fileBasenameNoExtension} && cf test"
+        }
+    ],
+    "version": "2.0.0"
+}
