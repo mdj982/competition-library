@@ -1,11 +1,14 @@
 #include <bits/stdc++.h>
+#include <cassert>
+
 using std::cin, std::cout, std::bitset, std::complex;
-using std::vector, std::array, std::string, std::pair;
+using std::vector, std::array, std::string, std::pair, std::list, std::queue;
 using std::priority_queue, std::set, std::map, std::unordered_map;
 using std::sort, std::min, std::max, std::reverse;
 using std::min_element, std::max_element, std::accumulate;
 
 using vi = vector<int>; using vvi = vector<vi>; using vvvi = vector<vvi>;
+using ull = unsigned long long int;
 using ll = long long int;
 using vll = vector<ll>; using vvll = vector<vll>; using vvvll = vector<vvll>;
 using vd = vector<double>; using vvd = vector<vd>; using vvvd = vector<vvd>;
@@ -34,7 +37,6 @@ const double eps = 1e-7;
 #define Comp(type_t) bool operator<(const type_t &another) const
 #define fst first
 #define snd second
-#define INF INFINITY
 bool feq(double x, double y) { return abs(x - y) <= eps; }
 bool inrange(ll x, ll t) { return x >= 0 && x < t; }
 bool inrange(vll xs, ll t) { Foreach(x, xs) if (!(x >= 0 && x < t)) return false; return true; }
