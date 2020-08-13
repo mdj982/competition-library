@@ -1,5 +1,6 @@
 #include "auto_util_header.hpp"
 
+
 class Ancestor {
 private:
 	int n;

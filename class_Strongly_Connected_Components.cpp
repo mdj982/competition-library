@@ -7,7 +7,7 @@ private:
 	};
 	vector<node> nodes[2];
 	int n;
-	stack<int> stk;
+	vi stk;
 	vvi sccs;
 	vi scc_gid;
 	// u means the direction
@@ -21,7 +21,7 @@ private:
 				scc_dfs(b, u);
 			}
 		}
-		if (u == 0) stk.push(a);
+		if (u == 0) stk.push_back(a);
 		else {
 			sccs.back().push_back(a);
 		}
@@ -46,7 +46,7 @@ public:
 			if (!nodes[0][i].done) scc_dfs(i, 0);
 		}
 		while (stk.size()) {
-			int a = stk.top(); stk.pop();
+			int a = stk.back(); stk.pop_back();
 			if (!nodes[1][a].done) {
 				sccs.push_back({});
 				scc_dfs(a, 1);

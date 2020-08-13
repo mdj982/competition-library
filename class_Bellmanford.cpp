@@ -42,18 +42,18 @@ public:
 		return;
 	}
 	vi get_path(int v) {
-		stack<int> stk;
-		stk.push(v);
+		vector<int> stk;
+		stk.push_back(v);
 		int a = v;
 		while (nodes[a].from != -1) {
-			stk.push(nodes[a].from);
+			stk.push_back(nodes[a].from);
 			a = nodes[a].from;
 		}
 		if (a != source) return{ -1 };
 		vi ret;
 		while (stk.size()) {
-			ret.push_back(stk.top());
-			stk.pop();
+			ret.push_back(stk.back());
+			stk.pop_back();
 		}
 		return ret;
 	}

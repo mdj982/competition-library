@@ -2,19 +2,23 @@
 
 class Random_Int {
 private:
-	mt19937 *mt;
-	uniform_int_distribution<> *distr_int;
+	std::mt19937 *mt;
+	std::uniform_int_distribution<> *distr_int;
 public:
 	// uniform int distribution of [0, m)
 	Random_Int(int m) {
-		mt = new std::mt19937((unsigned)(
-			std::chrono::duration_cast<chrono::nanoseconds>(
-				chrono::high_resolution_clock::now().time_since_epoch()
+		mt = new std::mt19937((uint64_t)(
+			std::chrono::duration_cast<std::chrono::nanoseconds>(
+				std::chrono::high_resolution_clock::now().time_since_epoch()
 				).count()
 			));
-		distr_int = new uniform_int_distribution<>(0, m - 1);
+		distr_int = new std::uniform_int_distribution<>(0, m - 1);
 	}
-	int get() {
+	~Random_Int() {
+		delete mt;
+		delete distr_int;
+	}
+	int get() const {
 		return (*distr_int)(*mt);
 	}
 };

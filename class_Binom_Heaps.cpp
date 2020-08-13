@@ -87,7 +87,7 @@ private:
 	node_t* merge_root_core(node_t *root0, node_t *root1) {
 		val_t val0 = root0->add + (root0->enable ? root0->upd : root0->val);
 		val_t val1 = root1->add + (root1->enable ? root1->upd : root1->val);
-		if (val1 < val0) swap(root0, root1);
+		if (val1 < val0) std::swap(root0, root1);
 		if (root0->enable) {
 			root0->enable = false;
 			root0->val = root0->upd;
@@ -243,8 +243,8 @@ public:
 		int p = 0;
 		Loop(i, path.size() - 1) {
 			if (vals[i] < vals[i + 1]) {
-				swap(vals[i], vals[i + 1]);
-				swap(ptr_mp1[path[i]], ptr_mp1[path[i + 1]]);
+				std::swap(vals[i], vals[i + 1]);
+				std::swap(ptr_mp1[path[i]], ptr_mp1[path[i + 1]]);
 				p = i + 1;
 			}
 		}
