@@ -1,3 +1,5 @@
+#include "auto_util_header.hpp"
+
 class Fenwick {
 	using val_t = int;
 private:

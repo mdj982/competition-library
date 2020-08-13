@@ -1,3 +1,5 @@
+#include "auto_util_header.hpp"
+
 vi topological_sort(const vvi &lst) {
 	vi ret = {};
 	int n = lst.size();

@@ -1,3 +1,5 @@
+#include "auto_util_header.hpp"
+
 class SegTreeMax2D {
 	using val_t = ll;
 private:

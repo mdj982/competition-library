@@ -1,3 +1,5 @@
+#include "auto_util_header.hpp"
+
 // mx + ny = gcd(m, n), runtime error for (m, n) = (0, 0)
 ll ex_euclid(ll m, ll n, ll &x, ll &y) {
 	if (n == 0) { x = 1; y = 0; return m; }

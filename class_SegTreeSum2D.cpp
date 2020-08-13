@@ -1,3 +1,5 @@
+#include "auto_util_header.hpp"
+
 class SegTreeSum2D {
 	using val_t = int;
 private:

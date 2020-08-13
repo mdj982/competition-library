@@ -1,3 +1,5 @@
+#include "auto_util_header.hpp"
+
 class Max_Queue {
 private:
 	vector<Pll> stk0, stk1;

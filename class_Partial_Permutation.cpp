@@ -1,3 +1,5 @@
+#include "auto_util_header.hpp"
+
 template<typename val_t>
 class Partial_Permutation {
 private:

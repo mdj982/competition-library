@@ -1,3 +1,5 @@
+#include "auto_util_header.hpp"
+
 // include modll
 
 namespace number_theoretic_transform {

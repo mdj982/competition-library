@@ -1,3 +1,5 @@
+#include "auto_util_header.hpp"
+
 namespace Subset_Convolution {
 
 	// f.size() should be 2^digit, ret will assemble value from subsets

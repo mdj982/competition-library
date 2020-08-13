@@ -1,3 +1,5 @@
+#include "auto_util_header.hpp"
+
 class Maxflow {
 private:
 	struct edge_t {

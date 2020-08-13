@@ -1,3 +1,5 @@
+#include "auto_util_header.hpp"
+
 class SuffixTree26 {
 private:
 	int n;

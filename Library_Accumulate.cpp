@@ -1,3 +1,5 @@
+#include "auto_util_header.hpp"
+
 // ret[i] = a[i] + a[i + 1] + ... (for length times, with looping)
 vll loop_vec_accumulate(const vll &a, ll length) {
 	int n = a.size();

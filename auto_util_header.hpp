@@ -1,10 +1,13 @@
+#ifndef AUTO_UTIL_HEADER_HPP
+#define AUTO_UTIL_HEADER_HPP
+
 #include <bits/stdc++.h>
 #include <cassert>
 
 using std::cin, std::cout, std::bitset, std::complex;
 using std::vector, std::array, std::string, std::pair, std::list, std::queue;
 using std::priority_queue, std::set, std::map, std::unordered_map;
-using std::sort, std::min, std::max, std::reverse;
+using std::sort, std::greater, std::min, std::max, std::reverse;
 using std::min_element, std::max_element, std::accumulate;
 
 using vi = vector<int>; using vvi = vector<vi>; using vvvi = vector<vvi>;
@@ -53,5 +56,7 @@ ll rnddiv(ll a, ll b) { return (a / b + (a % b * 2 >= b ? 1 : 0)); }
 ll ceildiv(ll a, ll b) { return (a / b + (a % b == 0 ? 0 : 1)); }
 ll gcd(ll m, ll n) { if (n == 0) return m; else return gcd(n, m % n); }
 ll lcm(ll m, ll n) { return ll(m) * ll(n) / gcd(m, n); }
+
+#endif // AUTO_UTIL_HEADER_HPP
 
 //========================================================================//

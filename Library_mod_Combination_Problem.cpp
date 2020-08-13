@@ -1,3 +1,5 @@
+#include "auto_util_header.hpp"
+
 namespace mod_op {
 
 	const ll MOD = //(ll)1e9 + 7;

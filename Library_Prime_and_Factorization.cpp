@@ -1,3 +1,5 @@
+#include "auto_util_header.hpp"
+
 ll powll(ll n, ll p) {
   if (p == 0) return 1;
   else if (p == 1) return n;

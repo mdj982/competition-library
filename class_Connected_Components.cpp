@@ -1,3 +1,5 @@
+#include "auto_util_header.hpp"
+
 class Connected_Components {
 private:
 	int n;

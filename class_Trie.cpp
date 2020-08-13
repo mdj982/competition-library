@@ -1,3 +1,5 @@
+#include "auto_util_header.hpp"
+
 template<size_t T>
 class Trie {
 private:

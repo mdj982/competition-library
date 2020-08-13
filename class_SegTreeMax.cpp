@@ -1,3 +1,5 @@
+#include "auto_util_header.hpp"
+
 // #define ENABLE_UPD
 class SegTreeMax {
 	using val_t = ll;

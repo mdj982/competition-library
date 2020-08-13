@@ -1,3 +1,5 @@
+#include "auto_util_header.hpp"
+
 // ret[i] := the max length of common prefix between s[i, n) and s
 vi Z_algorithm(const string &s) {
 	int n = s.length();

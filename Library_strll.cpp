@@ -1,3 +1,5 @@
+#include "auto_util_header.hpp"
+
 namespace strll_op {
 
 	class strll {

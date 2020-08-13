@@ -1,3 +1,5 @@
+#include "auto_util_header.hpp"
+
 class Union_Find {
 private:
 	vi p, r, c; // parent, rank, the number of connected components

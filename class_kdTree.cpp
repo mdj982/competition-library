@@ -1,3 +1,5 @@
+#include "auto_util_header.hpp"
+
 template <class val_t>
 class kdTree {
 private:

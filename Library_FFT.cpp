@@ -1,3 +1,5 @@
+#include "auto_util_header.hpp"
+
 namespace Fourier_transform {
 
 	vector<cdouble> omegas, iomegas;

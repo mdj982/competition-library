@@ -1,3 +1,5 @@
+#include "auto_util_header.hpp"
+
 class StaticRangeMin2D {
 private:
 	int n, m;

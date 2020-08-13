@@ -1,3 +1,5 @@
+#include "auto_util_header.hpp"
+
 // the skip table used in KMP algorithm
 // ret[i] := the longest value x < i such that s.substr(0, x) == s.substr(i - x, x)
 vi solve_KMP_table(const string &s) {

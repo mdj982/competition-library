@@ -1,3 +1,5 @@
+#include "auto_util_header.hpp"
+
 class Strongly_Connected_Components {
 private:
 	struct node {

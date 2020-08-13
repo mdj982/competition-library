@@ -1,3 +1,5 @@
+#include "auto_util_header.hpp"
+
 bool fge(double x, double y) { return x >= y - eps; }
 double fsqrt(double x) { return feq(x, 0) ? 0 : sqrt(x); }
 

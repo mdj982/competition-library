@@ -1,3 +1,5 @@
+#include "auto_util_header.hpp"
+
 class Finding_Arts {
 private:
 	struct node {

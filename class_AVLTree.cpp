@@ -1,3 +1,5 @@
+#include "auto_util_header.hpp"
+
 class AVL_Tree {
 	using val_t = long long;
 private:

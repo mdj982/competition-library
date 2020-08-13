@@ -1,3 +1,5 @@
+#include "auto_util_header.hpp"
+
 class Nim {
 private:
   bool result;

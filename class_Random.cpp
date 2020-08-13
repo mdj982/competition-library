@@ -1,3 +1,5 @@
+#include "auto_util_header.hpp"
+
 class Random_Int {
 private:
 	std::mt19937 *mt;

@@ -1,3 +1,5 @@
+#include "auto_util_header.hpp"
+
 // range = [l, r), return last value causing "t" in evalfunc that returns l->[t,...,t,f,...,f)->r
 // NOTE: if [f,...,f) then return l - 1, if [l, r) = empty set then invalid use
 template<class val_t, class bsargv_t>

@@ -1,3 +1,5 @@
+#include "auto_util_header.hpp"
+
 // include strongly connected components
 
 struct cnf2_t {

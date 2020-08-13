@@ -1,3 +1,5 @@
+#include "auto_util_header.hpp"
+
 class Chuliu_Edmonds {
 private:
 	struct edge_t {

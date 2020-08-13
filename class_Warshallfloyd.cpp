@@ -1,3 +1,5 @@
+#include "auto_util_header.hpp"
+
 class Warshallfloyd {
 private:
 	int n;

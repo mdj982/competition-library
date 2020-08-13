@@ -1,3 +1,5 @@
+#include "auto_util_header.hpp"
+
 class AhoCorasick26 {
 private:
 	// cnt := #{the strings at this node}

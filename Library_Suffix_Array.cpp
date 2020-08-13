@@ -1,3 +1,5 @@
+#include "auto_util_header.hpp"
+
 namespace Suffix_Array {
 	struct sa_t {
 		int r0, r1;

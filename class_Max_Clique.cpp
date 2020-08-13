@@ -1,3 +1,5 @@
+#include "auto_util_header.hpp"
+
 class Max_Clique {
 private:
 	static int max_clique_rec(const vvi &mx, unordered_map<ll, int> &mp, ll mask) {

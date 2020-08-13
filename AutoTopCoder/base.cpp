@@ -49,26 +49,3 @@ ll lcm(ll m, ll n) { return m * n / gcd(m, n); }
 
 //========================================================================//
 
-
-class SubstringQueries {
-public:
-	long long solve(string S, int k) {
-	}
-};
-
-struct params_t {
-	string S;
-	int k;
-};
-
-int main() {
-	vector<params_t> testparams;
-	testparams.push_back({ "aaaaaaaaa",1 });
-	testparams.push_back({ "zaba",2 });
-	testparams.push_back({ "acaa",2 });
-	testparams.push_back({ "aa",4 });
-	SubstringQueries classunit;
-	Loop(unused, testparams.size()) {
-		classunit.solve(testparams[i].S, testparams[i].k);
-	}
-}

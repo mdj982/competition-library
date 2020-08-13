@@ -1,3 +1,5 @@
+#include "auto_util_header.hpp"
+
 // ret.fst[i] = x <=> "left (x - 1) letters + s[i] + right (x - 1) letters" is a palindrome
 // ret.snd[i] = x <=> "left (x - 1) letters + s[i] + s[i + 1] + right (x - 1) letters" is a palindrome
 pair<vi, vi> Manacher(const string &s) {

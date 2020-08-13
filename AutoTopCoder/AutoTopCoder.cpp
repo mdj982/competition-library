@@ -113,7 +113,7 @@ void write_after_main() {
 
 
 int main() {
-	header_ifs.open("../auto_util_header.cpp");
+	header_ifs.open("../auto_util_header.hpp");
 	if (!header_ifs) failed("could not find ../auto_util_header.cpp file");
 	ofs.open("base.cpp");
 	if (!ofs) failed("could not make base.cpp file");

@@ -1,3 +1,5 @@
+#include "auto_util_header.hpp"
+
 class StaticRangeMax2D {
 private:
 	int n, m;
