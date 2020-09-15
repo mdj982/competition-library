@@ -5,7 +5,7 @@
 #include <cassert>
 
 using std::cin, std::cout, std::bitset, std::complex;
-using std::vector, std::array, std::string, std::pair, std::list, std::queue;
+using std::vector, std::array, std::string, std::pair, std::list, std::queue, std::deque;
 using std::priority_queue, std::set, std::map, std::unordered_map;
 using std::sort, std::greater, std::min, std::max, std::reverse;
 using std::min_element, std::max_element, std::accumulate;

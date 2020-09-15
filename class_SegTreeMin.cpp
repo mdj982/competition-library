@@ -1,27 +1,46 @@
 #include "auto_util_header.hpp"
 
+#define ENABLE_UPD
 class SegTreeMin {
 	using val_t = ll;
+	static const val_t VALMAX = LLONG_MAX;
+	static const int IDXMAX = INT_MAX;
 private:
+	struct idxval_t {
+		int idx;
+		val_t val;
+		bool operator<(const idxval_t &another) const {
+			return val != another.val ? val < another.val : idx < another.idx;
+		}
+		idxval_t operator+(const val_t x) {
+			return {this->idx, this->val + x};
+		}
+		idxval_t* operator+=(const val_t x) {
+			this->val += x;
+			return this;
+		}
+	};
 	struct segval_t {
 		bool enable;
-		val_t upd, add, min;
+		val_t upd, add;
+		idxval_t min;
 	};
 	int n, N; // n is the original size, while N is the extended size
 	int base;
 	vector<segval_t> nodes;
 	vi idl, idr;
 	void merge(int id) {
-		nodes[id].min = min(nodes[idl[id]].min + nodes[idl[id]].add,
+		nodes[id].min = std::min(nodes[idl[id]].min + nodes[idl[id]].add,
 			nodes[idr[id]].min + nodes[idr[id]].add);
 	}
-	void lazy(int id) {
+#ifdef ENABLE_UPD
+	void lazy(int id, int l, int r) {
 		if (id >= base) return;
 		if (nodes[id].enable) {
 			val_t upd = nodes[id].upd + nodes[id].add;
-			nodes[idl[id]] = { true, upd, 0, upd };
-			nodes[idr[id]] = { true, upd, 0, upd };
-			nodes[id] = { false, 0, 0, upd };
+			nodes[idl[id]] = { true, upd, 0, {l, upd} };
+			nodes[idr[id]] = { true, upd, 0, {(l + r) >> 1, upd} };
+			nodes[id] = { false, 0, 0, {l, upd} };
 		}
 		else {
 			nodes[idl[id]].add += nodes[id].add;
@@ -30,16 +49,19 @@ private:
 			merge(id);
 		}
 	}
+#endif
 	enum change_t {
 		UPD, ADD
 	};
 	void change_rec(int s, int t, int l, int r, int id, val_t x, change_t op) {
 		if (s == l && t == r) {
-			if (op == UPD) nodes[id] = { true, x, 0, x };
+			if (op == UPD) nodes[id] = { true, x, 0, {s, x} };
 			else if (op == ADD) nodes[id].add += x;
 		}
 		else {
-			lazy(id);
+#ifdef ENABLE_UPD
+			lazy(id, l, r);
+#endif
 			int m = (l + r) >> 1;
 			if (s < m && m < t) {
 				change_rec(s, m, l, m, idl[id], x, op);
@@ -54,18 +76,20 @@ private:
 			merge(id);
 		}
 	}
-	val_t solve_rec(int s, int t, int l, int r, int id) {
-		val_t v = 0;
+	idxval_t solve_rec(int s, int t, int l, int r, int id) {
+		idxval_t v;
 		if (s == l && t == r) {
 			v = nodes[id].min;
 		}
 		else {
-			lazy(id);
+#ifdef ENABLE_UPD
+			lazy(id, l, r);
+#endif
 			int m = (l + r) >> 1;
 			if (s < m && m < t) {
-				val_t v0 = solve_rec(s, m, l, m, idl[id]);
-				val_t v1 = solve_rec(m, t, m, r, idr[id]);
-				v = min(v0, v1);
+				idxval_t v0 = solve_rec(s, m, l, m, idl[id]);
+				idxval_t v1 = solve_rec(m, t, m, r, idr[id]);
+				v = std::min(v0, v1);
 			}
 			else if (s < m) {
 				v = solve_rec(s, t, l, m, idl[id]);
@@ -86,14 +110,14 @@ private:
 		}
 	}
 public:
-	SegTreeMin(int n, val_t init = LLONG_MAX) {
+	SegTreeMin(int n, val_t init = VALMAX) {
 		this->n = n;
-		N = 1 << ceillog2(n);
-		base = N - 1;
-		nodes = vector<segval_t>(base + N, { false, 0, 0, LLONG_MAX });
+		this->N = 1 << ceillog2(n);
+		this->base = N - 1;
+		this->nodes = vector<segval_t>(base + N, { false, 0, 0, {IDXMAX, VALMAX} });
 		common_init();
 		Loop(i, n) {
-			nodes[base + i] = { true, init, 0, init };
+			this->nodes[base + i] = { true, init, 0, {i, init} };
 		}
 		Loopr(i, base) {
 			merge(i);
@@ -101,27 +125,40 @@ public:
 	}
 	SegTreeMin(const vector<val_t> &a) {
 		this->n = int(a.size());
-		N = 1 << ceillog2(n);
-		base = N - 1;
-		nodes = vector<segval_t>(base + N, { false, 0, 0, LLONG_MAX });
+		this->N = 1 << ceillog2(n);
+		this->base = N - 1;
+		this->nodes = vector<segval_t>(base + N, { false, 0, 0, {IDXMAX, VALMAX} });
 		common_init();
 		Loop(i, n) {
-			nodes[base + i] = { true, a[i], 0, a[i] };
+			this->nodes[base + i] = { true, a[i], 0, {i, a[i]} };
 		}
 		Loopr(i, base) {
 			merge(i);
 		}
 	}
+#ifdef ENABLE_UPD
 	void upd(int s, int t, val_t x) {
 		if (s >= t) return;
 		change_rec(s, t, 0, N, 0, x, UPD);
 	}
+#endif
 	void add(int s, int t, val_t x) {
 		if (s >= t) return;
 		change_rec(s, t, 0, N, 0, x, ADD);
 	}
-	val_t minof(int s, int t) {
-		if (s >= t) return LLONG_MAX;
+	// the smallest argmin_i\in[s, t) a[i]
+	int minidx(int s, int t) {
+		if (s >= t) return IDXMAX;
+		return solve_rec(s, t, 0, N, 0).idx;
+	}
+	val_t minval(int s, int t) {
+		if (s >= t) return VALMAX;
+		return solve_rec(s, t, 0, N, 0).val;
+	}
+	// the smallest argmin_i\in[s, t) a[i], and its value
+	idxval_t minidxval(int s, int t) {
+		if (s >= t) return {IDXMAX, VALMAX};
 		return solve_rec(s, t, 0, N, 0);
 	}
 };
+#undef ENABLE_UPD
