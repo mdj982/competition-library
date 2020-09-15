@@ -1,9 +1,9 @@
 #include "auto_util_header.hpp"
 
-#define ENABLE_UPD
+// #define ENABLE_UPD
 class SegTreeMin {
-	using val_t = ll;
-	static const val_t VALMAX = LLONG_MAX;
+	using val_t = int;
+	static const val_t VALMAX = INT_MAX;
 	static const int IDXMAX = INT_MAX;
 private:
 	struct idxval_t {
@@ -11,13 +11,6 @@ private:
 		val_t val;
 		bool operator<(const idxval_t &another) const {
 			return val != another.val ? val < another.val : idx < another.idx;
-		}
-		idxval_t operator+(const val_t x) {
-			return {this->idx, this->val + x};
-		}
-		idxval_t* operator+=(const val_t x) {
-			this->val += x;
-			return this;
 		}
 	};
 	struct segval_t {
@@ -30,8 +23,10 @@ private:
 	vector<segval_t> nodes;
 	vi idl, idr;
 	void merge(int id) {
-		nodes[id].min = std::min(nodes[idl[id]].min + nodes[idl[id]].add,
-			nodes[idr[id]].min + nodes[idr[id]].add);
+		val_t val_l = nodes[idl[id]].min.val + nodes[idl[id]].add;
+		val_t val_r = nodes[idr[id]].min.val + nodes[idr[id]].add;
+		nodes[id].min.idx = (val_l <= val_r ? nodes[idl[id]].min.idx : nodes[idr[id]].min.idx);
+		nodes[id].min.val = std::min(val_l, val_r);
 	}
 #ifdef ENABLE_UPD
 	void lazy(int id, int l, int r) {
@@ -51,12 +46,19 @@ private:
 	}
 #endif
 	enum change_t {
-		UPD, ADD
+		ADD,
+#ifdef ENABLE_UPD
+		UPD
+#endif
 	};
 	void change_rec(int s, int t, int l, int r, int id, val_t x, change_t op) {
 		if (s == l && t == r) {
-			if (op == UPD) nodes[id] = { true, x, 0, {s, x} };
-			else if (op == ADD) nodes[id].add += x;
+#ifdef ENABLE_UPD
+			if (op == ADD) nodes[id].add += x;
+			else if (op == UPD) nodes[id] = { true, x, 0, {s, x} };
+#else
+			nodes[id].add += x;
+#endif
 		}
 		else {
 #ifdef ENABLE_UPD
@@ -98,7 +100,7 @@ private:
 				v = solve_rec(s, t, m, r, idr[id]);
 			}
 		}
-		v += nodes[id].add;
+		v.val += nodes[id].add;
 		return v;
 	}
 	void common_init() {
