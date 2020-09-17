@@ -112,7 +112,7 @@ private:
 		}
 	}
 public:
-	SegTreeMax(int n, val_t init = LLONG_MIN) {
+	SegTreeMax(int n, val_t init = VALMIN) {
 		this->n = n;
 		this->N = 1 << ceillog2(n);
 		this->base = N - 1;
