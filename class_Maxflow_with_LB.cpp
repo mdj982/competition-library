@@ -1,5 +1,6 @@
 #include "auto_util_header.hpp"
 
+// Solve maximum flow with lower bound in capacity settings
 // Dinic's algorithm, O(min(n^2 m, fm))
 class Maxflow_with_LB {
 private:
@@ -104,7 +105,6 @@ private:
 	bool feasible_flag;
 	ll sum_flow = 0;
 public:
-	// make sure that bnd <= cap, solve required flow in constructor
 	Maxflow_with_LB(const vvi &lst, const vvll &bnd, const vvll &cap, int s, int t) {
 		this->G.n = lst.size() + 2;
 		this->G.s = lst.size();
@@ -116,13 +116,15 @@ public:
 				ll b = bnd[i][k];
 				ll c = cap[i][k];
 				if (b > 0) {
-					cout << "strange" << endl;
 					add_edge(G.s, j, b);
 					add_edge(i, G.t, b);
 					sum_flow -= b;
 				}
 				if (c - b > 0) {
 					add_edge(i, j, c - b);
+				}
+				if (c - b < 0) {
+					assert(false);
 				}
 			}
 		}
