@@ -27,8 +27,8 @@ namespace mod_op {
 		modll& operator/=(const modll &x) { val = modify(val * inv(x.val)); return *this; }
 		bool operator==(const modll &x) { return val == x.val; }
 		bool operator!=(const modll &x) { return val != x.val; }
-		friend istream& operator >> (istream &is, modll& x) { is >> x.val; return is; }
-		friend ostream& operator << (ostream &os, const modll& x) { os << x.val; return os; }
+		friend std::istream& operator >> (std::istream &is, modll& x) { is >> x.val; return is; }
+		friend std::ostream& operator << (std::ostream &os, const modll& x) { os << x.val; return os; }
 		ll get_val() { return val; }
 	};
 
