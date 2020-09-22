@@ -1,5 +1,6 @@
 #include "auto_util_header.hpp"
 
+// O((n+m)f)
 class Maxflow {
 private:
 	struct edge_t {
@@ -51,7 +52,7 @@ public:
 	}
 	void add_cap(int s, int t, int dcap, bool update_flag = true) {
 		lst[s][t].cap += dcap;
-		// program not be ensured when cap. becomes negative
+		// program is unsafe when original capacity becomes negative
 		if (lst[s][t].cap < 0) {
 			int df = -lst[s][t].cap;
 			run_flow(s, source, df);
