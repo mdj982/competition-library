@@ -2,7 +2,7 @@
 
 namespace mod_op {
 
-	const ll MOD = // (ll)1e9 + 7;
+	const ll MOD = (ll)1e9 + 7; dont forget to modify;
 
 	class modll {
 	private:
