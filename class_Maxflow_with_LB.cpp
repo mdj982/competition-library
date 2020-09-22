@@ -1,7 +1,7 @@
 #include "auto_util_header.hpp"
 
 // Solve maximum flow with lower bound in capacity settings
-// Dinic's algorithm, O(min(n^2 m, fm))
+// Dinic's algorithm, O(min({n}^2{m}, {f}{m}))
 class Maxflow_with_LB {
 private:
 	struct edge_t {
