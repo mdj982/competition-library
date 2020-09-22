@@ -1,5 +1,6 @@
 #include "auto_util_header.hpp"
 
+// Basic algorithm, O(nmf)
 class Mincostflow {
 private:
 	struct edge {
