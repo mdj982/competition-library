@@ -47,19 +47,15 @@ public:
 		return;
 	}
 	vi get_path(int v) {
-		vi stk;
-		stk.push_back(v);
+		vi ret;
+		ret.push_back(v);
 		int a = v;
 		while (nodes[a].from != -1) {
-			stk.push_back(nodes[a].from);
+			ret.push_back(nodes[a].from);
 			a = nodes[a].from;
 		}
 		if (a != source) return {};
-		vi ret;
-		while (stk.size()) {
-			ret.push_back(stk.back());
-			stk.pop_back();
-		}
+		std::reverse(ret.begin(), ret.end());
 		return ret;
 	}
 	ll get_dist(int v) {
