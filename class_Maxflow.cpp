@@ -1,6 +1,6 @@
 #include "auto_util_header.hpp"
 
-// O((n+m)f)
+// Ford-Fulkerson algorithm, O((n+m)f)
 class Maxflow {
 private:
 	struct edge_t {

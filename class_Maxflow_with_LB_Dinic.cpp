@@ -1,6 +1,7 @@
 #include "auto_util_header.hpp"
 
-class MaxFlow_with_LB {
+// Dinic's algorithm, O(min(n^2 m, fm))
+class Maxflow_with_LB {
 private:
 	struct edge_t {
 		int from; int to; ll cap; edge_t* rev;
@@ -85,7 +86,7 @@ private:
 		return ret;
 	}
 	// return achieved flow
-	ll add_flow_sub(int s, int t, ll f) {
+	ll run_flow(int s, int t, ll f) {
 		ll ret = 0;
 		Loop(_, G.n) {
 			if (f == 0) break;
@@ -102,9 +103,11 @@ private:
 	graph_t G, LG;
 	bool feasible_flag;
 	ll sum_flow = 0;
+	ll min_flow = 0;
+	ll max_flow = 0;
 public:
 	// make sure that bnd <= cap, solve required flow in constructor
-	MaxFlow_with_LB(const vvi &lst, const vvll &bnd, const vvll &cap, int s, int t) {
+	Maxflow_with_LB(const vvi &lst, const vvll &bnd, const vvll &cap, int s, int t) {
 		this->G.n = lst.size() + 2;
 		this->G.s = lst.size();
 		this->G.t = lst.size() + 1;
@@ -124,9 +127,9 @@ public:
 				}
 			}
 		}
-		ll f00 = add_flow_sub(G.s, G.t, LLONG_MAX);
-		ll f01 = add_flow_sub(G.s, t, LLONG_MAX);
-		ll f10 = add_flow_sub(s, G.t, LLONG_MAX);
+		ll f00 = run_flow(G.s, G.t, LLONG_MAX);
+		ll f01 = run_flow(G.s, t, LLONG_MAX);
+		ll f10 = run_flow(s, G.t, LLONG_MAX);
 		add_edge(t, G.t, LLONG_MAX);
 		add_edge(G.s, s, LLONG_MAX);
 		pre_edges[{t, G.t}]->cap -= f01;
@@ -135,20 +138,22 @@ public:
 		pre_edges[{G.s, s}]->rev->cap += f10;
 		this->feasible_flag = (this->sum_flow + f00 + f01 == 0) && (this->sum_flow + f00 + f10 == 0);
 		this->sum_flow += f00 + f01 + f10;
+		this->min_flow = this->sum_flow;
+		this->sum_flow += run_flow(this->G.s, this->G.t, LLONG_MAX);
+		this->max_flow = this->sum_flow;
 	}
-	~MaxFlow_with_LB() {
+	~Maxflow_with_LB() {
 		for (const auto &x : this->pre_edges) {
 			edge_t *e = x.snd;
 			delete e->rev;
 			delete e;
 		}
 	}
-	// return achieved flow, Dinic's algorithm, O(min(n^2 m, fm))
-	void add_flow(ll f = LLONG_MAX) {
-		this->sum_flow += add_flow_sub(this->G.s, this->G.t, f);
+	ll get_minflow() {
+		return min_flow;
 	}
-	ll get_flow() {
-		return sum_flow;
+	ll get_maxflow() {
+		return max_flow;
 	}
 	bool is_feasible() {
 		return this->feasible_flag;
