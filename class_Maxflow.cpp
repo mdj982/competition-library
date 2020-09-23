@@ -7,7 +7,7 @@ private:
 	struct edge_t {
 		int cap;
 	};
-	int n, source, sink;
+	int n, src, snk;
 	int result;
 	vector<bool> done;
 	vector<unordered_map<int, edge_t>> lst;
@@ -46,8 +46,8 @@ public:
 				this->lst[lst[i][j]][i].cap += 0;
 			}
 		}
-		source = s;
-		sink = t;
+		src = s;
+		snk = t;
 		result = 0;
 		update();
 	}
@@ -56,8 +56,8 @@ public:
 		// program is unsafe when original capacity becomes negative
 		if (lst[s][t].cap < 0) {
 			int df = -lst[s][t].cap;
-			run_flow(s, source, df);
-			run_flow(sink, t, df);
+			run_flow(s, src, df);
+			run_flow(snk, t, df);
 			lst[s][t].cap += df;
 			lst[t][s].cap -= df;
 			result -= df;
@@ -65,7 +65,7 @@ public:
 		if (update_flag) update();
 	}
 	void update() {
-		result += run_flow(source, sink, INT_MAX);
+		result += run_flow(src, snk, INT_MAX);
 	}
 	int get_maxflow() {
 		return result;
