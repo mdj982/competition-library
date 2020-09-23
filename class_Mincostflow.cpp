@@ -11,7 +11,7 @@ private:
 		edge_t* rev;
 	};
 	struct node {
-		int id; int done; edge_t* e_from;
+		int id; bool done; edge_t* e_from;
 		ll dst; // distance considering potential
 		ll pot; // potential
 		list<edge_t*> edges;
@@ -32,16 +32,16 @@ private:
 		nodes[a].edges.push_back(e_pre);
 		nodes[b].edges.push_back(e_rev);
 	}
-	void update_potential_by_Bellman_Ford() {
+	void update_potential_by_Bellman_Ford(int s) {
 		Loop(i, n) {
-			nodes[i].done = 0;
+			nodes[i].done = false;
 			nodes[i].e_from = nullptr;
 			nodes[i].dst = LLONG_MAX;
 		}
         // solve distance from source node, and also check reachable negative cycles
         {
-            nodes[src].dst = 0;
-            nodes[src].done = 1;
+            nodes[s].dst = 0;
+            nodes[s].done = true;
             negative_cycle_endpoint = -1;
             Loop(k, n) {
                 Loop(i, n) {
@@ -97,15 +97,15 @@ private:
 		}
 		return;
 	}
-	void update_potential_by_Dijkstra() {
+	void update_potential_by_Dijkstra(int s) {
 		Loop(i, n) {
-			nodes[i].done = 0;
+			nodes[i].done = false;
 			nodes[i].e_from = nullptr;
 			nodes[i].dst = LLONG_MAX;
 		}
-		nodes[src].dst = 0;
+		nodes[s].dst = 0;
 		priority_queue<pq_t> pq;
-		pq.push({ nodes[src].id, nodes[src].dst });
+		pq.push({ nodes[s].id, nodes[s].dst });
 		while (pq.size()) {
 			int a = pq.top().id;
 			pq.pop();
@@ -125,7 +125,7 @@ private:
 		}
 		Loop(i, n) {
 			// When node i is unreachable, the potential will overflow, but never be used.
-			// node i is unreachable iff (i != src && nodes[i].e_from == nullptr)
+			// node i is reachable iff (nodes[i].done == true)
 			nodes[i].pot += nodes[i].dst;
 		}
 	}
@@ -165,10 +165,10 @@ private:
 		ll df = LLONG_MAX;
 		// modify negative_cycle_endpoint as a point in the negative cycle
 		{
-			vector<int> done(n);
+			vector<bool> done(n);
 			int a = negative_cycle_endpoint;
 			while (true) {
-				done[a] = 1;
+				done[a] = true;
 				edge_t *e = nodes[a].e_from;
 				a = e->from;
 				if (done[a]) {
@@ -239,7 +239,7 @@ public:
 		}
 		if (BF_mode) {
 			while (true) {
-				update_potential_by_Bellman_Ford();
+				update_potential_by_Bellman_Ford(src);
 				if (negative_cycle_endpoint != -1) {
 					update_flow_in_negative_cycle();
 				}
@@ -250,7 +250,7 @@ public:
 			}
 		}
 		else {
-			update_potential_by_Dijkstra();
+			update_potential_by_Dijkstra(src);
 		}
 	}
 	// add flow at most f
@@ -261,7 +261,7 @@ public:
 			ll df = update_flow(f);
 			if (df == 0) break;
 			f -= df;
-			update_potential_by_Dijkstra();
+			update_potential_by_Dijkstra(src);
 		}
 	}
 	ll get_cost() {
