@@ -3,16 +3,16 @@
 class Bellmanford {
 private:
 	struct node {
-		int id; bool done; vi to; vll cst; int from; ll d;
+		int id; bool done; int from; ll d; vi to; vll cst;
 	};
 	vector<node> nodes;
 	int n, m, source;
-	bool negative_cycle;
+	int negative_cycle_endpoint; // -1 if there is no negative cycle
 public:
 	Bellmanford(const vvi &lst, const vvll &cst, int start) {
 		n = lst.size();
 		nodes.resize(n);
-		Loop(i, n) nodes[i] = { i, false,{},{}, -1, LLONG_MAX };
+		Loop(i, n) nodes[i] = { i, false, -1, LLONG_MAX, {}, {} };
 		Loop(i, n) {
 			Loop(j, lst[i].size()) {
 				nodes[i].to.push_back(lst[i][j]);
@@ -21,6 +21,7 @@ public:
 		}
 		source = start;
 		nodes[source].d = 0;
+		negative_cycle_endpoint = -1;
 		Loop(k, n) {
 			Loop(i, n) {
 				int a = i;
@@ -31,36 +32,42 @@ public:
 						nodes[b].d = nodes[a].d + nodes[a].cst[j];
 						nodes[b].from = nodes[a].id;
 						if (k == n - 1) {
-							negative_cycle = true;
+							negative_cycle_endpoint = a;
 							return;
 						}
 					}
 				}
 			}
 		}
-		negative_cycle = false;
-		return;
 	}
 	vi get_path(int v) {
-		vector<int> stk;
-		stk.push_back(v);
+		vector<int> ret;
 		int a = v;
+		ret.push_back(a);
 		while (nodes[a].from != -1) {
-			stk.push_back(nodes[a].from);
+			ret.push_back(nodes[a].from);
 			a = nodes[a].from;
 		}
-		if (a != source) return{ -1 };
-		vi ret;
-		while (stk.size()) {
-			ret.push_back(stk.back());
-			stk.pop_back();
-		}
+		if (a != source) return {};
+		std::reverse(ret.begin(), ret.end());
 		return ret;
 	}
 	ll get_dist(int v) {
 		return nodes[v].d;
 	}
-	bool is_negative_cycle() {
-		return negative_cycle;
+	bool exists_negative_cycle() {
+		return (negative_cycle_endpoint != -1);
+	}
+	vi get_negative_cycle() {
+		if (negative_cycle_endpoint == -1) return {};
+		vector<int> ret;
+		int a = negative_cycle_endpoint;
+		ret.push_back(a);
+		while (nodes[a].from != negative_cycle_endpoint) {
+			ret.push_back(nodes[a].from);
+			a = nodes[a].from;
+		}
+		std::reverse(ret.begin(), ret.end());
+		return ret;
 	}
 };

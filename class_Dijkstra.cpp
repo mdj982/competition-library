@@ -3,7 +3,7 @@
 class Dijkstra {
 private:
 	struct node {
-		int id; bool done; vi to; vll cst; int from; ll d;
+		int id; bool done; int from; ll d; vi to; vll cst;
 	};
 	struct pq_t {
 		int id; ll d;
@@ -17,7 +17,7 @@ public:
 	Dijkstra(const vvi &lst, const vvll &cst, int start) {
 		n = lst.size();
 		nodes.resize(n);
-		Loop(i, n) nodes[i] = { i, false,{},{}, -1, LLONG_MAX };
+		Loop(i, n) nodes[i] = { i, false, -1, LLONG_MAX, {}, {} };
 		Loop(i, n) {
 			Loop(j, lst[i].size()) {
 				nodes[i].to.push_back(lst[i][j]);
