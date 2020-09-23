@@ -8,7 +8,7 @@ private:
 		int cap;
 	};
 	int n, src, snk;
-	int result;
+	int sum_flow;
 	vector<bool> done;
 	vector<unordered_map<int, edge_t>> lst;
 	int dfs(int a, int t) {
@@ -48,7 +48,7 @@ public:
 		}
 		src = s;
 		snk = t;
-		result = 0;
+		sum_flow = 0;
 		update();
 	}
 	void add_cap(int s, int t, int dcap, bool update_flag = true) {
@@ -60,14 +60,14 @@ public:
 			run_flow(snk, t, df);
 			lst[s][t].cap += df;
 			lst[t][s].cap -= df;
-			result -= df;
+			sum_flow -= df;
 		}
 		if (update_flag) update();
 	}
 	void update() {
-		result += run_flow(src, snk, INT_MAX);
+		sum_flow += run_flow(src, snk, INT_MAX);
 	}
 	int get_maxflow() {
-		return result;
+		return sum_flow;
 	}
 };
