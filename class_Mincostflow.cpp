@@ -1,14 +1,19 @@
 #include "auto_util_header.hpp"
 
-// Basic algorithm, O(nmf)
+// Required: all cost >= 0, O({f}{m}\log{n})
 class Mincostflow {
 private:
-	struct edge {
-		int eid, from, to;
-		ll cap, cost;
+	struct edge_t {
+		int from; int to; ll cap;
+		ll cst; // original cost 
+		ll dif; // difference considering potential
+		edge_t* rev;
 	};
 	struct node {
-		int id; ll d; int from_eid; vector<int> to_eids;
+		int id; bool done; edge_t* e_from;
+		ll dst; // distance considering potential
+		ll pot; // potential 
+		list<edge_t*> edges;
 	};
 	struct pq_t {
 		int id; ll d;
@@ -16,105 +21,113 @@ private:
 			return d != another.d ? d > another.d : id > another.id;
 		}
 	};
-	int dual_eid(int eid) {
-		if (eid < m) return eid + m;
-		else return eid - m;
+	void add_edge(int a, int b, ll cap, ll cst) {
+		edge_t *e_pre;
+		edge_t *e_rev;
+		e_pre = new edge_t({ a, b, cap, cst, cst, nullptr });
+		e_rev = new edge_t({ b, a, 0, -cst, -cst, nullptr });
+		e_pre->rev = e_rev;
+		e_rev->rev = e_pre;
+		nodes[a].edges.push_back(e_pre);
+		nodes[b].edges.push_back(e_rev);
 	}
-	vector<node> nodes;
-	vector<edge> edges;
-	int n, m;
-	int source, sink;
-	bool overflow;
-public:
-	Mincostflow(const vvi &lst, const vvll &cap, const vvll &cst, int s, int t) {
-		n = lst.size();
-		nodes.resize(n);
-		Loop(i, n) nodes[i] = { i, LLONG_MAX, -1, {} };
-		int eid = 0;
+	void update_potential() {
 		Loop(i, n) {
-			Loop(j, lst[i].size()) {
-				nodes[i].to_eids.push_back(eid);
-				edges.push_back({ eid, i, lst[i][j], cap[i][j], cst[i][j] });
-				eid++;
-			}
+			nodes[i].done = false;
+			nodes[i].e_from = nullptr;
+			nodes[i].dst = LLONG_MAX;
 		}
-		m = eid;
-		Loop(i, n) {
-			Loop(j, lst[i].size()) {
-				nodes[lst[i][j]].to_eids.push_back(eid);
-				edges.push_back({ eid, lst[i][j], i, 0, -cst[i][j] });
-				eid++;
-			}
-		}
-		source = s;
-		sink = t;
-		overflow = false;
-	}
-	bool add_flow(ll f) {
-		if (overflow) return false;
-		while (f > 0) {
-			Loop(i, n) {
-				nodes[i].d = LLONG_MAX;
-				nodes[i].from_eid = -1;
-			}
-			// Bellmanford
-			nodes[source].d = 0;
-			Loop(k, n) {
-				Loop(i, n) {
-					int a = i;
-					if (nodes[a].d == LLONG_MAX) continue;
-					Foreach(eid, nodes[a].to_eids) {
-						if (edges[eid].cap == 0) continue;
-						int b = edges[eid].to;
-						if (nodes[a].d + edges[eid].cost < nodes[b].d) {
-							nodes[b].d = nodes[a].d + edges[eid].cost;
-							nodes[b].from_eid = eid;
-							if (k == n - 1) {
-								return false;
-							}
-						}
-					}
+		nodes[src].dst = 0;
+		priority_queue<pq_t> pq;
+		pq.push({ nodes[src].id, nodes[src].dst });
+		while (pq.size()) {
+			int a = pq.top().id;
+			pq.pop();
+			if (nodes[a].done) continue;
+			nodes[a].done = true;
+			for (edge_t* e : nodes[a].edges) {
+				if (e->cap == 0) continue;
+				int b = e->to;
+				if (nodes[b].done) continue;
+				ll buf = nodes[a].dst + e->dif;
+				if (buf < nodes[b].dst) {
+					nodes[b].dst = buf;
+					nodes[b].e_from = e;
+					pq.push({ b, nodes[b].dst });
 				}
 			}
-			if (nodes[sink].d == LLONG_MAX) return false;
-			int a = sink;
-			ll df = f;
-			while (a != source) {
-				df = min(df, edges[nodes[a].from_eid].cap);
-				a = edges[nodes[a].from_eid].from;
+		}
+		Loop(i, n) {
+			// When node i is unreachable, the potential will overflow, but never be used.
+			// node i is unreachable iff (i != src && nodes[i].e_from == nullptr)
+			nodes[i].pot += nodes[i].dst;
+		}
+	}
+	void update_difference() {
+		Loop(a, n) {
+			for (edge_t* e : nodes[a].edges) {
+				int b = e->to;
+				e->dif = e->cst + nodes[a].pot - nodes[b].pot;
 			}
-			a = sink;
-			while (a != source) {
-				edges[nodes[a].from_eid].cap -= df;
-				edges[dual_eid(nodes[a].from_eid)].cap += df;
-				a = edges[nodes[a].from_eid].from;
+		}
+	}
+	ll update_flow(ll df) {
+		{
+			int a = snk;
+			while (a != src) {
+				edge_t* e = nodes[a].e_from;
+				df = min(df, e->cap);
+				a = e->from;
 			}
+		}
+		{
+			int a = snk;
+			ll unit_cost = 0;
+			while (a != src) {
+				edge_t* e = nodes[a].e_from;
+				e->cap -= df;
+				e->rev->cap += df;
+				unit_cost += e->cst;
+				a = e->from;
+			}
+			this->sum_flow += df;
+			this->sum_cost += unit_cost * df;
+		}
+		return df;
+	}
+	vector<node> nodes;
+	int n, src, snk;
+	ll sum_cost;
+	ll sum_flow;
+public:
+	Mincostflow(const vvi &lst, const vvll &cap, const vvll &cst, int s, int t) {
+		this->n = lst.size();
+		this->src = s;
+		this->snk = t;
+		this->nodes.resize(n);
+		Loop(i, n) {
+			Loop(j, lst[i].size()) {
+				add_edge(i, lst[i][j], cap[i][j], cst[i][j]);
+			}
+		}
+		this->sum_cost = 0;
+		this->sum_flow = 0;
+	}
+	// add flow at most f
+	void add_flow(ll f) {
+		while (true) {
+			update_potential();
+			if (nodes[snk].e_from == nullptr) break;
+			update_difference();
+			ll df = update_flow(f);
+			if (df == 0) break;
 			f -= df;
 		}
-		return true;
-	}
-	vll get_eid_flow() {
-		vll ret(m, -1);
-		if (overflow) return ret;
-		Loop(i, m) {
-			ret[i] = edges[i + m].cap;
-		}
-		return ret;
-	}
-	ll get_flow() {
-		if (overflow) return -1;
-		ll ret = 0;
-		Foreach(eid, nodes[sink].to_eids) {
-			if (eid >= m) ret += edges[eid].cap;
-		}
-		return ret;
 	}
 	ll get_cost() {
-		if (overflow) return -1;
-		ll ret = 0;
-		Loop(i, m) {
-			ret += edges[i].cost * edges[i + m].cap;
-		}
-		return ret;
+		return this->sum_cost;
+	}
+	ll get_flow() {
+		return this->sum_flow;
 	}
 };
