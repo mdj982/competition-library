@@ -6,7 +6,7 @@ private:
 		int id; bool done; int from; ll d; vi to; vll cst;
 	};
 	vector<node> nodes;
-	int n, m, source;
+	int n, m, src;
 	int negative_cycle_endpoint; // -1 if there is no negative cycle
 public:
 	Bellmanford(const vvi &lst, const vvll &cst, int start) {
@@ -19,8 +19,8 @@ public:
 				nodes[i].cst.push_back(cst[i][j]);
 			}
 		}
-		source = start;
-		nodes[source].d = 0;
+		src = start;
+		nodes[src].d = 0;
 		negative_cycle_endpoint = -1;
 		Loop(k, n) {
 			Loop(i, n) {
@@ -28,8 +28,9 @@ public:
 				if (nodes[a].d == LLONG_MAX) continue;
 				Loop(j, nodes[a].to.size()) {
 					int b = nodes[a].to[j];
-					if (nodes[a].d + nodes[a].cst[j] < nodes[b].d) {
-						nodes[b].d = nodes[a].d + nodes[a].cst[j];
+					ll buf = nodes[a].d + nodes[a].cst[j];
+					if (buf < nodes[b].d) {
+						nodes[b].d = buf;
 						nodes[b].from = nodes[a].id;
 						if (k == n - 1) {
 							negative_cycle_endpoint = a;
@@ -48,26 +49,45 @@ public:
 			ret.push_back(nodes[a].from);
 			a = nodes[a].from;
 		}
-		if (a != source) return {};
+		if (a != src) return {};
 		std::reverse(ret.begin(), ret.end());
 		return ret;
 	}
 	ll get_dist(int v) {
 		return nodes[v].d;
 	}
-	bool exists_negative_cycle() {
+	bool exists_reachable_negative_cycle() {
 		return (negative_cycle_endpoint != -1);
 	}
-	vi get_negative_cycle() {
+	vi get_reachable_negative_cycle() {
 		if (negative_cycle_endpoint == -1) return {};
-		vector<int> ret;
-		int a = negative_cycle_endpoint;
-		ret.push_back(a);
-		while (nodes[a].from != negative_cycle_endpoint) {
-			ret.push_back(nodes[a].from);
-			a = nodes[a].from;
+		// modify negative_cycle_endpoint as a point in the negative cycle
+		{
+			vector<int> done(n);
+			int a = negative_cycle_endpoint;
+			while (true) {
+				done[a] = 1;
+				a = nodes[a].from;
+				if (done[a]) {
+					negative_cycle_endpoint = a;
+					break;
+				}
+			}
 		}
-		std::reverse(ret.begin(), ret.end());
+		vector<int> ret;
+		// get the negative cycle
+		{
+			int a = negative_cycle_endpoint;
+			ret.push_back(a);
+			while (true) {
+				ret.push_back(nodes[a].from);
+				a = nodes[a].from;
+				if (a == negative_cycle_endpoint) {
+					break;
+				}
+			}
+			std::reverse(ret.begin(), ret.end());
+		}
 		return ret;
 	}
 };
