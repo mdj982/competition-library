@@ -1,6 +1,7 @@
 #include "auto_util_header.hpp"
 
-// O({f}{m}{n}) to fill negative cycles
+// O({_f}{m}{n}) to fill negative cycles
+// O({m}{n}) to proceed negative edges
 // O({f}{m}\log{n}) to fill positive paths
 class Mincostflow {
 private:
