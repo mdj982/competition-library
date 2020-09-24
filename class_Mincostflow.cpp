@@ -200,7 +200,7 @@ private:
 				if (a == negative_cycle_endpoint) break;
 			}
 			// do not sum up flow
-			this->sum_cost += unit_cost * df;
+			this->sum_cost += df * unit_cost;
 		}
 		return df;
 	}
@@ -221,7 +221,7 @@ public:
 		Loop(i, n) {
 			this->nodes[i] = { i, false, nullptr, LLONG_MAX, 0, {} };
 		}
-		Loop(i, n) {
+		Loop(i, lst.size()) {
 			Loop(j, lst[i].size()) {
 				if (cst[i][j] >= 0) {
 					add_edge(i, lst[i][j], cap[i][j], cst[i][j]);
