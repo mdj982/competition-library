@@ -39,7 +39,7 @@ public:
 			w[x] = unite_rule(w[x], w[y]);
 		}
 	}
-	bool is_same(int x, int y) {
+	bool is_united(int x, int y) {
 		return find(x) == find(y);
 	}
 	int get_w(int x) {
