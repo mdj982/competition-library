@@ -7,8 +7,7 @@
 using std::cin, std::cout, std::bitset, std::complex;
 using std::vector, std::array, std::string, std::pair, std::list, std::queue, std::deque;
 using std::priority_queue, std::set, std::map, std::unordered_map;
-using std::sort, std::greater, std::min, std::max, std::reverse;
-using std::min_element, std::max_element, std::accumulate;
+using std::greater;
 
 using vi = vector<int>; using vvi = vector<vi>; using vvvi = vector<vvi>;
 using ull = unsigned long long int;
@@ -49,6 +48,8 @@ const string endl = "\n";
 template<class T> T reversed(T container) { reverse(container.begin(), container.end()); return container; }
 template<class T> void printv(const vector<T> &v) { for (const T &x : v) cout << x << " "; cout << endl; }
 template<class T> void printmx(const vector<vector<T>> &mx) { for (const vector<T> &v : mx) printv(v); }
+template<class T> void chmin(T &x, const T &y) { x = std::min(x, y); }
+template<class T> void chmax(T &x, const T &y) { x = std::max(x, y); }
 ll rndf(double x) { return (ll)(x + (x >= 0 ? 0.5 : -0.5)); }
 ll floorsqrt(ll x) { ll m = (ll)sqrt((double)x); return m + (m*  m <= x ? 0 : -1); }
 ll ceilsqrt(ll x) { ll m = (ll)sqrt((double)x); return m + (x <= m * m ? 0 : 1); }

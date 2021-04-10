@@ -101,7 +101,7 @@ namespace strll_op {
 					ret.back()++;
 				}
 				Loop(j, min(m + 1, n)) {
-					s[i + j] = j < sbuf.size() ? sbuf[j] : '0';
+					s[i + j] = j < int(sbuf.size()) ? sbuf[j] : '0';
 				}
 			}
 			reverse(ret.begin(), ret.end());
@@ -247,8 +247,8 @@ namespace strll_op {
 		inline bool operator==(const strll &x) { return val == x.val; }
 		inline bool operator!=(const strll &x) { return val != x.val; }
 		inline bool operator<(const strll &x) const { return !ge(val, x.val); }
-		friend inline istream& operator >> (istream &is, strll& x) { is >> x.val; reverse(x.val.begin(), x.val.end()); return is; }
-		friend inline ostream& operator << (ostream &os, const strll& x) { os << x.get_val(); return os; }
+		friend inline std::istream& operator >> (std::istream &is, strll& x) { is >> x.val; reverse(x.val.begin(), x.val.end()); return is; }
+		friend inline std::ostream& operator << (std::ostream &os, const strll& x) { os << x.get_val(); return os; }
 		string get_val() const { string ret = val; reverse(ret.begin(), ret.end()); return ret; }
 	};
 }
