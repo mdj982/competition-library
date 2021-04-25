@@ -12,9 +12,9 @@ private:
 	vector<segval_t> nodes;
 	vi idl, idr, cover_size;
 	void merge(int id) {
-		nodes[id].min = min(nodes[idl[id]].min + nodes[idl[id]].add,
+		nodes[id].min = std::min(nodes[idl[id]].min + nodes[idl[id]].add,
 			nodes[idr[id]].min + nodes[idr[id]].add);
-		nodes[id].max = max(nodes[idl[id]].max + nodes[idl[id]].add,
+		nodes[id].max = std::max(nodes[idl[id]].max + nodes[idl[id]].add,
 			nodes[idr[id]].max + nodes[idr[id]].add);
 		nodes[id].sum = nodes[idl[id]].sum + nodes[idl[id]].add * cover_size[idl[id]]
 			+ nodes[idr[id]].sum + nodes[idr[id]].add * cover_size[idr[id]];
@@ -74,8 +74,8 @@ private:
 			if (s < m && m < t) {
 				val_t v0 = solve_rec(s, m, l, m, idl[id], op);
 				val_t v1 = solve_rec(m, t, m, r, idr[id], op);
-				if (op == MIN) v = min(v0, v1);
-				else if (op == MAX) v = max(v0, v1);
+				if (op == MIN) v = std::min(v0, v1);
+				else if (op == MAX) v = std::max(v0, v1);
 				else if (op == SUM) v = v0 + v1;
 			}
 			else if (s < m) {

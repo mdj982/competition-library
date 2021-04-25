@@ -2,34 +2,34 @@
 
 namespace mod_op {
 
-	const ll MOD = //(ll)1e9 + 7;
+	ll MOD = (ll)1e9 + 7; dont forget to modify;
 
-		class modll {
-		private:
-			ll val;
-			ll modify(ll x) const { ll ret = x % MOD; if (ret < 0) ret += MOD; return ret; }
-			ll inv(ll x) const {
-				if (x == 0) return 1 / x;
-				else if (x == 1) return 1;
-				else return modify(inv(MOD % x) * modify(-MOD / x));
-			}
-		public:
-			modll(ll init = 0) { val = modify(init); return; }
-			modll(const modll& another) { val = another.val; return; }
-			modll& operator=(const modll &another) { val = another.val; return *this; }
-			modll operator+(const modll &x) const { return modify(val + x.val); }
-			modll operator-(const modll &x) const { return modify(val - x.val); }
-			modll operator*(const modll &x) const { return modify(val * x.val); }
-			modll operator/(const modll &x) const { return modify(val * inv(x.val)); }
-			modll& operator+=(const modll &x) { val = modify(val + x.val); return *this; }
-			modll& operator-=(const modll &x) { val = modify(val - x.val); return *this; }
-			modll& operator*=(const modll &x) { val = modify(val * x.val); return *this; }
-			modll& operator/=(const modll &x) { val = modify(val * inv(x.val)); return *this; }
-			bool operator==(const modll &x) { return val == x.val; }
-			bool operator!=(const modll &x) { return val != x.val; }
-			friend istream& operator >> (istream &is, modll& x) { is >> x.val; return is; }
-			friend ostream& operator << (ostream &os, const modll& x) { os << x.val; return os; }
-			ll get_val() { return val; }
+	class modll {
+	private:
+		ll val;
+		ll modify(ll x) const { ll ret = x % MOD; if (ret < 0) ret += MOD; return ret; }
+		ll inv(ll x) const {
+			if (x == 0) return 1 / x;
+			else if (x == 1) return 1;
+			else return modify(inv(MOD % x) * modify(-MOD / x));
+		}
+	public:
+		modll(ll init = 0) { val = modify(init); return; }
+		modll(const modll& another) { val = another.val; return; }
+		modll& operator=(const modll &another) { val = another.val; return *this; }
+		modll operator+(const modll &x) const { return modify(val + x.val); }
+		modll operator-(const modll &x) const { return modify(val - x.val); }
+		modll operator*(const modll &x) const { return modify(val * x.val); }
+		modll operator/(const modll &x) const { return modify(val * inv(x.val)); }
+		modll& operator+=(const modll &x) { val = modify(val + x.val); return *this; }
+		modll& operator-=(const modll &x) { val = modify(val - x.val); return *this; }
+		modll& operator*=(const modll &x) { val = modify(val * x.val); return *this; }
+		modll& operator/=(const modll &x) { val = modify(val * inv(x.val)); return *this; }
+		bool operator==(const modll &x) { return val == x.val; }
+		bool operator!=(const modll &x) { return val != x.val; }
+		friend std::istream& operator>>(std::istream &is, modll& x) { is >> x.val; return is; }
+		friend std::ostream& operator<<(std::ostream &os, const modll& x) { os << x.val; return os; }
+		ll get_val() { return val; }
 	};
 
 	modll pow(modll n, ll p) {

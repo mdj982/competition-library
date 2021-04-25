@@ -39,7 +39,7 @@ public:
 	String_Comparator(int max_length, int n_base = 4) {
 		Random_Int *rm = new Random_Int(int(MOD_cands.size()));
 		this->MOD = this->MOD_cands[rm->get()];
-		this->max_length = max(1, max_length);
+		this->max_length = std::max(1, max_length);
 		this->ri = new Random_Int(int(this->MOD) - 256);
 		this->bases.resize(n_base);
 		this->pows.resize(n_base, vll(this->max_length + 1));

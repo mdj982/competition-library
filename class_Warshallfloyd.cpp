@@ -19,7 +19,7 @@ public:
 			Loop(i, n) {
 				Loop(j, n) {
 					if (table[i][k] == LLONG_MAX || table[k][j] == LLONG_MAX) continue;
-					table[i][j] = min(table[i][j], table[i][k] + table[k][j]);
+					table[i][j] = std::min(table[i][j], table[i][k] + table[k][j]);
 				}
 			}
 		}

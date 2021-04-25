@@ -1,6 +1,5 @@
 #include "auto_util_header.hpp"
-
-// include modll
+#include "Library_mod.cpp"
 
 namespace number_theoretic_transform {
 
@@ -81,7 +80,7 @@ namespace number_theoretic_transform {
 		make_omegas(n);
 		Loop(i, n) {
 			int j = bit_reverse(i, digit);
-			if (j > i) swap(ret[i], ret[j]);
+			if (j > i) std::swap(ret[i], ret[j]);
 		}
 		Loop(i, digit) {
 			int j = 0, m = 1 << i, mw = (digit - i - 1);
@@ -118,7 +117,7 @@ namespace number_theoretic_transform {
 		}
 		Loop(i, n) {
 			int j = bit_reverse(i, digit);
-			if (j > i) swap(ret[i], ret[j]);
+			if (j > i) std::swap(ret[i], ret[j]);
 		}
 		return ret;
 	}

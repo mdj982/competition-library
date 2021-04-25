@@ -19,14 +19,14 @@ private:
 			if (!nodes[b].done) {
 				nodes[b].from = a;
 				lowlink_dfs(b);
-				nodes[a].low = min(nodes[a].low, nodes[b].low);
+				chmin(nodes[a].low, nodes[b].low);
 				if (nodes[a].pre < nodes[b].low) {
 					if (a < b) result.push_back({ a,b });
 					else result.push_back({ b,a });
 				}
 			}
 			else {
-				nodes[a].low = min(nodes[a].low, nodes[b].pre);
+				chmin(nodes[a].low, nodes[b].pre);
 			}
 		}
 		return;

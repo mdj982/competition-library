@@ -12,8 +12,8 @@ private:
 			Loop(i, n - di) {
 				Loop(j, m) {
 					ll &val = table[ki][0][i][j];
-					val = max(val, table[ki - 1][0][i][j]);
-					val = max(val, table[ki - 1][0][i + (di >> 1)][j]);
+					val = std::max(val, table[ki - 1][0][i][j]);
+					val = std::max(val, table[ki - 1][0][i + (di >> 1)][j]);
 				}
 			}
 		}
@@ -24,15 +24,15 @@ private:
 				Loop(i, n - di) {
 					Loop(j, m - dj) {
 						ll &val = table[ki][kj][i][j];
-						val = max(val, table[ki][kj - 1][i][j]);
-						val = max(val, table[ki][kj - 1][i][j + (dj >> 1)]);
+						val = std::max(val, table[ki][kj - 1][i][j]);
+						val = std::max(val, table[ki][kj - 1][i][j + (dj >> 1)]);
 					}
 				}
 			}
 		}
 	}
 	void make_floorlogs() {
-		floorlogs.resize(max(n, m) + 1);
+		floorlogs.resize(std::max(n, m) + 1);
 		int p = 0;
 		Loop(i, floorlogs.size()) {
 			if ((1 << (p + 1)) == i) ++p;
@@ -60,10 +60,10 @@ public:
 		int di = 1 << ki;
 		int dj = 1 << kj;
 		ll ret = LLONG_MIN;
-		ret = max(ret, table[ki][kj][s0][s1]);
-		ret = max(ret, table[ki][kj][t0 - di][s1]);
-		ret = max(ret, table[ki][kj][s0][t1 - dj]);
-		ret = max(ret, table[ki][kj][t0 - di][t1 - dj]);
+		ret = std::max(ret, table[ki][kj][s0][s1]);
+		ret = std::max(ret, table[ki][kj][t0 - di][s1]);
+		ret = std::max(ret, table[ki][kj][s0][t1 - dj]);
+		ret = std::max(ret, table[ki][kj][t0 - di][t1 - dj]);
 		return ret;
 	}
 };

@@ -13,14 +13,14 @@ namespace Fourier_transform {
 	inline void make_omegas(int n) {
 		if (omegas.size() != n) {
 			omegas.resize(n);
-			Loop(i, n) omegas[i] = exp(cdouble({ 0, 2 * PI * i / n }));
+			Loop(i, n) omegas[i] = exp(cdouble({ 0, 2 * M_PI * i / n }));
 		}
 	}
 
 	inline void make_iomegas(int n) {
 		if (iomegas.size() != n) {
 			iomegas.resize(n);
-			Loop(i, n) iomegas[i] = exp(cdouble({ 0, -2 * PI * i / n }));
+			Loop(i, n) iomegas[i] = exp(cdouble({ 0, -2 * M_PI * i / n }));
 		}
 	}
 

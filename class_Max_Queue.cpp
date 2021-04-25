@@ -6,14 +6,14 @@ private:
 public:
 	void push(ll x) {
 		ll y = stk1.size() ? stk1.back().second : LLONG_MIN;
-		stk1.push_back({ x, max(x, y) });
+		stk1.push_back({ x, std::max(x, y) });
 	}
 	void pop() {
 		if (!stk0.size()) {
 			while (stk1.size()) {
 				ll x = stk1.back().first;
 				ll y = stk0.size() ? stk0.back().second : LLONG_MIN;
-				stk0.push_back({ x, max(x, y) });
+				stk0.push_back({ x, std::max(x, y) });
 				stk1.pop_back();
 			}
 		}
@@ -30,6 +30,6 @@ public:
 		ll x = LLONG_MIN, y = LLONG_MIN;
 		if (stk0.size()) x = stk0.back().second;
 		if (stk1.size()) y = stk1.back().second;
-		return max(x, y);
+		return std::max(x, y);
 	}
 };

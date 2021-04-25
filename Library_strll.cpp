@@ -21,7 +21,7 @@ namespace strll_op {
 			int n = s.length();
 			int m = t.length();
 			string ret = "";
-			int v_digits = max(n, m) + 1;
+			int v_digits = std::max(n, m) + 1;
 			vi v(v_digits, 0);
 			Loop(i, v_digits - 1) {
 				if (i < n) v[i] += s[i] - '0';
@@ -31,7 +31,7 @@ namespace strll_op {
 					v[i + 1] += 1;
 				}
 			}
-			if (v[v_digits - 1] == 0) v_digits = max(1, v_digits - 1);
+			if (v[v_digits - 1] == 0) v_digits = std::max(1, v_digits - 1);
 			Loop(i, v_digits) ret += '0' + v[i];
 			return ret;
 		}
@@ -100,7 +100,7 @@ namespace strll_op {
 					sbuf = usub_core(sbuf, t);
 					ret.back()++;
 				}
-				Loop(j, min(m + 1, n)) {
+				Loop(j, std::min(m + 1, n)) {
 					s[i + j] = j < int(sbuf.size()) ? sbuf[j] : '0';
 				}
 			}

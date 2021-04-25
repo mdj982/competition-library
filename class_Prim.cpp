@@ -50,7 +50,7 @@ public:
 		Loop1(i, n - 1) {
 			int a = i;
 			int b = nodes[i].from;
-			if (a > b) swap(a, b);
+			if (a > b) std::swap(a, b);
 			ret.push_back({ a, b });
 		}
 	}

@@ -151,7 +151,7 @@ public:
 		val_t ret = init_val;
 		for (auto root : heaps[h].roots) {
 			if (root == nullptr) continue;
-			ret = min(ret, root->add + (root->enable ? root->upd : root->val));
+			ret = std::min(ret, root->add + (root->enable ? root->upd : root->val));
 		}
 		return ret;
 	}

@@ -12,7 +12,7 @@ private:
 				if (mask & (ll(mx[id][j]) << j)) y |= (1LL << j);
 			}
 			int r1 = max_clique_rec(mx, mp, y) + 1;
-			mp[mask] = max(r0, r1);
+			mp[mask] = std::max(r0, r1);
 		}
 		return mp[mask];
 	}

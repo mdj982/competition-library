@@ -17,7 +17,7 @@ vll loop_vec_accumulate(const vll &a, ll length) {
 	return ret;
 }
 
-vvll loop_mx_accumulate(const vvll &A, ll i_length, ll j_length) {
+vvll loop_mx_accumulate(vvll A, ll i_length, ll j_length) {
 	int m = A.size();
 	int n = A[0].size();
 	Loop(i, m) A[i] = loop_vec_accumulate(A[i], j_length);

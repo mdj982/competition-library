@@ -1,4 +1,5 @@
 #include "auto_util_header.hpp"
+#include "class_Strongly_Connected_Components.cpp"
 
 // include strongly connected components
 

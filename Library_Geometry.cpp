@@ -65,10 +65,10 @@ bool on_same_line(pt_t s, pt_t t, pt_t p) {
 bool in_segment(pt_t s, pt_t t, pt_t p) {
 	line_t l = solve_line(s, t);
 	if (feq(dist(l, p), 0)
-		&& fge(p.x, min(s.x, t.x))
-		&& fge(max(s.x, t.x), p.x)
-		&& fge(p.y, min(s.y, t.y))
-		&& fge(max(s.y, t.y), p.y)) return true;
+		&& fge(p.x, std::min(s.x, t.x))
+		&& fge(std::max(s.x, t.x), p.x)
+		&& fge(p.y, std::min(s.y, t.y))
+		&& fge(std::max(s.y, t.y), p.y)) return true;
 	else return false;
 }
 
@@ -77,7 +77,7 @@ bool in_segment(pt_t s, pt_t t, pt_t p) {
 pt_t cross_point(line_t l, line_t m) {
 	double d = l.a * m.b - l.b * m.a;
 	if (feq(d, 0)) {
-		if (feq(l.a * m.c - l.c * m.a, 0)) return { INF, INF };
+		if (feq(l.a * m.c - l.c * m.a, 0)) return { INFINITY, INFINITY };
 		else return { NAN, NAN };
 	}
 	else {
@@ -325,8 +325,8 @@ vector<pt_t> convex_hull(vector<pt_t> ps) {
 double angle(pt_t p, pt_t q) {
 	p = p * (1.0 / norm(p));
 	q = q * (1.0 / norm(q));
-	double r0 = acos(max(min(dot(p, q), 1.0), -1.0));
-	double r1 = asin(max(min(dot(p, q), 1.0), -1.0));
+	double r0 = acos(std::max(std::min(dot(p, q), 1.0), -1.0));
+	double r1 = asin(std::max(std::min(dot(p, q), 1.0), -1.0));
 	if (r1 >= 0) return r0;
 	else return 2 * M_PI - r0;
 }

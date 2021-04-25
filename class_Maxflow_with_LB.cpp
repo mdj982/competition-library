@@ -69,7 +69,7 @@ private:
 				itr = LG.nodes[a].edges.erase(itr);
 			}
 			else {
-				ll df = add_flow_on_LG(e->to, min(e->cap, f));
+				ll df = add_flow_on_LG(e->to, std::min(e->cap, f));
 				if (df > 0) {
 					e->cap -= df;
 					e->rev->cap += df;

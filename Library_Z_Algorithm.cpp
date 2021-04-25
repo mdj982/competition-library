@@ -27,7 +27,7 @@ vi Z_algorithm(const string &s, const string &t) {
 	vi ret(n);
 	vi a = Z_algorithm(t + s);
 	Loop(i, n) {
-		ret[i] = min(m, a[m + i]);
+		ret[i] = std::min(m, a[m + i]);
 	}
 	return ret;
 }

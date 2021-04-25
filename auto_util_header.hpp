@@ -7,7 +7,6 @@
 using std::cin, std::cout, std::bitset, std::complex;
 using std::vector, std::array, std::string, std::pair, std::list, std::queue, std::deque;
 using std::priority_queue, std::set, std::map, std::unordered_map;
-using std::greater;
 
 using vi = vector<int>; using vvi = vector<vi>; using vvvi = vector<vvi>;
 using ull = unsigned long long int;
@@ -45,7 +44,8 @@ bool inrange(vll xs, ll t) { Foreach(x, xs) if (!(x >= 0 && x < t)) return false
 int ceillog2(ll x) { int m = int(log2(x)); return m + ((1LL << m) < x ? 1 : 0); }
 int floorlog2(ll x) { int m = int(log2(x)); return m - ((1LL << m) > x ? 1 : 0); }
 const string endl = "\n";
-template<class T> T reversed(T container) { reverse(container.begin(), container.end()); return container; }
+// using std::endl;
+template<class T> T reversed(T container) { std::reverse(container.begin(), container.end()); return container; }
 template<class T> void printv(const vector<T> &v) { for (const T &x : v) cout << x << " "; cout << endl; }
 template<class T> void printmx(const vector<vector<T>> &mx) { for (const vector<T> &v : mx) printv(v); }
 template<class T> void chmin(T &x, const T &y) { x = std::min(x, y); }

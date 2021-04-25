@@ -1,4 +1,5 @@
 #include "auto_util_header.hpp"
+#include "class_Fenwick.cpp" // modify as: using val_t = int
 
 class SegTreeSum2D {
 	using val_t = int;
@@ -16,8 +17,8 @@ private:
 	};
 	void change_rec(int s0, int s1, int l, int r, int id, val_t x, change_t op) {
 		int s1_code = int(lower_bound(nodes[id].codes.begin(), nodes[id].codes.end(), s0 + s1 * ll(this->N)) - nodes[id].codes.begin());
-		if (op == UPD) nodes[id].st->upd(s1_code, s1_code + 1, x);
-		if (op == ADD) nodes[id].st->add(s1_code, s1_code + 1, x);
+		if (op == UPD) nodes[id].fwk->upd(s1_code, x);
+		if (op == ADD) nodes[id].fwk->add(s1_code, x);
 		if (s0 == l && s0 + 1 == r) {
 			return;
 		}

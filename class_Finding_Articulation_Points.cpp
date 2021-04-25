@@ -20,11 +20,11 @@ private:
 			if (!nodes[b].done) {
 				nodes[b].from = a;
 				lowlink_dfs(b, false);
-				nodes[a].low = min(nodes[a].low, nodes[b].low);
+				chmin(nodes[a].low, nodes[b].low);
 				if (nodes[a].pre <= nodes[b].low) cnt++;
 			}
 			else {
-				nodes[a].low = min(nodes[a].low, nodes[b].pre);
+				chmin(nodes[a].low, nodes[b].pre);
 			}
 		}
 		if (cnt > (isroot ? 1 : 0)) arts.push_back(a);

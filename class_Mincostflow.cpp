@@ -143,7 +143,7 @@ private:
 			int a = snk;
 			while (a != src) {
 				edge_t* e = nodes[a].e_from;
-				df = min(df, e->cap);
+				chmin(df, e->cap);
 				a = e->from;
 			}
 		}
@@ -183,7 +183,7 @@ private:
 			int a = negative_cycle_endpoint;
 			while (true) {
 				edge_t *e = nodes[a].e_from;
-				df = min(df, e->cap);
+				chmin(df, e->cap);
 				a = e->from;
 				if (a == negative_cycle_endpoint) break;
 			}
