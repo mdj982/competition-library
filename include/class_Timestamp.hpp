@@ -1,5 +1,5 @@
-#ifndef UTILTIME
-#define UTILTIME
+#ifndef CLASS_TIMESTAMP_HPP
+#define CLASS_TIMESTAMP_HPP
 
 #include <iostream>
 #include <chrono>
@@ -20,7 +20,7 @@ public:
 	void begin() {
 		if (mode == BEGIN) {
 			std::cout << "timestamp mode error with BEGIN -> BEGIN" << std::endl;
-			exit(EXIT_SUCCESS);
+			exit(EXIT_FAILURE);
 		}
 		mode = BEGIN;
 		start = std::chrono::system_clock::now();
@@ -29,11 +29,11 @@ public:
 		finish = std::chrono::system_clock::now();
 		if (mode == PAUSE) {
 			std::cout << "timestamp mode error with PAUSE -> PAUSE" << std::endl;
-			exit(EXIT_SUCCESS);
+			exit(EXIT_FAILURE);
 		}
 		if (mode == END) {
 			std::cout << "timestamp mode error with END -> PAUSE" << std::endl;
-			exit(EXIT_SUCCESS);
+			exit(EXIT_FAILURE);
 		}
 		elapsed += double(std::chrono::duration_cast<std::chrono::nanoseconds>(finish - start).count());
 		mode = PAUSE;
@@ -43,7 +43,7 @@ public:
 		double ret = 0;
 		if (mode == END) {
 			std::cout << "timestamp mode error with END -> END" << std::endl;
-			exit(EXIT_SUCCESS);
+			exit(EXIT_FAILURE);
 		}
 		if (mode == PAUSE) {
 			ret = elapsed / 1e6;
@@ -68,4 +68,4 @@ public:
     }
 };
 
-#endif // UTILTIME
+#endif // CLASS_TIMESTAMP_HPP
