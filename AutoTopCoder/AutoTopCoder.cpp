@@ -69,7 +69,7 @@ string method_name = "";
 
 void failed(string error_message) {
 	cout << "Failed: " << error_message << endl;
-	exit(EXIT_SUCCESS);
+	exit(EXIT_FAILURE);
 }
 
 void write_before_main() {
@@ -133,7 +133,7 @@ int main() {
 		if (in_test_case >= 0) {
 			test_params.push_back(readline);
 			in_test_case++;
-			if (in_test_case >= params_typename.size()) {
+			if (in_test_case >= int(params_typename.size())) {
 				in_test_case = -1;
 				write_testcase();
 			}
