@@ -137,11 +137,11 @@ public:
 		Foreach(a, deg_order) {
 			int x = n - 1, max_x = INT_MIN;
 			Foreach(b, nodes[a].childs) {
-				max_x = max(max_x, record[b]);
+				max_x = std::max(max_x, record[b]);
 				x -= record[b];
 				record[a] += record[b];
 			}
-			max_x = max(max_x, x);
+			max_x = std::max(max_x, x);
 			if (max_x < ret.fst) ret = { max_x,{ a } };
 			else if (max_x == ret.fst) ret.snd.push_back(a);
 		}

@@ -9,7 +9,9 @@ namespace Suffix_Array {
 		}
 	};
 	// excluding empty substring
-	vi suffix_array(const vi &s) {
+    // ret[i] : substring s[i, n) is the ret[i]-th smallest
+    template<class Vec_T>
+	vi suffix_array(const Vec_T &s) {
 		int n = s.size();
 		vi ret(n);
 		vector<sa_t> a(n); // fst = current rank, snd add rank
