@@ -28,7 +28,7 @@ class Tree {
 private:
 	struct node {
 		vi childs; int parent = -1;
-		int deg = -1; // the number of edges of the path to the root
+		int dep = -1; // the number of edges of the path to the root
 		int eid = -1; // edge id of the edge connected by its parent and itself
 		int subtree_n = 1; // the number of nodes of the partial tree rooted by itself
 #ifdef ANCESTOR
@@ -60,16 +60,16 @@ private:
 		que.push(root);
 		while (que.size()) {
 			int a = que.front(); que.pop();
-			deg_order.push_back(a);
-			if (a == Tree::root) nodes[a].deg = 0;
+			dep_order.push_back(a);
+			if (a == Tree::root) nodes[a].dep = 0;
 			int leaf_flag = true;
 			Loop(i, edges[a].size()) {
 				int b = edges[a][i].to;
-				if (nodes[b].deg != -1) {
+				if (nodes[b].dep != -1) {
 					nodes[a].parent = b;
 					nodes[a].eid = edges[a][i].eid;
 					nodes[a].cost = edges[a][i].cost;
-					nodes[a].deg = nodes[b].deg + 1;
+					nodes[a].dep = nodes[b].dep + 1;
 				}
 				else {
 					leaf_flag = false;
@@ -80,7 +80,7 @@ private:
 			if (leaf_flag) leaves.push_back(a);
 		}
 		Loopr(i, n) {
-			int a = deg_order[i];
+			int a = dep_order[i];
 			Loop(j, nodes[a].childs.size()) {
 				int b = nodes[a].childs[j];
 				nodes[a].subtree_n += nodes[b].subtree_n;
@@ -89,7 +89,7 @@ private:
 	}
 public:
 	vector<node> nodes;
-	vi deg_order; // node ids, sorted by deg
+	vi dep_order; // node ids, sorted by depth
 	vi leaves;
 	int root;
 public:
@@ -113,8 +113,8 @@ public:
 	int solve_diameter() {
 		vi d(n, -1);
 		queue<int> que;
-		d[deg_order[n - 1]] = 0;
-		que.push(deg_order[n - 1]);
+		d[dep_order[n - 1]] = 0;
+		que.push(dep_order[n - 1]);
 		while (que.size()) {
 			int a = que.front(); que.pop();
 			int p = nodes[a].parent;
@@ -134,7 +134,7 @@ public:
 	pair<int, vi> solve_center_of_gravity() {
 		pair<int, vi> ret = { INT_MAX,{} };
 		vi record(n, 1);
-		Foreach(a, deg_order) {
+		Foreach(a, dep_order) {
 			int x = n - 1, max_x = INT_MIN;
 			Foreach(b, nodes[a].childs) {
 				max_x = std::max(max_x, record[b]);
@@ -176,24 +176,24 @@ public:
 	void solve_sprs_ancestors() {
 		sprs_ancestors.resize(n);
 		vector<int> current_ancestors;
-		stack<int> stk;
-		stk.push(Tree::root);
+		vector<int> stk;
+		stk.push_back(Tree::root);
 		int time_stamp = 0;
 		while (stk.size()) {
-			int a = stk.top(); stk.pop();
+			int a = stk.back(); stk.pop_back();
 			nodes[a].visited = time_stamp++;
 			for (int i = 1; i <= (int)(current_ancestors.size()); i *= 2) {
 				sprs_ancestors[a].push_back(current_ancestors[current_ancestors.size() - i]);
 			}
 			if (nodes[a].childs.size()) {
 				Loop(i, nodes[a].childs.size()) {
-					stk.push(nodes[a].childs[i]);
+					stk.push_back(nodes[a].childs[i]);
 				}
 				current_ancestors.push_back(a);
 			}
 			else {
 				nodes[a].departed = time_stamp++;
-				while (current_ancestors.size() && (stk.empty() || nodes[stk.top()].parent != current_ancestors.back())) {
+				while (current_ancestors.size() && (stk.empty() || nodes[stk.back()].parent != current_ancestors.back())) {
 					nodes[current_ancestors.back()].departed = time_stamp++;
 					current_ancestors.pop_back();
 				}
@@ -223,7 +223,7 @@ public:
 	int get_ancestor(int descendant, int k) {
 		if (k == 0) return descendant;
 		int l = (int)log2(k);
-		if (l >= sprs_ancestors[descendant].size()) return -1;
+		if (l >= int(sprs_ancestors[descendant].size())) return -1;
 		else return get_ancestor(sprs_ancestors[descendant][l], k - (1 << l));
 	}
 	// return first value causing "t" in evalfunc that returns descendant->[f,...,f,t,...,t]->root
@@ -258,7 +258,7 @@ public:
 #endif
 #ifdef HLD
 	void solve_hld() {
-		Foreach(a, deg_order) {
+		Foreach(a, dep_order) {
 			if (nodes[a].pid == -1) {
 				nodes[a].pid = int(hld_paths.size());
 				nodes[a].qid = 0;

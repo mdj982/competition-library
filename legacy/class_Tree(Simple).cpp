@@ -14,13 +14,13 @@ class Tree {
 private:
 	struct node {
 		int id; vi childs; int parent = -1;
-		int deg = -1; // the number of edges of the path to the root
+		int dep = -1; // the number of edges of the path to the root
 		int eid = -1; // edge id of the edge connected by its parent and itself
 		int subtree_n = 1; // the number of nodes of the partial tree rooted by itself
 		nodeval_t val; // value of the node itself
 		edgeval_t cost; // cost of the edge connected by its parent and itself
 		bool operator<(const node & another) const {
-			return deg != another.deg ? deg < another.deg : id < another.id;
+			return dep != another.dep ? dep < another.dep : id < another.id;
 		}
 	};
 	struct edgeinfo {
@@ -36,16 +36,16 @@ private:
 		que.push(root);
 		while (que.size()) {
 			int a = que.front(); que.pop();
-			deg_order.push_back(a);
-			if (a == Tree::root) nodes[a].deg = 0;
+			dep_order.push_back(a);
+			if (a == Tree::root) nodes[a].dep = 0;
 			int leaf_flag = true;
 			Loop(i, edges[a].size()) {
 				int b = edges[a][i].to;
-				if (nodes[b].deg != -1) {
+				if (nodes[b].dep != -1) {
 					nodes[a].parent = b;
 					nodes[a].eid = edges[a][i].eid;
 					nodes[a].cost = edges[a][i].cost;
-					nodes[a].deg = nodes[b].deg + 1;
+					nodes[a].dep = nodes[b].dep + 1;
 				}
 				else {
 					leaf_flag = false;
@@ -56,7 +56,7 @@ private:
 			if (leaf_flag) leaves.push_back(a);
 		}
 		Loopr(i, n) {
-			int a = deg_order[i];
+			int a = dep_order[i];
 			Loop(j, nodes[a].childs.size()) {
 				int b = nodes[a].childs[j];
 				nodes[a].subtree_n += nodes[b].subtree_n;
@@ -65,7 +65,7 @@ private:
 	}
 public:
 	vector<node> nodes;
-	vi deg_order; // node ids, sorted by deg
+	vi dep_order; // node ids, sorted by depth
 	vi leaves;
 	int root;
 	// T should be non-empty tree
