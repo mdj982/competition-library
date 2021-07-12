@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 
-auto partialbind = [](auto f, auto&& x)
+auto bindarg = [](auto f, auto&& x)
 {
 	if constexpr (std::is_lvalue_reference<decltype(x)>{}) {
 		return [f, &x](auto&& ... args) mutable {
@@ -29,11 +29,11 @@ void test_output_and_inc_arg1_arg5() {
 	int z = 23;
 	int p = 31;
 	//
-	auto c1 = partialbind(output_and_inc_arg1_arg5, x);
-	auto c2 = partialbind(c1, y);
-	auto c3 = partialbind(c2, a);
-	auto c4 = partialbind(c3, z);
-	auto c5 = partialbind(c4, &p);
+	auto c1 = bindarg(output_and_inc_arg1_arg5, x);
+	auto c2 = bindarg(c1, y);
+	auto c3 = bindarg(c2, a);
+	auto c4 = bindarg(c3, z);
+	auto c5 = bindarg(c4, &p);
 	//
 	output_and_inc_arg1_arg5(x, 7, a, 23, &p, "expected(13, 7, 1000, 23, 31): ");
 	c1(y, a, 23, &p, "expected(14, 7, 1000, 23, 32): ");
@@ -42,7 +42,7 @@ void test_output_and_inc_arg1_arg5() {
 	c4(&p, "expected(17, 7, 1000, 23, 35): ");
 	c5("expected(18, 7, 1000, 24, 36): ");
 	//
-	auto c6 = partialbind(c5, "expected(19, 7, 1000, 24, 37): ");
+	auto c6 = bindarg(c5, "expected(19, 7, 1000, 24, 37): ");
 	c6();
 }
 
@@ -133,7 +133,7 @@ void test_binary_search() {
 	std::cout << ts->end() << " ms, sum = " << ref_1 << std::endl;
 	ts->begin();
 	for (int i = 0; i < int(a.size()); ++i) {
-		auto c = partialbind(binary_search1, a);
+		auto c = bindarg(binary_search1, a);
 		ans_1 += c(i);
 	}
 	std::cout << ts->end() << " ms, sum = " << ans_1 << std::endl;
@@ -144,7 +144,7 @@ void test_binary_search() {
 	std::cout << ts->end() << " ms, sum = " << ref_2 << std::endl;
 	ts->begin();
 	for (int i = 0; i < int(a.size()); ++i) {
-		auto c = partialbind(binary_search2, i);
+		auto c = bindarg(binary_search2, i);
 		ans_2 += c(a);
 	}
 	std::cout << ts->end() << " ms, sum = " << ans_2 << std::endl;
