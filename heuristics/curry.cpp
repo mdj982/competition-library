@@ -1,4 +1,4 @@
-#include "auto_util_header.hpp"
+#include <bits/stdc++.h>
 
 auto curry = [](auto f, auto&& x)
 {
@@ -14,6 +14,7 @@ auto curry = [](auto f, auto&& x)
 	}
 };
 
+/*
 void output_and_inc_arg1_arg5(int &x, const int y, const std::vector<int> &a, const int &z, int* p, const std::string &s) {
 	std::cout << s << " " << x << " " << y << " " << a[0] << " " << z << " " << *p << " " << std::endl;
 	x++;
@@ -149,7 +150,6 @@ void test_binary_search() {
 	std::cout << ts->end() << " ms, sum = " << ans_2 << std::endl;
 }
 
-/*
 int main()
 {
 	test_output_and_inc_arg1_arg5();
