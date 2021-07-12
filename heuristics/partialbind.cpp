@@ -40,9 +40,9 @@ void test_output_and_inc_arg1_arg5() {
 	c2(a, z, &p, "expected(15, 7, 1000, 23, 33): ");
 	c3(z, &p, "expected(16, 7, 1000, 23, 34): ");
 	c4(&p, "expected(17, 7, 1000, 23, 35): ");
-	c5("expected(18, 7, 1000, 24, 36): ");
+	c5("expected(18, 7, 1000, 23, 36): ");
 	//
-	auto c6 = partialbind(c5, "expected(19, 7, 1000, 24, 37): ");
+	auto c6 = partialbind(c5, "expected(19, 7, 1000, 23, 37): ");
 	c6();
 }
 
