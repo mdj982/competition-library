@@ -154,8 +154,8 @@ void test_binary_search() {
 	std::cout << "direct1    :  " << ts->end() << " ms, sum = " << ref_1 << std::endl;
 	ts->begin();
 	for (int i = 0; i < int(a.size()); ++i) {
-		auto c = partbind(binary_search1, a, i);
-		ans_1 += c();
+		auto c = partbind(binary_search1, a);
+		ans_1 += c(i);
 	}
 	std::cout << "partialapp1:  " << ts->end() << " ms, sum = " << ans_1 << std::endl;
 	ts->begin();
@@ -165,8 +165,8 @@ void test_binary_search() {
 	std::cout << "direct2    :  " << ts->end() << " ms, sum = " << ref_2 << std::endl;
 	ts->begin();
 	for (int i = 0; i < int(a.size()); ++i) {
-		auto c = partbind(binary_search2, i, a);
-		ans_2 += c();
+		auto c = partbind(binary_search2, i);
+		ans_2 += c(a);
 	}
 	std::cout << "partialapp2:  " << ts->end() << " ms, sum = " << ans_2 << std::endl;
 }
