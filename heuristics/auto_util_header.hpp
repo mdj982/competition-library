@@ -4,18 +4,7 @@
 #include <bits/stdc++.h>
 #include <cassert>
 
-using std::cin, std::cout, std::bitset, std::complex;
-using std::vector, std::array, std::string, std::pair, std::list, std::queue, std::deque;
-using std::priority_queue, std::set, std::map, std::unordered_map;
-
-using vi = vector<int>; using vvi = vector<vi>; using vvvi = vector<vvi>;
-using ull = unsigned long long int;
 using ll = long long int;
-using vll = vector<ll>; using vvll = vector<vll>; using vvvll = vector<vvll>;
-using vd = vector<double>; using vvd = vector<vd>; using vvvd = vector<vvd>;
-using P = pair<int, int>;
-using Pll = pair<ll, ll>;
-using cdouble = complex<double>;
 
 const double eps = 1e-7;
 #define Loop(i, n) for(int i = 0; i < int(n); i++)
@@ -40,14 +29,13 @@ const double eps = 1e-7;
 #define snd second
 bool feq(double x, double y) { return std::abs(x - y) <= eps; }
 bool inrange(ll x, ll t) { return x >= 0 && x < t; }
-bool inrange(vll xs, ll t) { Foreach(x, xs) if (!(x >= 0 && x < t)) return false; return true; }
+bool inrange(std::vector<ll> xs, ll t) { Foreach(x, xs) if (!(x >= 0 && x < t)) return false; return true; }
 int ceillog2(ll x) { int m = int(log2(x)); return m + ((1LL << m) < x ? 1 : 0); }
 int floorlog2(ll x) { int m = int(log2(x)); return m - ((1LL << m) > x ? 1 : 0); }
-const string endl = "\n";
 // using std::endl;
 template<class T> T reversed(T container) { std::reverse(container.begin(), container.end()); return container; }
-template<class T> void printv(const vector<T> &v) { for (const T &x : v) cout << x << " "; cout << endl; }
-template<class T> void printmx(const vector<vector<T>> &mx) { for (const vector<T> &v : mx) printv(v); }
+template<class T> void printv(const std::vector<T> &v) { for (const T &x : v) std::cout << x << " "; std::cout << std::endl; }
+template<class T> void printmx(const std::vector<std::vector<T>> &mx) { for (const std::vector<T> &v : mx) printv(v); }
 template<class T> void chmin(T &x, const T &y) { x = std::min(x, y); }
 template<class T> void chmax(T &x, const T &y) { x = std::max(x, y); }
 ll rndf(double x) { return (ll)(x + (x >= 0 ? 0.5 : -0.5)); }

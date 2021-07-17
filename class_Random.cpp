@@ -1,4 +1,8 @@
-#include "auto_util_header.hpp"
+#include <random>
+#include <chrono>
+#include <functional>
+#include <algorithm>
+#include <cassert>
 
 class Random_Int {
 private:
@@ -145,4 +149,30 @@ public:
 	double get_integral() const {
 		return this->val_integral;
 	}
+};
+
+class Selector {
+private:
+	std::mt19937 *mt;
+	std::vector<size_t> st;
+public:
+	// choose multiple values from [n] uniformly at random
+	Selector(const size_t n) {
+		mt = new std::mt19937((uint64_t)(
+			std::chrono::duration_cast<std::chrono::nanoseconds>(
+				std::chrono::high_resolution_clock::now().time_since_epoch()
+				).count()
+			));
+		st.resize(n);
+		std::iota(st.begin(), st.end(), 0);
+	}
+	~Selector() {
+		delete mt;
+	}
+	// choose r values from [n] uniformly at random, r < n is required
+    std::vector<size_t> get(const size_t r) const {
+        std::vector<size_t> ret;
+		std::sample(st.begin(), st.end(), std::back_inserter(ret), r, *mt);
+		return ret;
+    }
 };

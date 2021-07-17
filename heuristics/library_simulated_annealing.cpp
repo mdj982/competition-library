@@ -1,6 +1,6 @@
-#include "auto_util_header.hpp"
-
 #include "../class_Random.cpp"
+
+#include "auto_util_header.hpp"
 
 namespace heur_binary {
 
@@ -19,13 +19,13 @@ namespace heur_binary {
         std::shared_ptr<Random_Real> rr;
         std::shared_ptr<Selector> selector;
 
-        std::vector<std::function<evalval_t(
-            const solution_t &
-        )>> relational_functions;
-
         std::function<evalval_t(
             const solution_t &
         )> objective_function;
+
+        std::vector<std::function<evalval_t(
+            const solution_t &
+        )>> relational_functions;
 
         std::function<solution_t(
             const size_t n,
@@ -64,6 +64,7 @@ namespace heur_binary {
                 X[flip_id] ^= 1;
                 ret += relfunc[flip_id](X);
             }
+            return ret;
         }
 
         evalval_t calc_evalval (
@@ -95,12 +96,12 @@ namespace heur_binary {
 
         Simulated_Annealing (
             const size_t n,
-            const std::vector<std::function<evalval_t(
-                const solution_t &
-            )>> &relational_functions,
             const std::function<evalval_t(
                 const solution_t &
             )> objective_function,
+            const std::vector<std::function<evalval_t(
+                const solution_t &
+            )>> &relational_functions,
             std::function<solution_t(
                 const size_t n,
                 const std::shared_ptr<Random_Dynamic_Int> rdi
@@ -116,8 +117,8 @@ namespace heur_binary {
             )> temperature_function
         ) {
             this->n = n;
-            this->relational_functions = relational_functions;
             this->objective_function = objective_function;
+            this->relational_functions = relational_functions;
             this->initializing_function = initializing_function;
             this->neighboring_function = neighboring_function;
             this->temperature_function = temperature_function;
@@ -137,12 +138,13 @@ namespace heur_binary {
                 std::vector<size_t> flip_ids = neighboring_function(X_cur, rdi, selector);
                 evalval_t evaldiff = calc_evaldiff_with_solution_update(X_cur, flip_ids, relational_functions);
                 evalval_t evalval_next = evalval_cur + evaldiff;
+                // std::cout << evalval_cur << " " << evalval_next << " " << temperature_function(cur_iter, max_iter) << " " << calc_probability(evalval_cur, evalval_next, temperature_function(cur_iter, max_iter)) << std::endl;
                 if (rr->get() < calc_probability(evalval_cur, evalval_next, temperature_function(cur_iter, max_iter))) {
-                    if (evalval_cur > evalval_next) {
+                    evalval_cur = evalval_next;
+                    if (evalval_best > evalval_cur) {
                         X_best = X_cur;
                         evalval_best = evalval_cur;
                     }
-                    evalval_cur = evalval_next;
                 }
                 else {
                     revert(X_cur, flip_ids);
@@ -154,45 +156,6 @@ namespace heur_binary {
     };
 
     namespace helper {
-
-        std::vector<std::function<evalval_t(const solution_t &)>> convert_polynomial_to_relfuncs (
-            const size_t n,
-            const std::vector<std::pair<std::vector<size_t>, evalval_t>> &P
-        ) {
-
-            auto zero = [](const solution_t &X) {
-                return evalval_t(0);
-            };
-
-            std::vector<std::function<evalval_t(const solution_t &)>> relfuncs(n, zero);
-
-            for (const auto &term : P) {
-                for (const auto i : term.first) {
-                    relfuncs[i] = [term, prev = relfuncs[i]](const solution_t &X) {
-                        auto buf = 1;
-                        for (const auto k : term.first) {
-                            buf &= X[k];
-                        }
-                        evalval_t coeff = term.second;
-                        return prev(X) + buf * coeff;
-                    };
-                }
-            }
-
-            for (size_t i = 0; i < n; ++i) {
-                relfuncs[i] = [i, prev = relfuncs[i]](const solution_t &X) {
-                    if (X[i]) {
-                        return prev(X);
-                    }
-                    else {
-                        return evalval_t(0);
-                    }
-                };
-            }
-
-            return relfuncs;
-
-        }
 
         std::function<evalval_t(const solution_t &)> convert_polynomial_to_objfunc (
             const size_t n,
@@ -220,17 +183,57 @@ namespace heur_binary {
 
         }
 
+        std::vector<std::function<evalval_t(const solution_t &)>> convert_polynomial_to_relfuncs (
+            const size_t n,
+            const std::vector<std::pair<std::vector<size_t>, evalval_t>> &P
+        ) {
+
+            auto zero = [](const solution_t &X) {
+                return evalval_t(0);
+            };
+
+            std::vector<std::function<evalval_t(const solution_t &)>> relfuncs(n, zero);
+
+            for (const auto &term : P) {
+                for (const auto i : term.first) {
+                    relfuncs[i] = [i, term, prev = relfuncs[i]](const solution_t &X) {
+                        auto buf = 1;
+                        for (const auto k : term.first) {
+                            buf &= X[k];
+                        }
+                        evalval_t coeff = term.second;
+                        return prev(X) + buf * coeff;
+                    };
+                }
+            }
+
+            for (size_t i = 0; i < n; ++i) {
+                relfuncs[i] = [i, prev = relfuncs[i]](const solution_t &X) {
+                    if (X[i]) {
+                        return prev(X);
+                    }
+                    else {
+                        return evalval_t(0);
+                    }
+                };
+            }
+
+            return relfuncs;
+
+        }
+
         std::function<double(size_t, size_t)> create_exponential_temperature_function(
-            const double alpha = 0.01
+            const double scale,
+            const double alpha = 0.5
         ) {
             std::array<double, 4> log_alpha;
             for (size_t i = 0; i < log_alpha.size(); ++i) {
                 log_alpha[i] = std::pow(std::log(alpha), i);
             }
-            auto tfunc = [log_alpha](size_t cur_iter, size_t max_iter) {
+            auto tfunc = [scale, log_alpha](size_t cur_iter, size_t max_iter) {
                 // return std::pow(alpha, cur_iter / max_iter)
                 auto x = double(cur_iter) / max_iter;
-                return ((log_alpha[3] / 6 * x + log_alpha[2] / 2) * x + log_alpha[1]) * x + log_alpha[0];
+                return scale * std::max(log_alpha[1], ((log_alpha[3] / 6 * x + log_alpha[2] / 2) * x + log_alpha[1]) * x + log_alpha[0]);
             };
             return tfunc;
         }
@@ -256,7 +259,7 @@ namespace heur_binary {
         const std::shared_ptr<Selector> selector
     ) {
         const size_t n = X.size();
-        const size_t n_flip = rdi->get(1, std::min(n, size_t(5)));
+        const size_t n_flip = rdi->get(1, std::min(n, size_t(std::sqrt(n))));
         return selector->get(n_flip);
     }
 
