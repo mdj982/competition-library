@@ -1,9 +1,10 @@
 #include <bits/stdc++.h>
 #include "library_simulated_annealing.cpp"
+#include "../include/class_Timestamp.hpp"
 
 int main() {
 
-    size_t n = 22;
+    size_t n = 400;
 
     std::vector<std::vector<double>> M(n, std::vector<double>(n));
 
@@ -26,38 +27,43 @@ int main() {
     auto objfunc = heur_binary::helper::convert_polynomial_to_objfunc(n, P);
     auto relfuncs = heur_binary::helper::convert_polynomial_to_relfuncs(n, P);
 
-    heur_binary::solution_t X(n);
+    if (n <= 20) {
+
+        heur_binary::solution_t X(n);
 
 
-    double evalmin = INFINITY;
-    double evalmax = -INFINITY;
+        double evalmin = INFINITY;
+        double evalmax = -INFINITY;
 
-    for (int code = 0; code < (1 << n); ++code) {
-        for (size_t i = 0; i < n; ++i) {
-            X[i] = (code >> i) & 1;
+        for (int code = 0; code < (1 << n); ++code) {
+            for (size_t i = 0; i < n; ++i) {
+                X[i] = (code >> i) & 1;
+            }
+            double evalbuf = objfunc(X);
+            if (evalmin > evalbuf) {
+                evalmin = evalbuf;
+            }
+            if (evalmax < evalbuf) {
+                evalmax = evalbuf;
+            }
         }
-        double evalbuf = objfunc(X);
-        if (evalmin > evalbuf) {
-            evalmin = evalbuf;
-        }
-        if (evalmax < evalbuf) {
-            evalmax = evalbuf;
-        }
+
+        std::cout << "min = " << evalmin << std::endl;
+        std::cout << "max = " << evalmax << std::endl;
     }
-
-    std::cout << "min = " << evalmin << std::endl;
-    std::cout << "max = " << evalmax << std::endl;
 
     auto solver = std::make_unique<heur_binary::Simulated_Annealing>(
         n,
         objfunc,
-        relfuncs,
+        std::move(relfuncs),
         heur_binary::choose_initial_solution,
         heur_binary::choose_neighbor,
         heur_binary::helper::create_exponential_temperature_function(50)
     );
 
-    auto Y = solver->get_solution(1000);
+    size_t N_ITERATION = size_t(1e8 * (2 / std::sqrt(n) / n));
+    std::cout << "N_ITERATION = " << N_ITERATION << std::endl;
+    auto Y = solver->get_solution(N_ITERATION);
     std::cout << objfunc(Y) << std::endl;
 
 }

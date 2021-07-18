@@ -169,7 +169,7 @@ namespace heur_binary {
             std::function<evalval_t(const solution_t &)> objfunc = zero;
 
             for (const auto &term : P) {
-                objfunc = [term, prev = objfunc](const solution_t &X) {
+                objfunc = [term, prev = std::move(objfunc)](const solution_t &X) {
                     auto buf = 1;
                     for (const auto k : term.first) {
                         buf &= X[k];
@@ -196,7 +196,7 @@ namespace heur_binary {
 
             for (const auto &term : P) {
                 for (const auto i : term.first) {
-                    relfuncs[i] = [i, term, prev = relfuncs[i]](const solution_t &X) {
+                    relfuncs[i] = [i, term, prev = std::move(relfuncs[i])](const solution_t &X) {
                         auto buf = 1;
                         for (const auto k : term.first) {
                             buf &= X[k];
