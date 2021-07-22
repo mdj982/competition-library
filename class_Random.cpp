@@ -1,3 +1,6 @@
+#ifndef CLASS_RANDOM_
+#define CLASS_RANDOM_
+
 #include <random>
 #include <chrono>
 #include <functional>
@@ -176,3 +179,5 @@ public:
 		return ret;
     }
 };
+
+#endif // CLASS_RANDOM_
