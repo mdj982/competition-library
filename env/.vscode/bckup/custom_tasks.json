@@ -1,0 +1,42 @@
+{
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "debugBuild",
+            "command": "/usr/bin/g++-9",
+            "args": [
+                "-Wall",
+                "-std=c++1z",
+                "-g",
+                "${file}",
+                "-o",
+                "${fileDirname}/${fileBasenameNoExtension}"
+            ],
+            "options": {
+                "cwd": "/usr/bin"
+            }
+        },
+        {
+            "type": "shell",
+            "label": "releaseBuild",
+            "command": "/usr/bin/g++-9",
+            "args": [
+                "-Wall",
+                "-std=c++1z",
+                "-O3",
+                "${file}",
+                "-o",
+                "${fileDirname}/${fileBasenameNoExtension}"
+            ],
+            "options": {
+                "cwd": "/usr/bin"
+            }
+        },
+        {
+            "type": "shell",
+            "label": "runConpetitiveTestSample",
+            "command": "cd ${fileDirname} && g++ -Wall -std=c++1z -g ${fileBasename} -o ${fileBasenameNoExtension} && IS_AC=1 && for TEST_IN in $(ls in*.txt); do TEST_OUT=out$(echo $TEST_IN | cut -c 3-); TEST_ANS=ans$(echo $TEST_IN | cut -c 3-); echo -n \"${TEST_IN}: \"; (time ./${fileBasenameNoExtension} < ${TEST_IN} > ${TEST_OUT}) 2>&1 | grep real | cut -c 6- && if [ -n \"$(diff ${TEST_OUT} ${TEST_ANS})\" ]; then diff -u --color=always ${TEST_OUT} ${TEST_ANS}; IS_AC=0; fi; rm ${TEST_OUT}; done; if [ $IS_AC -eq 1 ]; then echo -e \"\\n\\e[32mCorrect Answer!\\e[0m\"; else echo -e \"\\n\\e[35mWrong Answer\\e[0m\"; fi"
+        }
+    ],
+    "version": "2.0.0"
+}
