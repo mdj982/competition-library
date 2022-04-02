@@ -46,7 +46,7 @@ int floorlog2(ll x) { int m = int(log2(x)); return m - ((1LL << m) > x ? 1 : 0);
 const string endl = "\n";
 // using std::endl;
 template<class T> T reversed(T container) { std::reverse(container.begin(), container.end()); return container; }
-template<class T> void printv(const vector<T> &v) { for (const T &x : v) cout << x << " "; cout << endl; }
+template<class T> void printv(const vector<T> &v) { for (const T &x : v) std::cout << x << " "; std::cout << endl; }
 template<class T> void printmx(const vector<vector<T>> &mx) { for (const vector<T> &v : mx) printv(v); }
 template<class T> void chmin(T &x, const T &y) { x = std::min(x, y); }
 template<class T> void chmax(T &x, const T &y) { x = std::max(x, y); }
