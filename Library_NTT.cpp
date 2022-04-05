@@ -73,7 +73,7 @@ namespace number_theoretic_transform {
 	}
 
 	// a.size() should be 2^digit
-	vector<modll> NTT(const vector<modll> a, int mode = 0) {
+	vector<modll> NTT(const vector<modll> &a, int mode = 0) {
 		int n = int(a.size());
 		int digit = int(rndf(log2(n)));
 		vector<modll> ret = a;
@@ -98,7 +98,7 @@ namespace number_theoretic_transform {
 	}
 
 	// f.size() should be 2^digit
-	vector<modll> INTT(const vector<modll>& f, int mode = 0) {
+	vector<modll> INTT(const vector<modll> &f, int mode = 0) {
 		int n = int(f.size());
 		int digit = int(rndf(log2(n)));
 		vector<modll> ret = f;
