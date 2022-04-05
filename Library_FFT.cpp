@@ -25,7 +25,7 @@ namespace Fourier_transform {
 	}
 
 	// a.size() should be 2^digit
-	vector<cdouble> FFT(const vector<cdouble> a) {
+	vector<cdouble> FFT(const vector<cdouble> &a) {
 		int n = int(a.size());
 		int digit = int(rndf(log2(n)));
 		vector<cdouble> ret = a;
@@ -50,7 +50,7 @@ namespace Fourier_transform {
 	}
 
 	// f.size() should be 2^digit
-	vector<cdouble> IFFT(const vector<cdouble>& f) {
+	vector<cdouble> IFFT(const vector<cdouble> &f) {
 		int n = int(f.size());
 		int digit = int(rndf(log2(n)));
 		vector<cdouble> ret = f;
